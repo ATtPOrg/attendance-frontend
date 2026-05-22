@@ -230,6 +230,15 @@ export default function LoginPage() {
               Contact your organisation admin
             </a>
           </p>
+
+          <div className="mt-4 pt-5 border-t" style={{ borderColor: "var(--line)" }}>
+            <p className="text-[11px] text-center" style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}>
+              School administrator?{" "}
+              <Link href="/school/login" style={{ color: "var(--accent)" }}>
+                School admin login →
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

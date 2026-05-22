@@ -3,7 +3,11 @@ import { useState } from "react";
 import Link from "next/link";
 import DashboardHeader from "@/components/dashboard/Header";
 import { mockSchools } from "@/lib/mockData";
-import { Search, Plus, MoreVertical, Users, BookOpen, GraduationCap } from "lucide-react";
+import { Search, Plus, MoreVertical, Users, BookOpen, GraduationCap, Pencil, Trash2, Eye, Power } from "lucide-react";
+import Modal, { ConfirmModal } from "@/components/ui/Modal";
+import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
+
+type School = typeof mockSchools[number];
 
 const statusColors = {
   active: { bg: "#ecfdf5", text: "#059669" },
@@ -17,11 +21,102 @@ const planColors = {
   Starter: { bg: "#f0fdf4", text: "#16a34a" },
 };
 
+function EditSchoolModal({ school, open, onClose, onSave }: { school: School | null; open: boolean; onClose: () => void; onSave: (s: School) => void }) {
+  const [form, setForm] = useState<School | null>(school);
+
+  if (!form) return null;
+  const set = (k: keyof School, v: string) => setForm((p) => p ? { ...p, [k]: v } : p);
+
+  return (
+    <Modal open={open} onClose={onClose} title="Edit School" subtitle={school?.name} width="max-w-xl">
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-4">
+          <FormField label="Full Name" id="name" required>
+            <Input id="name" value={form.name} onChange={(e) => set("name", e.target.value)} />
+          </FormField>
+          <FormField label="Short Name" id="shortName" required>
+            <Input id="shortName" value={form.shortName} onChange={(e) => set("shortName", e.target.value)} />
+          </FormField>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField label="City" id="city">
+            <Input id="city" value={form.city} onChange={(e) => set("city", e.target.value)} />
+          </FormField>
+          <FormField label="Country" id="country">
+            <Input id="country" value={form.country} onChange={(e) => set("country", e.target.value)} />
+          </FormField>
+        </div>
+        <FormField label="Email" id="email">
+          <Input id="email" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} />
+        </FormField>
+        <FormField label="Phone" id="phone">
+          <Input id="phone" value={form.phone} onChange={(e) => set("phone", e.target.value)} />
+        </FormField>
+        <div className="grid grid-cols-2 gap-4">
+          <FormField label="Plan" id="plan">
+            <Select id="plan" value={form.plan} onChange={(e) => set("plan", e.target.value)}>
+              <option>Starter</option>
+              <option>Professional</option>
+              <option>Enterprise</option>
+            </Select>
+          </FormField>
+          <FormField label="Status" id="status">
+            <Select id="status" value={form.status} onChange={(e) => set("status", e.target.value as School["status"])}>
+              <option value="active">Active</option>
+              <option value="trial">Trial</option>
+              <option value="inactive">Inactive</option>
+            </Select>
+          </FormField>
+        </div>
+      </div>
+      <ModalActions>
+        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
+        <BtnPrimary onClick={() => { onSave(form); onClose(); }}>Save Changes</BtnPrimary>
+      </ModalActions>
+    </Modal>
+  );
+}
+
+function SchoolMenu({ school, onEdit, onDelete, onToggle }: { school: School; onEdit: () => void; onDelete: () => void; onToggle: () => void }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="relative">
+      <button className="p-1 rounded hover:bg-gray-100 transition-colors" onClick={() => setOpen((v) => !v)}>
+        <MoreVertical size={16} color="#9ca3af" />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-7 z-20 bg-white border rounded-xl shadow-lg py-1.5 w-44" style={{ borderColor: "#e5e7eb" }}>
+            <Link href={`/dashboard/schools/${school.id}`} className="flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-gray-50 transition-colors" style={{ color: "#374151" }} onClick={() => setOpen(false)}>
+              <Eye size={14} /> View Details
+            </Link>
+            <button className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-gray-50 transition-colors" style={{ color: "#374151" }} onClick={() => { onEdit(); setOpen(false); }}>
+              <Pencil size={14} /> Edit School
+            </button>
+            <button className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-gray-50 transition-colors" style={{ color: "#374151" }} onClick={() => { onToggle(); setOpen(false); }}>
+              <Power size={14} /> {school.status === "active" ? "Suspend" : "Activate"}
+            </button>
+            <div className="my-1 border-t" style={{ borderColor: "#f3f4f6" }} />
+            <button className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-red-50 transition-colors" style={{ color: "#ef4444" }} onClick={() => { onDelete(); setOpen(false); }}>
+              <Trash2 size={14} /> Remove School
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function SchoolsPage() {
+  const [schools, setSchools] = useState(mockSchools);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "trial" | "inactive">("all");
+  const [editTarget, setEditTarget] = useState<School | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<School | null>(null);
+  const [toggleTarget, setToggleTarget] = useState<School | null>(null);
 
-  const filtered = mockSchools.filter((s) => {
+  const filtered = schools.filter((s) => {
     const matchesSearch =
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.shortName.toLowerCase().includes(search.toLowerCase()) ||
@@ -29,6 +124,21 @@ export default function SchoolsPage() {
     const matchesFilter = filter === "all" || s.status === filter;
     return matchesSearch && matchesFilter;
   });
+
+  const handleSave = (updated: School) =>
+    setSchools((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+
+  const handleDelete = () =>
+    setSchools((prev) => prev.filter((s) => s.id !== deleteTarget?.id));
+
+  const handleToggle = () =>
+    setSchools((prev) =>
+      prev.map((s) =>
+        s.id === toggleTarget?.id
+          ? { ...s, status: s.status === "active" ? "inactive" as const : "active" as const }
+          : s
+      )
+    );
 
   return (
     <>
@@ -48,15 +158,12 @@ export default function SchoolsPage() {
                   fontFamily: "'Inter',sans-serif",
                 }}
               >
-                {f}
+                {f} {f === "all" ? `(${schools.length})` : `(${schools.filter((s) => s.status === f).length})`}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <div
-              className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white"
-              style={{ borderColor: "#e5e7eb" }}
-            >
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
               <Search size={14} color="#9ca3af" />
               <input
                 value={search}
@@ -83,40 +190,29 @@ export default function SchoolsPage() {
             const sc = statusColors[school.status];
             const pc = planColors[school.plan as keyof typeof planColors] ?? planColors.Starter;
             return (
-              <div
-                key={school.id}
-                className="bg-white rounded-xl border overflow-hidden hover:shadow-md transition-shadow"
-                style={{ borderColor: "#e5e7eb" }}
-              >
-                {/* Card header */}
+              <div key={school.id} className="bg-white rounded-xl border overflow-hidden hover:shadow-md transition-shadow" style={{ borderColor: "#e5e7eb" }}>
                 <div className="px-5 py-4 border-b flex items-center justify-between" style={{ borderColor: "#f3f4f6" }}>
                   <div className="flex items-center gap-3">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-[14px] font-bold"
-                      style={{ background: "#4f46e5" }}
-                    >
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-[14px] font-bold" style={{ background: "#4f46e5" }}>
                       {school.shortName.slice(0, 2)}
                     </div>
                     <div>
-                      <div className="text-[14px] font-semibold leading-tight" style={{ color: "#111827" }}>
-                        {school.shortName}
-                      </div>
+                      <div className="text-[14px] font-semibold leading-tight" style={{ color: "#111827" }}>{school.shortName}</div>
                       <div className="text-[11px]" style={{ color: "#9ca3af" }}>{school.city}</div>
                     </div>
                   </div>
-                  <button className="p-1 rounded hover:bg-gray-100 transition-colors">
-                    <MoreVertical size={16} color="#9ca3af" />
-                  </button>
+                  <SchoolMenu
+                    school={school}
+                    onEdit={() => setEditTarget(school)}
+                    onDelete={() => setDeleteTarget(school)}
+                    onToggle={() => setToggleTarget(school)}
+                  />
                 </div>
 
-                {/* School name */}
                 <div className="px-5 pt-3">
-                  <p className="text-[13px] font-medium leading-snug" style={{ color: "#374151" }}>
-                    {school.name}
-                  </p>
+                  <p className="text-[13px] font-medium leading-snug" style={{ color: "#374151" }}>{school.name}</p>
                 </div>
 
-                {/* Stats */}
                 <div className="px-5 py-4 grid grid-cols-3 gap-2">
                   {[
                     { icon: BookOpen, value: school.totalCourses.toLocaleString(), label: "Courses" },
@@ -131,22 +227,12 @@ export default function SchoolsPage() {
                   ))}
                 </div>
 
-                {/* Footer */}
-                <div
-                  className="px-5 py-3 flex items-center justify-between border-t"
-                  style={{ borderColor: "#f3f4f6", background: "#fafafa" }}
-                >
+                <div className="px-5 py-3 flex items-center justify-between border-t" style={{ borderColor: "#f3f4f6", background: "#fafafa" }}>
                   <div className="flex gap-2">
-                    <span
-                      className="text-[11px] px-2.5 py-0.5 rounded-full font-medium"
-                      style={{ background: sc.bg, color: sc.text }}
-                    >
+                    <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: sc.bg, color: sc.text }}>
                       {school.status}
                     </span>
-                    <span
-                      className="text-[11px] px-2.5 py-0.5 rounded-full font-medium"
-                      style={{ background: pc.bg, color: pc.text }}
-                    >
+                    <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: pc.bg, color: pc.text }}>
                       {school.plan}
                     </span>
                   </div>
@@ -161,6 +247,7 @@ export default function SchoolsPage() {
                     <button
                       className="text-[12px] font-medium px-3 py-1.5 rounded-lg border transition-colors hover:bg-gray-50"
                       style={{ borderColor: "#e5e7eb", color: "#374151" }}
+                      onClick={() => setEditTarget(school)}
                     >
                       Edit
                     </button>
@@ -180,6 +267,36 @@ export default function SchoolsPage() {
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      <EditSchoolModal
+        school={editTarget}
+        open={!!editTarget}
+        onClose={() => setEditTarget(null)}
+        onSave={handleSave}
+      />
+      <ConfirmModal
+        open={!!deleteTarget}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDelete}
+        title="Remove School"
+        message={`Are you sure you want to remove ${deleteTarget?.name}? This action cannot be undone and will delete all associated data.`}
+        confirmLabel="Remove School"
+        danger
+      />
+      <ConfirmModal
+        open={!!toggleTarget}
+        onClose={() => setToggleTarget(null)}
+        onConfirm={handleToggle}
+        title={toggleTarget?.status === "active" ? "Suspend School" : "Activate School"}
+        message={
+          toggleTarget?.status === "active"
+            ? `Suspending ${toggleTarget?.name} will disable all attendance sessions. Students and professors will lose access.`
+            : `Activating ${toggleTarget?.name} will restore full access for all users.`
+        }
+        confirmLabel={toggleTarget?.status === "active" ? "Suspend" : "Activate"}
+        danger={toggleTarget?.status === "active"}
+      />
     </>
   );
 }

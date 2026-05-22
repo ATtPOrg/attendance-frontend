@@ -4,17 +4,15 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, School, Settings, LogOut,
-  Users, BookOpen, GraduationCap, CheckSquare,
+  CreditCard, BarChart3,
 } from "lucide-react";
 import { useAuthStore } from "@/stores/authStore";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/schools", label: "Schools", icon: School },
-  { href: "/dashboard/students", label: "Students", icon: GraduationCap },
-  { href: "/dashboard/courses", label: "Courses", icon: BookOpen },
-  { href: "/dashboard/professors", label: "Professors", icon: Users },
-  { href: "/dashboard/attendance", label: "-Goance", icon: CheckSquare },
+  { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/dashboard/billing", label: "Billing", icon: CreditCard },
 ];
 
 export default function Sidebar() {
@@ -34,7 +32,7 @@ export default function Sidebar() {
         <Image src="/logo.png" alt="ATP-Go" width={36} height={36} className="rounded-lg" />
         <div>
           <div className="text-[14px] font-bold" style={{ fontFamily: "'Inter',sans-serif", color: "#111827" }}>
-            -Goance System
+            ATP-Go
           </div>
           <div className="text-[11px]" style={{ color: "#9ca3af" }}>Admin Portal</div>
         </div>
