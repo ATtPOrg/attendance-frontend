@@ -43,7 +43,7 @@ function Counter({ target, suffix, decimal }: { target: number; suffix: string; 
 export default function Stats() {
   return (
     <section
-      className="px-6 md:px-12 py-24 border-b"
+      className="px-6 md:px-12 py-14 md:py-24 border-b"
       style={{ borderColor: "var(--line)" }}
     >
       <div className="section-label mb-12">By The Numbers</div>
@@ -55,7 +55,7 @@ export default function Stats() {
         {stats.map((s) => (
           <div
             key={s.label}
-            className="px-8 py-10 transition-colors duration-200 hover:bg-blue-50"
+            className="px-4 py-6 md:px-8 md:py-10 transition-colors duration-200 hover:bg-blue-50"
             style={{ background: "var(--paper)" }}
           >
             <div

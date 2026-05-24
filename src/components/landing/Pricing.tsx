@@ -54,7 +54,7 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="px-6 md:px-12 py-28 border-b"
+      className="px-6 md:px-12 py-16 md:py-28 border-b"
       style={{ background: "var(--charcoal)", borderColor: "rgba(255,255,255,0.06)" }}
     >
       <div
@@ -64,7 +64,7 @@ export default function Pricing() {
         Pricing
       </div>
       <h2
-        className="mb-16 tracking-tight"
+        className="mb-8 md:mb-16 tracking-tight"
         style={{
           fontFamily: "var(--font-syne)",
           fontSize: "clamp(36px,5vw,64px)",
@@ -83,7 +83,7 @@ export default function Pricing() {
         {plans.map((plan) => (
           <div
             key={plan.name}
-            className="p-8 flex flex-col"
+            className="p-5 md:p-8 flex flex-col"
             style={{
               background: plan.highlight ? "var(--accent)" : "rgba(255,255,255,0.04)",
               border: `1px solid ${plan.highlight ? "transparent" : "rgba(255,255,255,0.08)"}`,

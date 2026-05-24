@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Hero() {
   return (
     <section
-      className="relative min-h-screen flex flex-col justify-end px-6 md:px-12 pb-20 overflow-hidden"
+      className="relative min-h-screen flex flex-col justify-center sm:justify-end px-6 md:px-12 pb-12 md:pb-20 overflow-hidden"
       style={{ paddingTop: "72px" }}
     >
       {/* Background grid */}
@@ -39,7 +39,7 @@ export default function Hero() {
       >
         <span className="block w-10 h-px" style={{ background: "var(--accent)" }} />
         Attendance Technology Platform
-        <span className="hidden md:block">&amp; School Management System</span>
+        <span className="hidden sm:inline">&amp; School Management System</span>
       </div>
 
       {/* Main headline */}

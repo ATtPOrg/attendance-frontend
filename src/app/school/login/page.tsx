@@ -51,7 +51,7 @@ export default function SchoolLoginPage() {
         </div>
 
         <Link href="/" className="relative z-10 flex items-center gap-2.5">
-          <Image src="/logo.png" alt="ATP-Go" width={32} height={32} className="rounded-lg" />
+          <Image src="/logo_new.png" alt="ATP-Go" width={32} height={32} className="rounded-lg" />
           <span className="font-bold text-[14px]" style={{ fontFamily: "var(--font-syne)", color: "#e2e8f0" }}>
             ATP<span style={{ color: "var(--accent)" }}>-Go</span>
           </span>
@@ -100,7 +100,7 @@ export default function SchoolLoginPage() {
       <div className="flex items-center justify-center px-6 py-16">
         <div className="w-full max-w-sm">
           <Link href="/" className="md:hidden flex items-center gap-2 mb-10">
-            <Image src="/logo.png" alt="ATP-Go" width={30} height={30} className="rounded-lg" />
+            <Image src="/logo_new.png" alt="ATP-Go" width={30} height={30} className="rounded-lg" />
             <span style={{ fontFamily: "var(--font-syne)", fontWeight: 700, color: "var(--charcoal)", fontSize: 15 }}>
               ATP<span style={{ color: "var(--accent)" }}>-Go</span>
             </span>

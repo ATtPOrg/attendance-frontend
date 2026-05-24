@@ -12,10 +12,10 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="px-6 md:px-12 py-28 border-b"
+      className="px-6 md:px-12 py-16 md:py-28 border-b"
       style={{ borderColor: "var(--line)" }}
     >
-      <div className="grid md:grid-cols-2 gap-20">
+      <div className="grid md:grid-cols-2 gap-10 md:gap-20">
         {/* Left */}
         <div>
           <div className="section-label mb-6">Get In Touch</div>

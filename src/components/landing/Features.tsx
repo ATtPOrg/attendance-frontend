@@ -41,11 +41,11 @@ export default function Features() {
   return (
     <section
       id="features"
-      className="px-6 md:px-12 py-28 border-b"
+      className="px-6 md:px-12 py-16 md:py-28 border-b"
       style={{ borderColor: "var(--line)" }}
     >
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8 md:mb-16">
         <div>
           <div className="section-label mb-4">Core Features</div>
           <h2

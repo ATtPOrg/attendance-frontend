@@ -15,12 +15,12 @@ export default function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="px-6 md:px-12 py-28 border-b"
+      className="px-6 md:px-12 py-16 md:py-28 border-b"
       style={{ background: "var(--ivory)", borderColor: "var(--line)" }}
     >
       <div className="section-label mb-4">How It Works</div>
       <h2
-        className="mb-16 tracking-tight"
+        className="mb-8 md:mb-16 tracking-tight"
         style={{
           fontFamily: "var(--font-syne)",
           fontSize: "clamp(36px,5vw,64px)",
@@ -35,7 +35,7 @@ export default function HowItWorks() {
         </em>
       </h2>
 
-      <div className="grid md:grid-cols-2 gap-16">
+      <div className="grid md:grid-cols-2 gap-10 md:gap-16">
         {/* Professor */}
         <div>
           <div

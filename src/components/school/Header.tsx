@@ -1,6 +1,7 @@
 "use client";
-import { Bell, Search } from "lucide-react";
+import { Bell, Search, Menu } from "lucide-react";
 import { useSchoolAuthStore } from "@/stores/schoolAuthStore";
+import { useSidebarStore } from "@/stores/sidebarStore";
 
 interface Props {
   title: string;
@@ -9,21 +10,31 @@ interface Props {
 
 export default function SchoolHeader({ title, subtitle }: Props) {
   const { admin } = useSchoolAuthStore();
+  const { toggle } = useSidebarStore();
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between px-8 py-4 bg-white border-b" style={{ borderColor: "#e5e7eb" }}>
-      <div>
-        <h1 className="text-[18px] font-bold" style={{ color: "#111827", fontFamily: "'Inter',sans-serif" }}>{title}</h1>
-        {subtitle && <p className="text-[13px]" style={{ color: "#9ca3af" }}>{subtitle}</p>}
+    <header className="sticky top-0 z-30 flex items-center justify-between px-4 sm:px-8 py-4 bg-white border-b" style={{ borderColor: "#e5e7eb" }}>
+      <div className="flex items-center gap-3 min-w-0">
+        <button
+          className="md:hidden p-1.5 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
+          onClick={toggle}
+          aria-label="Open menu"
+        >
+          <Menu size={20} strokeWidth={1.8} color="#6b7280" />
+        </button>
+        <div className="min-w-0">
+          <h1 className="text-[16px] sm:text-[18px] font-bold truncate" style={{ color: "#111827", fontFamily: "'Inter',sans-serif" }}>{title}</h1>
+          {subtitle && <p className="text-[13px] truncate" style={{ color: "#9ca3af" }}>{subtitle}</p>}
+        </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 px-4 py-2 rounded-lg border" style={{ borderColor: "#e5e7eb", background: "#f9fafb" }}>
+      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg border" style={{ borderColor: "#e5e7eb", background: "#f9fafb" }}>
           <Search size={15} strokeWidth={1.8} color="#9ca3af" />
           <input
             type="text"
             placeholder={`Search ${admin?.schoolShortName ?? ""}...`}
-            className="bg-transparent text-[13px] outline-none w-40"
+            className="bg-transparent text-[13px] outline-none w-32 md:w-40"
             style={{ color: "#111827", fontFamily: "'Inter',sans-serif" }}
           />
         </div>

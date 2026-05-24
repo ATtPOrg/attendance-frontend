@@ -15,7 +15,7 @@ export default function Footer() {
       </div>
 
       <Link href="/" className="flex items-center gap-2">
-        <Image src="/logo.png" alt="ATP-Go" width={28} height={28} className="rounded-md" />
+        <Image src="/logo_new.png" alt="ATP-Go" width={28} height={28} className="rounded-md" />
         <span
           className="font-bold text-[14px]"
           style={{ fontFamily: "var(--font-syne)", color: "var(--charcoal)" }}

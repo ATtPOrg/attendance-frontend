@@ -18,14 +18,14 @@ export default function Navbar() {
       <nav
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 md:px-12 h-[72px] transition-all duration-300"
         style={{
-          background: scrolled ? "rgba(250,247,242,0.92)" : "transparent",
-          backdropFilter: scrolled ? "blur(20px)" : "none",
+          background: scrolled || menuOpen ? "rgba(250,247,242,0.96)" : "transparent",
+          backdropFilter: scrolled || menuOpen ? "blur(20px)" : "none",
           borderBottom: scrolled ? "1px solid rgba(26,24,20,0.1)" : "none",
         }}
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
-          <Image src="/logo.png" alt="ATP-Go" width={36} height={36} className="rounded-lg" />
+          <Image src="/logo_new.png" alt="ATP-Go" width={36} height={36} className="rounded-lg" />
           <span
             className="font-bold text-[15px] tracking-tight"
             style={{ fontFamily: "var(--font-syne)", color: "var(--charcoal)" }}
@@ -71,48 +71,61 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* Hamburger */}
+        {/* Hamburger — animates to ✕ when open */}
         <button
-          className="md:hidden flex flex-col gap-[5px]"
+          className="md:hidden flex flex-col gap-[5px] p-2 -mr-2"
           onClick={() => setMenuOpen((v) => !v)}
-          aria-label="Menu"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
         >
           {[0, 1, 2].map((i) => (
             <span
               key={i}
-              className="block w-6 h-[1.5px] transition-all duration-300"
-              style={{ background: "var(--charcoal)" }}
+              className="block w-6 h-[1.5px] transition-all duration-300 origin-center"
+              style={{
+                background: "var(--charcoal)",
+                opacity: menuOpen && i === 1 ? 0 : 1,
+                transform: menuOpen
+                  ? i === 0
+                    ? "translateY(6.5px) rotate(45deg)"
+                    : i === 2
+                    ? "translateY(-6.5px) rotate(-45deg)"
+                    : "none"
+                  : "none",
+              }}
             />
           ))}
         </button>
       </nav>
 
       {/* Mobile menu */}
-      {menuOpen && (
-        <div
-          className="fixed top-[72px] left-0 right-0 z-40 flex flex-col gap-4 px-6 py-6 border-b md:hidden"
-          style={{ background: "var(--paper)", borderColor: "var(--line)" }}
-        >
+      <div
+        className={`fixed top-[72px] left-0 right-0 z-40 flex flex-col border-b md:hidden transition-all duration-300 overflow-hidden ${
+          menuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+        }`}
+        style={{ background: "var(--paper)", borderColor: "var(--line)" }}
+      >
+        <div className="flex flex-col gap-0 px-6 py-4">
           {["Features", "How It Works", "Pricing", "Contact"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
               onClick={() => setMenuOpen(false)}
-              className="text-[13px] uppercase tracking-[0.1em]"
-              style={{ fontFamily: "var(--font-dm-mono)", color: "var(--charcoal)" }}
+              className="text-[13px] uppercase tracking-[0.1em] py-3 border-b"
+              style={{ fontFamily: "var(--font-dm-mono)", color: "var(--charcoal)", borderColor: "var(--line)" }}
             >
               {item}
             </a>
           ))}
           <Link
             href="/login"
-            className="text-[13px] uppercase tracking-[0.1em]"
+            onClick={() => setMenuOpen(false)}
+            className="text-[13px] uppercase tracking-[0.1em] py-3"
             style={{ fontFamily: "var(--font-dm-mono)", color: "var(--accent)" }}
           >
             Sign In →
           </Link>
         </div>
-      )}
+      </div>
     </>
   );
 }
