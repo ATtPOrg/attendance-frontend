@@ -1,3 +1,5 @@
 attendance/
 node_modules
 .next/
+docs.md
+.env.local

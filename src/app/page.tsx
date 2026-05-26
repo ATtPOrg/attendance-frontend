@@ -1,5 +1,6 @@
 import Navbar from "@/components/landing/Navbar";
 import Hero from "@/components/landing/Hero";
+import Waitlist from "@/components/landing/Waitlist";
 import Marquee from "@/components/landing/Marquee";
 import Features from "@/components/landing/Features";
 import HowItWorks from "@/components/landing/HowItWorks";
@@ -14,6 +15,7 @@ export default function Home() {
       <Navbar />
       <main>
         <Hero />
+        <Waitlist />
         <Marquee />
         <Features />
         <HowItWorks />
