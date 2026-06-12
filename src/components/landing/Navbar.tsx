@@ -52,7 +52,7 @@ export default function Navbar() {
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
           <Link
-            href="/login"
+            href="/school/login"
             className="text-[12px] uppercase tracking-[0.1em] px-5 py-2.5 transition-all duration-200 border"
             style={{
               fontFamily: "var(--font-dm-mono)",
@@ -62,13 +62,13 @@ export default function Navbar() {
           >
             Sign In
           </Link>
-          <Link
-            href="/login"
+          <a
+            href="#waitlist"
             className="text-[12px] uppercase tracking-[0.1em] px-5 py-2.5 text-white transition-all duration-200"
             style={{ fontFamily: "var(--font-dm-mono)", background: "var(--charcoal)" }}
           >
             Get Demo →
-          </Link>
+          </a>
         </div>
 
         {/* Hamburger — animates to ✕ when open */}
@@ -117,7 +117,7 @@ export default function Navbar() {
             </a>
           ))}
           <Link
-            href="/login"
+            href="/school/login"
             onClick={() => setMenuOpen(false)}
             className="text-[13px] uppercase tracking-[0.1em] py-3"
             style={{ fontFamily: "var(--font-dm-mono)", color: "var(--accent)" }}

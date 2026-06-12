@@ -22,7 +22,7 @@ No test suite is configured.
 - **Super Admin portal** (`/dashboard`) — system-wide management: schools, platform analytics, billing, API keys
 - **School Admin portal** (`/school`) — institution-level management: students, professors, courses, departments, settings
 
-This is currently a **prototype with all mock data** — there is no real backend integration. All state comes from `src/lib/mockData.ts` and Zustand stores with hardcoded credentials. API calls are not wired up yet.
+All pages fetch from the **real backend API** (`NEXT_PUBLIC_API_URL`, see `.env.example`). The full endpoint contract for the web app lives in **`api.md`** (the mobile app's contract is `BACKEND_API_SPEC.md`). Keep `src/lib/api.ts` and `api.md` in sync when adding endpoints.
 
 ---
 
@@ -33,16 +33,16 @@ This is currently a **prototype with all mock data** — there is no real backen
 ```
 app/
   page.tsx              — marketing landing page
-  login/                — super admin login
+  sysadmin/             — super admin login (hidden — intentionally not linked anywhere)
   dashboard/            — super admin portal (auth-guarded in layout.tsx)
-    layout.tsx          — checks authStore.isAuthenticated, redirects to /login
+    layout.tsx          — checks authStore.isAuthenticated, redirects to /sysadmin
     page.tsx            — overview: stat cards, charts, schools list
     schools/            — CRUD + multi-step onboarding wizard
     analytics/          — platform-wide charts and rankings
     billing/            — subscription management
     settings/           — 6-tab settings page
   school/               — school admin portal
-    login/              — school admin login (demo creds shown)
+    login/              — school admin login (the only public login page)
     layout.tsx          — checks schoolAuthStore.isAuthenticated
     dashboard/          — school KPIs, attendance trend, alerts
     students/           — sortable student table, add/edit/suspend
@@ -58,18 +58,27 @@ Auth checks live in each portal's `layout.tsx` — they redirect to the relevant
 
 Three stores in `src/stores/`:
 
-- **`authStore.ts`** — super admin auth. Persists to `localStorage` key `atp-auth`. Mock login with 800ms delay. User shape: `{ id, name, email, role: "super_admin" | "org_admin" }`.
-- **`schoolAuthStore.ts`** — school admin auth. Persists to `localStorage` key `atp-school-auth`. Hardcoded school mapping by email domain (e.g. `admin@unilag.edu.ng` → UNILAG). User shape adds `schoolId`, `schoolName`, `schoolShortName`.
+- **`authStore.ts`** — super admin auth. Persists to `localStorage` key `atp-auth`. Logs in via `POST /admin/auth/login`, stores `token` + `refreshToken` + user.
+- **`schoolAuthStore.ts`** — school admin auth. Persists to `localStorage` key `atp-school-auth`. Logs in via `POST /school-admin/auth/login`; the admin object carries `schoolId`, `schoolName`, `schoolShortName`.
 - **`sidebarStore.ts`** — mobile sidebar open/close toggle only.
+
+### Data layer
+
+- **`src/lib/api.ts`** — fetch wrapper (`request`) + `adminApi` / `schoolApi` endpoint objects. Reads the Bearer token straight from the zustand-persisted localStorage keys (avoids an import cycle with the stores). On 401 it clears storage and redirects to the portal's login page.
+- **`src/lib/types.ts`** — shared API models (School, Student, Professor, Course, Faculty, Department, AttendanceSession, ...).
+- **`src/hooks/useApi.ts`** — minimal `{ data, loading, error, refetch, setData }` fetch hook used by every page; CRUD handlers call the API then patch the cache with `setData`.
 
 ### Components
 
 ```
 components/
   ui/
-    Modal.tsx       — base Modal + ConfirmModal for destructive actions
+    Modal.tsx       — Modal is a right-side slide-over drawer; ConfirmModal
+                      stays a small centered dialog (supports async onConfirm)
     FormField.tsx   — FormField wrapper, Input, Select, Textarea,
                       ModalActions, BtnPrimary, BtnSecondary
+    Async.tsx       — LoadingState, ErrorState (with retry), InlineError
+    NotificationBell.tsx — header bell: unread badge + dropdown feed
   dashboard/
     Header.tsx      — sticky header: menu, title, search, notifications
     Sidebar.tsx     — fixed nav: logo, items, settings, logout, user chip
@@ -99,8 +108,8 @@ All page and component files use `"use client"` (fully client-side; no Server Co
 
 ## Key constraints
 
-- **No real backend yet** — all data comes from `src/lib/mockData.ts`. When wiring up real API calls, replace mock data references and add proper error/loading states.
-- **No environment variables** — API URL and secrets are not yet configured. Add `.env.local` with `NEXT_PUBLIC_API_URL` when integrating the backend.
-- **Mock auth only** — login accepts any email matching the hardcoded domain map (school portal) or any email/password (super admin). Replace with real JWT flow against the FastAPI backend when ready.
+- **API contract** — every endpoint the web app calls is documented in `api.md`. Update both `src/lib/api.ts` and `api.md` together.
+- **Environment** — `NEXT_PUBLIC_API_URL` in `.env.local` (see `.env.example`); defaults to `http://localhost:8000`.
+- **Auth** — real JWT flow against the FastAPI backend. The super admin login page is `/sysadmin` and must remain unlinked from all public pages; the school login at `/school/login` is the only public sign-in.
 - **Path alias** — `@/*` maps to `./src/*` (configured in `tsconfig.json`).
-- **No SSR data fetching** — all pages are client-rendered. Data fetching should use `useEffect` or a data-fetching library (SWR/React Query) when backend integration begins.
+- **No SSR data fetching** — all pages are client-rendered and fetch via `useApi` from `src/hooks/useApi.ts`.

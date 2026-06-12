@@ -1,7 +1,9 @@
 "use client";
-import { Bell, Search, Menu } from "lucide-react";
+import { Search, Menu } from "lucide-react";
 import { useSchoolAuthStore } from "@/stores/schoolAuthStore";
 import { useSidebarStore } from "@/stores/sidebarStore";
+import NotificationBell from "@/components/ui/NotificationBell";
+import { schoolApi } from "@/lib/api";
 
 interface Props {
   title: string;
@@ -38,10 +40,10 @@ export default function SchoolHeader({ title, subtitle }: Props) {
             style={{ color: "#111827", fontFamily: "'Inter',sans-serif" }}
           />
         </div>
-        <button className="relative p-2 rounded-lg border transition-colors hover:bg-gray-50" style={{ borderColor: "#e5e7eb" }}>
-          <Bell size={18} strokeWidth={1.8} color="#6b7280" />
-          <span className="absolute top-1 right-1 w-2 h-2 rounded-full" style={{ background: "#ef4444" }} />
-        </button>
+        <NotificationBell
+          fetchNotifications={schoolApi.notifications}
+          markAllRead={schoolApi.markNotificationsRead}
+        />
       </div>
     </header>
   );

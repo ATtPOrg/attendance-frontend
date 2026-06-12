@@ -139,7 +139,7 @@ export default function Pricing() {
             </ul>
 
             <Link
-              href="/login"
+              href="/school/login"
               className="block text-center py-3 text-[12px] uppercase tracking-[0.1em] transition-all duration-200"
               style={{
                 fontFamily: "var(--font-dm-mono)",

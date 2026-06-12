@@ -1,17 +1,47 @@
 "use client";
 import DashboardHeader from "@/components/dashboard/Header";
-import { mockSchools, attendanceTrend, departmentPerformance } from "@/lib/mockData";
+import { adminApi } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
+import { LoadingState, ErrorState } from "@/components/ui/Async";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 const COLORS = ["#4f46e5", "#7c3aed", "#059669", "#d97706", "#ef4444", "#0ea5e9"];
 
 export default function AnalyticsPage() {
-  const activeSchools = mockSchools.filter((s) => s.status === "active");
-  const totalStudents = mockSchools.reduce((a, s) => a + s.totalStudents, 0);
-  const totalProfessors = mockSchools.reduce((a, s) => a + s.totalProfessors, 0);
-  const avgAttendance = (activeSchools.reduce((a, s) => a + s.avgAttendance, 0) / activeSchools.length).toFixed(1);
+  const schools = useApi(() => adminApi.schools.list());
+  const trend = useApi(() => adminApi.attendanceTrend());
+  const deptPerf = useApi(() => adminApi.departmentPerformance());
 
-  const schoolAttendance = mockSchools
+  const loading = schools.loading || trend.loading || deptPerf.loading;
+  const error = schools.error ?? trend.error ?? deptPerf.error;
+
+  if (loading) {
+    return (
+      <>
+        <DashboardHeader title="Analytics" subtitle="Platform-wide performance overview" />
+        <LoadingState label="Loading analytics..." />
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <DashboardHeader title="Analytics" subtitle="Platform-wide performance overview" />
+        <ErrorState message={error} onRetry={() => { void schools.refetch(); void trend.refetch(); void deptPerf.refetch(); }} />
+      </>
+    );
+  }
+
+  const list = schools.data ?? [];
+  const activeSchools = list.filter((s) => s.status === "active");
+  const totalStudents = list.reduce((a, s) => a + s.totalStudents, 0);
+  const totalProfessors = list.reduce((a, s) => a + s.totalProfessors, 0);
+  const avgAttendance = activeSchools.length
+    ? (activeSchools.reduce((a, s) => a + s.avgAttendance, 0) / activeSchools.length).toFixed(1)
+    : "0";
+
+  const schoolAttendance = list
     .filter((s) => s.avgAttendance > 0)
     .map((s) => ({ name: s.shortName, attendance: s.avgAttendance }))
     .sort((a, b) => b.attendance - a.attendance);
@@ -21,9 +51,9 @@ export default function AnalyticsPage() {
       <DashboardHeader title="Analytics" subtitle="Platform-wide performance overview" />
       <div className="p-8 space-y-6">
         {/* Top stats */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Platform Schools", value: mockSchools.length, color: "#4f46e5" },
+            { label: "Platform Schools", value: list.length, color: "#4f46e5" },
             { label: "Total Students", value: totalStudents.toLocaleString(), color: "#059669" },
             { label: "Total Professors", value: totalProfessors.toLocaleString(), color: "#7c3aed" },
             { label: "Avg Attendance", value: `${avgAttendance}%`, color: "#d97706" },
@@ -41,7 +71,7 @@ export default function AnalyticsPage() {
             <h3 className="text-[15px] font-semibold mb-1" style={{ color: "#111827" }}>Platform Attendance Trend</h3>
             <p className="text-[12px] mb-4" style={{ color: "#9ca3af" }}>Monthly average across all active schools</p>
             <ResponsiveContainer width="100%" height={220}>
-              <AreaChart data={attendanceTrend} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={trend.data ?? []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="analAtt" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.15} />
@@ -63,13 +93,13 @@ export default function AnalyticsPage() {
             <h3 className="text-[15px] font-semibold mb-1" style={{ color: "#111827" }}>Department Performance</h3>
             <p className="text-[12px] mb-4" style={{ color: "#9ca3af" }}>Average attendance by department</p>
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={departmentPerformance} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+              <BarChart data={deptPerf.data ?? []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
                 <XAxis dataKey="dept" tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} domain={[60, 100]} />
                 <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #f3f4f6", fontSize: 12 }} />
                 <Bar dataKey="attendance" radius={[4, 4, 0, 0]} name="Attendance %">
-                  {departmentPerformance.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                  {(deptPerf.data ?? []).map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
@@ -90,6 +120,9 @@ export default function AnalyticsPage() {
                 <span className="w-14 text-right text-[13px] font-bold" style={{ color: s.attendance >= 90 ? "#059669" : s.attendance >= 80 ? "#4f46e5" : "#d97706" }}>{s.attendance}%</span>
               </div>
             ))}
+            {schoolAttendance.length === 0 && (
+              <p className="text-[13px] py-6 text-center" style={{ color: "#9ca3af" }}>No attendance data yet.</p>
+            )}
           </div>
         </div>
 
@@ -107,12 +140,12 @@ export default function AnalyticsPage() {
               </tr>
             </thead>
             <tbody>
-              {mockSchools.map((s, i) => {
+              {list.map((s, i) => {
                 const rate = s.avgAttendance;
                 const rateColor = rate >= 85 ? "#059669" : rate >= 70 ? "#d97706" : "#dc2626";
                 const rateBg = rate >= 85 ? "#ecfdf5" : rate >= 70 ? "#fffbeb" : rate > 0 ? "#fef2f2" : "#f3f4f6";
                 return (
-                  <tr key={s.id} className="border-b hover:bg-gray-50 transition-colors" style={{ borderColor: i === mockSchools.length - 1 ? "transparent" : "#f3f4f6" }}>
+                  <tr key={s.id} className="border-b hover:bg-gray-50 transition-colors" style={{ borderColor: i === list.length - 1 ? "transparent" : "#f3f4f6" }}>
                     <td className="px-6 py-3.5">
                       <div className="font-medium" style={{ color: "#111827" }}>{s.name}</div>
                       <div className="text-[11px]" style={{ color: "#9ca3af" }}>{s.city}</div>

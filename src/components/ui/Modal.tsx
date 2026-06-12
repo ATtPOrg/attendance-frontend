@@ -1,6 +1,6 @@
 "use client";
-import { useEffect, useRef } from "react";
-import { X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { X, Loader2 } from "lucide-react";
 
 interface ModalProps {
   open: boolean;
@@ -11,8 +11,33 @@ interface ModalProps {
   width?: string;
 }
 
+const ANIMATION_MS = 300;
+
+/**
+ * Slide-over drawer that enters from the right edge of the screen.
+ * Keeps the old centered-modal API (open/onClose/title/subtitle/width)
+ * so existing call sites work unchanged.
+ */
 export default function Modal({ open, onClose, title, subtitle, children, width = "max-w-lg" }: ModalProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
+  // Two-phase mount so CSS transitions run on both enter and exit.
+  const [mounted, setMounted] = useState(open);
+  const [shown, setShown] = useState(false);
+
+  // Render-phase adjustments keep mount/exit state in sync with `open`
+  // without setting state synchronously inside an effect.
+  if (open && !mounted) setMounted(true);
+  if (!open && shown) setShown(false);
+
+  useEffect(() => {
+    if (open) {
+      // Let the browser paint the off-screen position first, then animate in.
+      const raf = requestAnimationFrame(() => requestAnimationFrame(() => setShown(true)));
+      return () => cancelAnimationFrame(raf);
+    }
+    const t = setTimeout(() => setMounted(false), ANIMATION_MS);
+    return () => clearTimeout(t);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -25,18 +50,29 @@ export default function Modal({ open, onClose, title, subtitle, children, width 
     };
   }, [open, onClose]);
 
-  if (!open) return null;
+  if (!mounted) return null;
 
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)" }}
+      className="fixed inset-0 z-50"
+      style={{
+        background: shown ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0)",
+        backdropFilter: shown ? "blur(4px)" : "none",
+        transition: `background ${ANIMATION_MS}ms ease, backdrop-filter ${ANIMATION_MS}ms ease`,
+      }}
       onClick={(e) => { if (e.target === overlayRef.current) onClose(); }}
     >
       <div
-        className={`relative w-full ${width} bg-white rounded-2xl shadow-2xl flex flex-col max-h-[90vh]`}
-        style={{ fontFamily: "'Inter',sans-serif" }}
+        className={`absolute right-0 top-0 h-full w-full ${width} bg-white shadow-2xl flex flex-col`}
+        style={{
+          fontFamily: "'Inter',sans-serif",
+          transform: shown ? "translateX(0)" : "translateX(100%)",
+          transition: `transform ${ANIMATION_MS}ms cubic-bezier(0.32, 0.72, 0, 1)`,
+        }}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
       >
         {/* Header */}
         <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b flex-shrink-0" style={{ borderColor: "#f3f4f6" }}>
@@ -47,6 +83,7 @@ export default function Modal({ open, onClose, title, subtitle, children, width 
           <button
             onClick={onClose}
             className="ml-4 p-1.5 rounded-lg hover:bg-gray-100 transition-colors flex-shrink-0"
+            aria-label="Close"
           >
             <X size={18} color="#9ca3af" />
           </button>
@@ -64,33 +101,87 @@ export default function Modal({ open, onClose, title, subtitle, children, width 
 interface ConfirmModalProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  /** May be async — the dialog shows a spinner and closes when it resolves. */
+  onConfirm: () => void | Promise<void>;
   title: string;
   message: string;
   confirmLabel?: string;
   danger?: boolean;
 }
 
+/**
+ * Small centered confirmation dialog. Deliberately NOT a drawer — a yes/no
+ * question doesn't warrant a full-height panel.
+ */
 export function ConfirmModal({ open, onClose, onConfirm, title, message, confirmLabel = "Confirm", danger = false }: ConfirmModalProps) {
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleClose = () => {
+    setBusy(false);
+    setError(null);
+    onClose();
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  const handleConfirm = async () => {
+    setError(null);
+    try {
+      setBusy(true);
+      await onConfirm();
+      handleClose();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
+      setBusy(false);
+    }
+  };
+
   return (
-    <Modal open={open} onClose={onClose} title={title} width="max-w-sm">
-      <p className="text-[14px] leading-relaxed mb-6" style={{ color: "#6b7280" }}>{message}</p>
-      <div className="flex gap-3 justify-end">
-        <button
-          onClick={onClose}
-          className="px-4 py-2 rounded-lg text-[13px] font-medium border transition-colors hover:bg-gray-50"
-          style={{ borderColor: "#e5e7eb", color: "#374151" }}
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() => { onConfirm(); onClose(); }}
-          className="px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-opacity hover:opacity-90"
-          style={{ background: danger ? "#ef4444" : "#4f46e5" }}
-        >
-          {confirmLabel}
-        </button>
+    <div
+      ref={overlayRef}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)" }}
+      onClick={(e) => { if (e.target === overlayRef.current && !busy) handleClose(); }}
+    >
+      <div
+        className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6"
+        style={{ fontFamily: "'Inter',sans-serif" }}
+        role="alertdialog"
+        aria-modal="true"
+        aria-label={title}
+      >
+        <h2 className="text-[16px] font-bold tracking-tight mb-2" style={{ color: "#111827" }}>{title}</h2>
+        <p className="text-[14px] leading-relaxed mb-2" style={{ color: "#6b7280" }}>{message}</p>
+        {error && <p className="text-[12px] mb-2" style={{ color: "#dc2626" }}>{error}</p>}
+        <div className="flex gap-3 justify-end mt-4">
+          <button
+            onClick={handleClose}
+            disabled={busy}
+            className="px-4 py-2 rounded-lg text-[13px] font-medium border transition-colors hover:bg-gray-50 disabled:opacity-50"
+            style={{ borderColor: "#e5e7eb", color: "#374151" }}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleConfirm}
+            disabled={busy}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+            style={{ background: danger ? "#ef4444" : "#4f46e5" }}
+          >
+            {busy && <Loader2 size={13} className="animate-spin" />}
+            {confirmLabel}
+          </button>
+        </div>
       </div>
-    </Modal>
+    </div>
   );
 }

@@ -2,32 +2,44 @@
 import { useState } from "react";
 import SchoolHeader from "@/components/school/Header";
 import { useSchoolAuthStore } from "@/stores/schoolAuthStore";
-import { mockCourses, mockProfessors } from "@/lib/mockData";
-import { Search, Plus, Pencil, Trash2, BookOpen } from "lucide-react";
+import { schoolApi, ApiError } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
+import { LoadingState, ErrorState, InlineError } from "@/components/ui/Async";
+import type { Course, Professor } from "@/lib/types";
+import { Search, Plus, Pencil, Trash2, BookOpen, Loader2 } from "lucide-react";
 import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
-type Course = typeof mockCourses[number];
-
-const DEPARTMENTS = ["Computer Science", "Electrical Engineering", "Mechanical Engineering", "Business Administration", "Economics", "Medicine", "Arts & Humanities"];
 const LEVELS = ["100", "200", "300", "400", "500", "600"];
 
-function CourseModal({ course, open, onClose, onSave, professors }: {
-  course: Partial<Course> | null;
+function CourseModal({ course, departments, professors, open, onClose, onSave }: {
+  course: Course | null;
+  departments: string[];
+  professors: Professor[];
   open: boolean;
   onClose: () => void;
-  onSave: (c: Course) => void;
-  professors: typeof mockProfessors;
+  onSave: (c: Partial<Course>) => Promise<void>;
 }) {
   const isNew = !course?.id;
-  const blank: Partial<Course> = { code: "", title: "", department: "Computer Science", school: "", professor: "", students: 0, semester: "First", level: "100", attendanceRate: 0, status: "active" };
-  const [form, setForm] = useState<Partial<Course>>(course ?? blank);
+  const [form, setForm] = useState<Partial<Course>>(course ?? {
+    code: "", title: "", department: departments[0] ?? "", professorId: null, semester: "First", level: "100", status: "active",
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const set = <K extends keyof Course>(k: K, v: Course[K]) => setForm((p) => ({ ...p, [k]: v }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.code || !form.title) return;
-    onSave({ ...blank, ...form, id: form.id ?? `c${Date.now()}` } as Course);
-    onClose();
+    setError(null);
+    setSaving(true);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to save course.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -49,7 +61,7 @@ function CourseModal({ course, open, onClose, onSave, professors }: {
         <div className="grid grid-cols-2 gap-4">
           <FormField label="Department" id="cdept">
             <Select id="cdept" value={form.department ?? ""} onChange={(e) => set("department", e.target.value)}>
-              {DEPARTMENTS.map((d) => <option key={d}>{d}</option>)}
+              {departments.map((d) => <option key={d}>{d}</option>)}
             </Select>
           </FormField>
           <FormField label="Semester" id="csem">
@@ -59,9 +71,9 @@ function CourseModal({ course, open, onClose, onSave, professors }: {
           </FormField>
         </div>
         <FormField label="Assigned Professor" id="cprof">
-          <Select id="cprof" value={form.professor ?? ""} onChange={(e) => set("professor", e.target.value)}>
+          <Select id="cprof" value={form.professorId ?? ""} onChange={(e) => set("professorId", e.target.value || null)}>
             <option value="">— Unassigned —</option>
-            {professors.map((p) => <option key={p.id} value={p.name}>{p.name}</option>)}
+            {professors.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
           </Select>
         </FormField>
         <FormField label="Status" id="cstatus">
@@ -70,10 +82,13 @@ function CourseModal({ course, open, onClose, onSave, professors }: {
             <option value="inactive">Inactive</option>
           </Select>
         </FormField>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={handleSave}>{isNew ? "Add Course" : "Save Changes"}</BtnPrimary>
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <BtnPrimary onClick={handleSave} disabled={saving}>
+          {saving ? <span className="flex items-center gap-2"><Loader2 size={13} className="animate-spin" /> Saving...</span> : (isNew ? "Add Course" : "Save Changes")}
+        </BtnPrimary>
       </ModalActions>
     </Modal>
   );
@@ -82,14 +97,37 @@ function CourseModal({ course, open, onClose, onSave, professors }: {
 export default function SchoolCoursesPage() {
   const { admin } = useSchoolAuthStore();
   const shortName = admin?.schoolShortName ?? "";
-  const schoolProfessors = mockProfessors.filter((p) => p.school === shortName);
-  const [courses, setCourses] = useState(mockCourses.filter((c) => c.school === shortName));
+  const { data, loading, error, refetch, setData } = useApi(() => schoolApi.courses.list());
+  const professorsQuery = useApi(() => schoolApi.professors.list());
+  const departmentsQuery = useApi(() => schoolApi.departments.list());
+  const departments = (departmentsQuery.data ?? []).map((d) => d.name);
+
   const [search, setSearch] = useState("");
   const [semFilter, setSemFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Course | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Course | null>(null);
+
+  const courses = data ?? [];
+
+  if (loading) {
+    return (
+      <>
+        <SchoolHeader title="Courses" subtitle={shortName} />
+        <LoadingState label="Loading courses..." />
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <SchoolHeader title="Courses" subtitle={shortName} />
+        <ErrorState message={error} onRetry={refetch} />
+      </>
+    );
+  }
 
   const filtered = courses.filter((c) => {
     const q = search.toLowerCase();
@@ -99,16 +137,20 @@ export default function SchoolCoursesPage() {
     return matchSearch && matchSem && matchStatus;
   });
 
-  const handleSave = (updated: Course) => {
-    if (courses.find((c) => c.id === updated.id)) {
-      setCourses((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
-    } else {
-      setCourses((prev) => [...prev, { ...updated, school: shortName }]);
-    }
+  const handleCreate = async (form: Partial<Course>) => {
+    const created = await schoolApi.courses.create(form);
+    setData((prev) => [...(prev ?? []), created]);
   };
 
-  const avgAttendance = courses.filter((c) => c.status === "active").length
-    ? (courses.filter((c) => c.status === "active").reduce((a, c) => a + c.attendanceRate, 0) / courses.filter((c) => c.status === "active").length).toFixed(1)
+  const handleUpdate = async (form: Partial<Course>) => {
+    if (!editTarget) return;
+    const saved = await schoolApi.courses.update(editTarget.id, form);
+    setData((prev) => (prev ?? []).map((c) => (c.id === saved.id ? saved : c)));
+  };
+
+  const activeCourses = courses.filter((c) => c.status === "active");
+  const avgAttendance = activeCourses.length
+    ? (activeCourses.reduce((a, c) => a + c.attendanceRate, 0) / activeCourses.length).toFixed(1)
     : "—";
 
   return (
@@ -116,10 +158,10 @@ export default function SchoolCoursesPage() {
       <SchoolHeader title="Courses" subtitle={`${courses.length} courses at ${shortName}`} />
       <div className="p-8 space-y-5">
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Total Courses", value: courses.length, color: "#4f46e5" },
-            { label: "Active", value: courses.filter((c) => c.status === "active").length, color: "#059669" },
+            { label: "Active", value: activeCourses.length, color: "#059669" },
             { label: "Inactive", value: courses.filter((c) => c.status === "inactive").length, color: "#6b7280" },
             { label: "Avg Attendance", value: `${avgAttendance}%`, color: "#d97706" },
           ].map((s) => (
@@ -216,12 +258,16 @@ export default function SchoolCoursesPage() {
         </div>
       </div>
 
-      <CourseModal open={addOpen} course={null} onClose={() => setAddOpen(false)} onSave={handleSave} professors={schoolProfessors} />
-      <CourseModal open={!!editTarget} course={editTarget} onClose={() => setEditTarget(null)} onSave={handleSave} professors={schoolProfessors} />
+      {addOpen && <CourseModal open course={null} departments={departments} professors={professorsQuery.data ?? []} onClose={() => setAddOpen(false)} onSave={handleCreate} />}
+      {editTarget && <CourseModal key={editTarget.id} open course={editTarget} departments={departments} professors={professorsQuery.data ?? []} onClose={() => setEditTarget(null)} onSave={handleUpdate} />}
       <ConfirmModal
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
-        onConfirm={() => setCourses((prev) => prev.filter((c) => c.id !== deleteTarget?.id))}
+        onConfirm={async () => {
+          if (!deleteTarget) return;
+          await schoolApi.courses.remove(deleteTarget.id);
+          setData((prev) => (prev ?? []).filter((c) => c.id !== deleteTarget.id));
+        }}
         title="Remove Course"
         message={`Remove ${deleteTarget?.code} – ${deleteTarget?.title}?`}
         confirmLabel="Remove"

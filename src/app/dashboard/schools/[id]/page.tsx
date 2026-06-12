@@ -3,28 +3,46 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import DashboardHeader from "@/components/dashboard/Header";
-import { mockSchools, mockFaculties, mockDepartments, mockStudents, mockProfessors, mockCourses } from "@/lib/mockData";
-import { ChevronLeft, Search, Plus, MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { adminApi, ApiError } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
+import { LoadingState, ErrorState, InlineError } from "@/components/ui/Async";
+import type { School, Faculty, Department, Student, Professor, Course } from "@/lib/types";
+import { ChevronLeft, Search, Plus, Pencil, Trash2, Loader2 } from "lucide-react";
 import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
 const tabs = ["Overview", "Faculties", "Departments", "Professors", "Students", "Courses"];
-const FACULTY_COLORS = ["#3b82f6", "#7c3aed", "#ef4444", "#f97316"];
-const FACULTIES_LIST = mockFaculties.map((f) => f.name);
+const FACULTY_COLORS = ["#3b82f6", "#7c3aed", "#ef4444", "#f97316", "#10b981", "#8b5cf6"];
+const LEVELS = ["100", "200", "300", "400", "500", "600"];
+
+function SaveButton({ saving, children, onClick }: { saving: boolean; children: React.ReactNode; onClick: () => void }) {
+  return (
+    <BtnPrimary onClick={onClick} disabled={saving}>
+      {saving ? <span className="flex items-center gap-2"><Loader2 size={13} className="animate-spin" /> Saving...</span> : children}
+    </BtnPrimary>
+  );
+}
 
 // ─── Faculty modal ────────────────────────────────────────────────────────────
-type Faculty = typeof mockFaculties[number];
-
-function FacultyModal({ faculty, open, onClose, onSave }: { faculty: Partial<Faculty> | null; open: boolean; onClose: () => void; onSave: (f: Faculty) => void }) {
+function FacultyModal({ faculty, open, onClose, onSave }: { faculty: Faculty | null; open: boolean; onClose: () => void; onSave: (f: Partial<Faculty>) => Promise<void> }) {
   const isNew = !faculty?.id;
-  const blank: Partial<Faculty> = { name: "", dean: "", departments: 0, professors: 0, students: 0, color: "#3b82f6" };
-  const [form, setForm] = useState<Partial<Faculty>>(faculty ?? blank);
+  const [form, setForm] = useState<Partial<Faculty>>(faculty ?? { name: "", dean: "", color: "#3b82f6" });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const set = <K extends keyof Faculty>(k: K, v: Faculty[K]) => setForm((p) => ({ ...p, [k]: v }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name) return;
-    onSave({ ...blank, ...form, id: form.id ?? `f${Date.now()}` } as Faculty);
-    onClose();
+    setError(null);
+    setSaving(true);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to save faculty.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -39,31 +57,43 @@ function FacultyModal({ faculty, open, onClose, onSave }: { faculty: Partial<Fac
         <FormField label="Header Color" id="fcolor">
           <div className="flex items-center gap-3">
             <input type="color" value={form.color ?? "#3b82f6"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" style={{ borderColor: "#e5e7eb" }} />
-            <span className="text-[13px]" style={{ color: "#9ca3af" }}>Card header colour</span>
+            <div className="flex gap-2">
+              {FACULTY_COLORS.map((c) => (
+                <button key={c} onClick={() => set("color", c)} className="w-6 h-6 rounded-full border-2 transition-all" style={{ background: c, borderColor: form.color === c ? "#111827" : "transparent" }} />
+              ))}
+            </div>
           </div>
         </FormField>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={handleSave}>{isNew ? "Add Faculty" : "Save Changes"}</BtnPrimary>
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <SaveButton saving={saving} onClick={handleSave}>{isNew ? "Add Faculty" : "Save Changes"}</SaveButton>
       </ModalActions>
     </Modal>
   );
 }
 
 // ─── Department modal ─────────────────────────────────────────────────────────
-type Department = typeof mockDepartments[number];
-
-function DepartmentModal({ department, open, onClose, onSave }: { department: Partial<Department> | null; open: boolean; onClose: () => void; onSave: (d: Department) => void }) {
+function DepartmentModal({ department, faculties, open, onClose, onSave }: { department: Department | null; faculties: Faculty[]; open: boolean; onClose: () => void; onSave: (d: Partial<Department>) => Promise<void> }) {
   const isNew = !department?.id;
-  const blank: Partial<Department> = { name: "", faculty: "Engineering", hod: "", professors: 0, students: 0, courses: 0, attendanceRate: 0 };
-  const [form, setForm] = useState<Partial<Department>>(department ?? blank);
+  const [form, setForm] = useState<Partial<Department>>(department ?? { name: "", facultyId: faculties[0]?.id, hod: "" });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const set = <K extends keyof Department>(k: K, v: Department[K]) => setForm((p) => ({ ...p, [k]: v }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name) return;
-    onSave({ ...blank, ...form, id: form.id ?? `d${Date.now()}` } as Department);
-    onClose();
+    setError(null);
+    setSaving(true);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to save department.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -73,28 +103,44 @@ function DepartmentModal({ department, open, onClose, onSave }: { department: Pa
           <Input id="dname" value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} placeholder="Computer Science" />
         </FormField>
         <FormField label="Faculty" id="dfaculty">
-          <Select id="dfaculty" value={form.faculty ?? "Engineering"} onChange={(e) => set("faculty", e.target.value)}>
-            {FACULTIES_LIST.map((f) => <option key={f}>{f}</option>)}
+          <Select id="dfaculty" value={form.facultyId ?? ""} onChange={(e) => set("facultyId", e.target.value)}>
+            {faculties.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
           </Select>
         </FormField>
         <FormField label="Head of Department (HOD)" id="dhod">
           <Input id="dhod" value={form.hod ?? ""} onChange={(e) => set("hod", e.target.value)} placeholder="Dr. Chukwu" />
         </FormField>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={handleSave}>{isNew ? "Add Department" : "Save Changes"}</BtnPrimary>
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <SaveButton saving={saving} onClick={handleSave}>{isNew ? "Add Department" : "Save Changes"}</SaveButton>
       </ModalActions>
     </Modal>
   );
 }
 
-// ─── Student modal (school context) ──────────────────────────────────────────
-type Student = typeof mockStudents[number];
-
-function AddStudentModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [form, setForm] = useState({ name: "", matricNo: "", email: "", department: "Computer Science", level: "100" });
+// ─── Add Student / Professor / Course modals (school context) ─────────────────
+function AddStudentModal({ open, onClose, onCreate, departments }: { open: boolean; onClose: () => void; onCreate: (body: { name: string; matricNo: string; email: string; department: string; level: string }) => Promise<void>; departments: string[] }) {
+  const [form, setForm] = useState({ name: "", matricNo: "", email: "", department: departments[0] ?? "", level: "100" });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const set = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
+
+  const handleSave = async () => {
+    if (!form.name || !form.matricNo) return;
+    setError(null);
+    setSaving(true);
+    try {
+      await onCreate(form);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to enroll student.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <Modal open={open} onClose={onClose} title="Add Student" subtitle="Enroll a student in this school">
       <div className="space-y-4">
@@ -106,28 +152,45 @@ function AddStudentModal({ open, onClose }: { open: boolean; onClose: () => void
         <div className="grid grid-cols-2 gap-4">
           <FormField label="Department" id="sdept">
             <Select id="sdept" value={form.department} onChange={(e) => set("department", e.target.value)}>
-              {["Computer Science", "Electrical Engineering", "Mechanical Engineering", "Business Administration", "Economics", "Medicine"].map((d) => <option key={d}>{d}</option>)}
+              {departments.map((d) => <option key={d}>{d}</option>)}
             </Select>
           </FormField>
           <FormField label="Level" id="slevel">
             <Select id="slevel" value={form.level} onChange={(e) => set("level", e.target.value)}>
-              {["100", "200", "300", "400", "500", "600"].map((l) => <option key={l}>{l}</option>)}
+              {LEVELS.map((l) => <option key={l}>{l}</option>)}
             </Select>
           </FormField>
         </div>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={onClose}>Enroll Student</BtnPrimary>
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <SaveButton saving={saving} onClick={handleSave}>Enroll Student</SaveButton>
       </ModalActions>
     </Modal>
   );
 }
 
-// ─── Add Professor modal (school context) ─────────────────────────────────────
-function AddProfessorModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [form, setForm] = useState({ name: "", email: "", department: "Computer Science" });
+function AddProfessorModal({ open, onClose, onCreate, departments }: { open: boolean; onClose: () => void; onCreate: (body: { name: string; email: string; department: string }) => Promise<void>; departments: string[] }) {
+  const [form, setForm] = useState({ name: "", email: "", department: departments[0] ?? "" });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const set = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
+
+  const handleSave = async () => {
+    if (!form.name || !form.email) return;
+    setError(null);
+    setSaving(true);
+    try {
+      await onCreate(form);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to add professor.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <Modal open={open} onClose={onClose} title="Add Professor" subtitle="Register a professor in this school">
       <div className="space-y-4">
@@ -135,22 +198,39 @@ function AddProfessorModal({ open, onClose }: { open: boolean; onClose: () => vo
         <FormField label="Email" id="pemail" required><Input id="pemail" type="email" value={form.email} onChange={(e) => set("email", e.target.value)} placeholder="professor@university.edu.ng" /></FormField>
         <FormField label="Department" id="pdept">
           <Select id="pdept" value={form.department} onChange={(e) => set("department", e.target.value)}>
-            {["Computer Science", "Electrical Engineering", "Mechanical Engineering", "Business Administration", "Economics", "Medicine"].map((d) => <option key={d}>{d}</option>)}
+            {departments.map((d) => <option key={d}>{d}</option>)}
           </Select>
         </FormField>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={onClose}>Add Professor</BtnPrimary>
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <SaveButton saving={saving} onClick={handleSave}>Add Professor</SaveButton>
       </ModalActions>
     </Modal>
   );
 }
 
-// ─── Add Course modal (school context) ────────────────────────────────────────
-function AddCourseModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [form, setForm] = useState({ code: "", title: "", department: "Computer Science", level: "100", semester: "First" });
+function AddCourseModal({ open, onClose, onCreate, departments }: { open: boolean; onClose: () => void; onCreate: (body: { code: string; title: string; department: string; level: string; semester: string }) => Promise<void>; departments: string[] }) {
+  const [form, setForm] = useState({ code: "", title: "", department: departments[0] ?? "", level: "100", semester: "First" });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const set = (k: keyof typeof form, v: string) => setForm((p) => ({ ...p, [k]: v }));
+
+  const handleSave = async () => {
+    if (!form.code || !form.title) return;
+    setError(null);
+    setSaving(true);
+    try {
+      await onCreate(form);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to add course.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <Modal open={open} onClose={onClose} title="Add Course" subtitle="Register a course in this school">
       <div className="space-y-4">
@@ -158,7 +238,7 @@ function AddCourseModal({ open, onClose }: { open: boolean; onClose: () => void 
           <FormField label="Course Code" id="ccode" required><Input id="ccode" value={form.code} onChange={(e) => set("code", e.target.value)} placeholder="CSC401" /></FormField>
           <FormField label="Level" id="clevel">
             <Select id="clevel" value={form.level} onChange={(e) => set("level", e.target.value)}>
-              {["100", "200", "300", "400", "500"].map((l) => <option key={l}>{l}</option>)}
+              {LEVELS.map((l) => <option key={l}>{l}</option>)}
             </Select>
           </FormField>
         </div>
@@ -166,7 +246,7 @@ function AddCourseModal({ open, onClose }: { open: boolean; onClose: () => void 
         <div className="grid grid-cols-2 gap-4">
           <FormField label="Department" id="cdept">
             <Select id="cdept" value={form.department} onChange={(e) => set("department", e.target.value)}>
-              {["Computer Science", "Electrical Engineering", "Mechanical Engineering", "Business Administration", "Economics", "Medicine"].map((d) => <option key={d}>{d}</option>)}
+              {departments.map((d) => <option key={d}>{d}</option>)}
             </Select>
           </FormField>
           <FormField label="Semester" id="csem">
@@ -175,10 +255,11 @@ function AddCourseModal({ open, onClose }: { open: boolean; onClose: () => void 
             </Select>
           </FormField>
         </div>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={onClose}>Add Course</BtnPrimary>
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <SaveButton saving={saving} onClick={handleSave}>Add Course</SaveButton>
       </ModalActions>
     </Modal>
   );
@@ -186,13 +267,29 @@ function AddCourseModal({ open, onClose }: { open: boolean; onClose: () => void 
 
 // ─── Main page ────────────────────────────────────────────────────────────────
 export default function SchoolDetailPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("Overview");
-  const school = mockSchools.find((s) => s.id === id) ?? mockSchools[0];
+  const { data: school, loading, error, refetch } = useApi(() => adminApi.schools.get(id), [id]);
+  const departmentsQuery = useApi(() => adminApi.schools.departments(id), [id]);
+  const departmentNames = (departmentsQuery.data ?? []).map((d) => d.name);
 
-  const schoolStudents = mockStudents.filter((s) => s.school === school.shortName);
-  const schoolProfessors = mockProfessors.filter((p) => p.school === school.shortName);
-  const schoolCourses = mockCourses.filter((c) => c.school === school.shortName);
+  if (loading) {
+    return (
+      <>
+        <DashboardHeader title="School" subtitle="Loading..." />
+        <LoadingState label="Loading school..." />
+      </>
+    );
+  }
+
+  if (error || !school) {
+    return (
+      <>
+        <DashboardHeader title="School" subtitle="Error" />
+        <ErrorState message={error ?? "School not found."} onRetry={refetch} />
+      </>
+    );
+  }
 
   return (
     <>
@@ -252,18 +349,18 @@ export default function SchoolDetailPage() {
 
         {/* Tab content */}
         {activeTab === "Overview" && <OverviewTab school={school} />}
-        {activeTab === "Faculties" && <FacultiesTab />}
-        {activeTab === "Departments" && <DepartmentsTab />}
-        {activeTab === "Professors" && <ProfessorsTab professors={schoolProfessors} />}
-        {activeTab === "Students" && <StudentsTab students={schoolStudents} />}
-        {activeTab === "Courses" && <CoursesTab courses={schoolCourses} />}
+        {activeTab === "Faculties" && <FacultiesTab schoolId={id} />}
+        {activeTab === "Departments" && <DepartmentsTab schoolId={id} />}
+        {activeTab === "Professors" && <ProfessorsTab schoolId={id} departments={departmentNames} />}
+        {activeTab === "Students" && <StudentsTab schoolId={id} departments={departmentNames} />}
+        {activeTab === "Courses" && <CoursesTab schoolId={id} departments={departmentNames} />}
       </div>
     </>
   );
 }
 
 // ─── Overview ─────────────────────────────────────────────────────────────────
-function OverviewTab({ school }: { school: typeof mockSchools[0] }) {
+function OverviewTab({ school }: { school: School }) {
   return (
     <div className="grid md:grid-cols-2 gap-4">
       <div className="bg-white rounded-xl border p-6 space-y-4" style={{ borderColor: "#e5e7eb" }}>
@@ -295,9 +392,9 @@ function OverviewTab({ school }: { school: typeof mockSchools[0] }) {
         <div className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
           <h3 className="text-[15px] font-semibold mb-3" style={{ color: "#111827" }}>Quick Actions</h3>
           <div className="space-y-2">
-            {["Suspend School", "Change Plan", "Reset Admin Password", "Export Data", "View Audit Log"].map((a) => (
-              <button key={a} className="w-full text-left px-4 py-2.5 rounded-lg border text-[13px] font-medium transition-colors hover:bg-gray-50" style={{ borderColor: "#e5e7eb", color: a === "Suspend School" ? "#dc2626" : "#374151" }}>
-                {a}
+            {["Suspend School", "Change Plan", "Reset Admin Password", "Export Data", "View Audit Log"].map((action) => (
+              <button key={action} className="w-full text-left px-4 py-2.5 rounded-lg border text-[13px] font-medium transition-colors hover:bg-gray-50" style={{ borderColor: "#e5e7eb", color: action === "Suspend School" ? "#dc2626" : "#374151" }}>
+                {action}
               </button>
             ))}
           </div>
@@ -308,18 +405,27 @@ function OverviewTab({ school }: { school: typeof mockSchools[0] }) {
 }
 
 // ─── Faculties ────────────────────────────────────────────────────────────────
-function FacultiesTab() {
-  const [faculties, setFaculties] = useState(mockFaculties);
+function FacultiesTab({ schoolId }: { schoolId: string }) {
+  const { data, loading, error, refetch, setData } = useApi(() => adminApi.schools.faculties(schoolId), [schoolId]);
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Faculty | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Faculty | null>(null);
+  const faculties = data ?? [];
 
-  const handleSave = (updated: Faculty) => {
-    if (faculties.find((f) => f.id === updated.id)) {
-      setFaculties((prev) => prev.map((f) => (f.id === updated.id ? updated : f)));
-    } else {
-      setFaculties((prev) => [...prev, { ...updated, color: updated.color ?? FACULTY_COLORS[prev.length % 4] }]);
-    }
+  if (loading) return <LoadingState label="Loading faculties..." />;
+  if (error) return <ErrorState message={error} onRetry={refetch} />;
+
+  const handleCreate = async (form: Partial<Faculty>) => {
+    const created = await adminApi.schools.createFaculty(schoolId, {
+      name: form.name ?? "", dean: form.dean ?? "", color: form.color ?? FACULTY_COLORS[faculties.length % FACULTY_COLORS.length],
+    });
+    setData((prev) => [...(prev ?? []), created]);
+  };
+
+  const handleUpdate = async (form: Partial<Faculty>) => {
+    if (!editTarget) return;
+    const saved = await adminApi.schools.updateFaculty(schoolId, editTarget.id, form);
+    setData((prev) => (prev ?? []).map((f) => (f.id === saved.id ? saved : f)));
   };
 
   return (
@@ -355,20 +461,25 @@ function FacultiesTab() {
                 </div>
               ))}
             </div>
-            <div className="px-5 py-3 border-t grid grid-cols-2 gap-2" style={{ borderColor: "#f3f4f6" }}>
-              <button className="py-2 rounded-lg border text-[12px] font-medium transition-colors hover:bg-gray-50" style={{ borderColor: "#e5e7eb", color: "#374151" }}>View Details</button>
-              <button onClick={() => setEditTarget(f)} className="py-2 rounded-lg border text-[12px] font-medium transition-colors hover:bg-gray-50" style={{ borderColor: "#e5e7eb", color: "#374151" }}>Edit</button>
-            </div>
           </div>
         ))}
       </div>
+      {faculties.length === 0 && (
+        <div className="bg-white rounded-xl border py-12 text-center" style={{ borderColor: "#e5e7eb" }}>
+          <p className="text-[14px]" style={{ color: "#9ca3af" }}>No faculties yet.</p>
+        </div>
+      )}
 
-      <FacultyModal open={addOpen} faculty={null} onClose={() => setAddOpen(false)} onSave={handleSave} />
-      <FacultyModal open={!!editTarget} faculty={editTarget} onClose={() => setEditTarget(null)} onSave={handleSave} />
+      {addOpen && <FacultyModal open faculty={null} onClose={() => setAddOpen(false)} onSave={handleCreate} />}
+      {editTarget && <FacultyModal key={editTarget.id} open faculty={editTarget} onClose={() => setEditTarget(null)} onSave={handleUpdate} />}
       <ConfirmModal
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
-        onConfirm={() => setFaculties((prev) => prev.filter((f) => f.id !== deleteTarget?.id))}
+        onConfirm={async () => {
+          if (!deleteTarget) return;
+          await adminApi.schools.removeFaculty(schoolId, deleteTarget.id);
+          setData((prev) => (prev ?? []).filter((f) => f.id !== deleteTarget.id));
+        }}
         title="Delete Faculty"
         message={`Delete the ${deleteTarget?.name} faculty? All departments under it will become unassigned.`}
         confirmLabel="Delete"
@@ -379,23 +490,31 @@ function FacultiesTab() {
 }
 
 // ─── Departments ──────────────────────────────────────────────────────────────
-function DepartmentsTab() {
-  const [departments, setDepartments] = useState(mockDepartments);
+function DepartmentsTab({ schoolId }: { schoolId: string }) {
+  const { data, loading, error, refetch, setData } = useApi(() => adminApi.schools.departments(schoolId), [schoolId]);
+  const facultiesQuery = useApi(() => adminApi.schools.faculties(schoolId), [schoolId]);
   const [search, setSearch] = useState("");
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Department | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Department | null>(null);
+  const departments = data ?? [];
+
+  if (loading) return <LoadingState label="Loading departments..." />;
+  if (error) return <ErrorState message={error} onRetry={refetch} />;
 
   const filtered = departments.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase()) || d.faculty.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleSave = (updated: Department) => {
-    if (departments.find((d) => d.id === updated.id)) {
-      setDepartments((prev) => prev.map((d) => (d.id === updated.id ? updated : d)));
-    } else {
-      setDepartments((prev) => [...prev, updated]);
-    }
+  const handleCreate = async (form: Partial<Department>) => {
+    const created = await adminApi.schools.createDepartment(schoolId, { name: form.name ?? "", facultyId: form.facultyId, hod: form.hod ?? "" });
+    setData((prev) => [...(prev ?? []), created]);
+  };
+
+  const handleUpdate = async (form: Partial<Department>) => {
+    if (!editTarget) return;
+    const saved = await adminApi.schools.updateDepartment(schoolId, editTarget.id, form);
+    setData((prev) => (prev ?? []).map((d) => (d.id === saved.id ? saved : d)));
   };
 
   return (
@@ -453,12 +572,16 @@ function DepartmentsTab() {
         {filtered.length === 0 && <div className="py-12 text-center text-[14px]" style={{ color: "#9ca3af" }}>No departments found.</div>}
       </div>
 
-      <DepartmentModal open={addOpen} department={null} onClose={() => setAddOpen(false)} onSave={handleSave} />
-      <DepartmentModal open={!!editTarget} department={editTarget} onClose={() => setEditTarget(null)} onSave={handleSave} />
+      {addOpen && <DepartmentModal open department={null} faculties={facultiesQuery.data ?? []} onClose={() => setAddOpen(false)} onSave={handleCreate} />}
+      {editTarget && <DepartmentModal key={editTarget.id} open department={editTarget} faculties={facultiesQuery.data ?? []} onClose={() => setEditTarget(null)} onSave={handleUpdate} />}
       <ConfirmModal
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
-        onConfirm={() => setDepartments((prev) => prev.filter((d) => d.id !== deleteTarget?.id))}
+        onConfirm={async () => {
+          if (!deleteTarget) return;
+          await adminApi.schools.removeDepartment(schoolId, deleteTarget.id);
+          setData((prev) => (prev ?? []).filter((d) => d.id !== deleteTarget.id));
+        }}
         title="Delete Department"
         message={`Delete the ${deleteTarget?.name} department? Professors and students will need to be reassigned.`}
         confirmLabel="Delete"
@@ -469,8 +592,19 @@ function DepartmentsTab() {
 }
 
 // ─── Professors tab ───────────────────────────────────────────────────────────
-function ProfessorsTab({ professors }: { professors: typeof mockProfessors }) {
+function ProfessorsTab({ schoolId, departments }: { schoolId: string; departments: string[] }) {
+  const { data, loading, error, refetch, setData } = useApi(() => adminApi.schools.professors(schoolId), [schoolId]);
   const [addOpen, setAddOpen] = useState(false);
+  const professors = data ?? [];
+
+  if (loading) return <LoadingState label="Loading professors..." />;
+  if (error) return <ErrorState message={error} onRetry={refetch} />;
+
+  const handleCreate = async (body: { name: string; email: string; department: string }) => {
+    const created = await adminApi.schools.createProfessor(schoolId, body);
+    setData((prev) => [...(prev ?? []), created]);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -489,7 +623,7 @@ function ProfessorsTab({ professors }: { professors: typeof mockProfessors }) {
             </tr>
           </thead>
           <tbody>
-            {professors.length > 0 ? professors.map((p, i) => (
+            {professors.length > 0 ? professors.map((p: Professor, i: number) => (
               <tr key={p.id} className="border-b hover:bg-gray-50" style={{ borderColor: i === professors.length - 1 ? "transparent" : "#f3f4f6" }}>
                 <td className="px-5 py-3.5">
                   <div className="font-medium" style={{ color: "#111827" }}>{p.name}</div>
@@ -508,14 +642,25 @@ function ProfessorsTab({ professors }: { professors: typeof mockProfessors }) {
           </tbody>
         </table>
       </div>
-      <AddProfessorModal open={addOpen} onClose={() => setAddOpen(false)} />
+      {addOpen && <AddProfessorModal open onClose={() => setAddOpen(false)} onCreate={handleCreate} departments={departments} />}
     </div>
   );
 }
 
 // ─── Students tab ─────────────────────────────────────────────────────────────
-function StudentsTab({ students }: { students: typeof mockStudents }) {
+function StudentsTab({ schoolId, departments }: { schoolId: string; departments: string[] }) {
+  const { data, loading, error, refetch, setData } = useApi(() => adminApi.schools.students(schoolId), [schoolId]);
   const [addOpen, setAddOpen] = useState(false);
+  const students = data ?? [];
+
+  if (loading) return <LoadingState label="Loading students..." />;
+  if (error) return <ErrorState message={error} onRetry={refetch} />;
+
+  const handleCreate = async (body: { name: string; matricNo: string; email: string; department: string; level: string }) => {
+    const created = await adminApi.schools.createStudent(schoolId, body);
+    setData((prev) => [...(prev ?? []), created]);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -534,7 +679,7 @@ function StudentsTab({ students }: { students: typeof mockStudents }) {
             </tr>
           </thead>
           <tbody>
-            {students.length > 0 ? students.map((s, i) => {
+            {students.length > 0 ? students.map((s: Student, i: number) => {
               const rate = s.attendanceRate;
               const rateColor = rate >= 85 ? "#059669" : rate >= 70 ? "#d97706" : "#dc2626";
               const rateBg = rate >= 85 ? "#ecfdf5" : rate >= 70 ? "#fffbeb" : "#fef2f2";
@@ -563,14 +708,25 @@ function StudentsTab({ students }: { students: typeof mockStudents }) {
           </tbody>
         </table>
       </div>
-      <AddStudentModal open={addOpen} onClose={() => setAddOpen(false)} />
+      {addOpen && <AddStudentModal open onClose={() => setAddOpen(false)} onCreate={handleCreate} departments={departments} />}
     </div>
   );
 }
 
 // ─── Courses tab ──────────────────────────────────────────────────────────────
-function CoursesTab({ courses }: { courses: typeof mockCourses }) {
+function CoursesTab({ schoolId, departments }: { schoolId: string; departments: string[] }) {
+  const { data, loading, error, refetch, setData } = useApi(() => adminApi.schools.courses(schoolId), [schoolId]);
   const [addOpen, setAddOpen] = useState(false);
+  const courses = data ?? [];
+
+  if (loading) return <LoadingState label="Loading courses..." />;
+  if (error) return <ErrorState message={error} onRetry={refetch} />;
+
+  const handleCreate = async (body: { code: string; title: string; department: string; level: string; semester: string }) => {
+    const created = await adminApi.schools.createCourse(schoolId, body);
+    setData((prev) => [...(prev ?? []), created]);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -589,7 +745,7 @@ function CoursesTab({ courses }: { courses: typeof mockCourses }) {
             </tr>
           </thead>
           <tbody>
-            {courses.length > 0 ? courses.map((c, i) => {
+            {courses.length > 0 ? courses.map((c: Course, i: number) => {
               const rate = c.attendanceRate;
               const rateColor = rate >= 85 ? "#059669" : rate >= 70 ? "#d97706" : "#dc2626";
               const rateBg = rate >= 85 ? "#ecfdf5" : rate >= 70 ? "#fffbeb" : "#fef2f2";
@@ -602,7 +758,7 @@ function CoursesTab({ courses }: { courses: typeof mockCourses }) {
                     <div className="font-medium" style={{ color: "#111827" }}>{c.title}</div>
                     <div className="text-[11px]" style={{ color: "#9ca3af" }}>{c.department} · {c.level}L · {c.semester} Sem.</div>
                   </td>
-                  <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{c.professor}</td>
+                  <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{c.professor || "Unassigned"}</td>
                   <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{c.students}</td>
                   <td className="px-5 py-3.5">
                     <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full" style={{ background: rateBg, color: rateColor }}>{rate.toFixed(1)}%</span>
@@ -618,7 +774,7 @@ function CoursesTab({ courses }: { courses: typeof mockCourses }) {
           </tbody>
         </table>
       </div>
-      <AddCourseModal open={addOpen} onClose={() => setAddOpen(false)} />
+      {addOpen && <AddCourseModal open onClose={() => setAddOpen(false)} onCreate={handleCreate} departments={departments} />}
     </div>
   );
 }

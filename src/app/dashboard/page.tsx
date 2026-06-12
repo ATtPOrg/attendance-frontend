@@ -1,54 +1,15 @@
 "use client";
+import Link from "next/link";
 import DashboardHeader from "@/components/dashboard/Header";
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis,
   CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from "recharts";
-import { attendanceTrend, recentActivity, mockSchools } from "@/lib/mockData";
+import { adminApi } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
+import { LoadingState, ErrorState } from "@/components/ui/Async";
+import { useAuthStore } from "@/stores/authStore";
 import { School, Users, BookOpen, TrendingUp, Clock, ArrowUpRight } from "lucide-react";
-
-const statCards = [
-  {
-    label: "Total Schools",
-    value: "6",
-    change: "+1 this month",
-    icon: School,
-    color: "#4f46e5",
-    bg: "#eef2ff",
-  },
-  {
-    label: "Total Students",
-    value: "47,991",
-    change: "+1,245 this month",
-    icon: Users,
-    color: "#7c3aed",
-    bg: "#f5f3ff",
-  },
-  {
-    label: "Active Courses",
-    value: "2,930",
-    change: "+45 this semester",
-    icon: BookOpen,
-    color: "#0891b2",
-    bg: "#ecfeff",
-  },
-  {
-    label: "Avg Attendance",
-    value: "87.5%",
-    change: "+3.2% from last month",
-    icon: TrendingUp,
-    color: "#059669",
-    bg: "#ecfdf5",
-  },
-];
-
-const deptPerformance = [
-  { name: "Computer Science", attendance: 89 },
-  { name: "Engineering", attendance: 84 },
-  { name: "Business", attendance: 82 },
-  { name: "Medicine", attendance: 91 },
-  { name: "Arts", attendance: 78 },
-];
 
 const activityIcons: Record<string, string> = {
   onboard: "🏫",
@@ -58,6 +19,51 @@ const activityIcons: Record<string, string> = {
 };
 
 export default function DashboardPage() {
+  const { user } = useAuthStore();
+  const overview = useApi(() => adminApi.overview());
+  const activity = useApi(() => adminApi.activity());
+  const trend = useApi(() => adminApi.attendanceTrend());
+  const deptPerf = useApi(() => adminApi.departmentPerformance());
+  const schools = useApi(() => adminApi.schools.list());
+
+  const loading = overview.loading || activity.loading || trend.loading || deptPerf.loading || schools.loading;
+  const error = overview.error ?? activity.error ?? trend.error ?? deptPerf.error ?? schools.error;
+
+  if (loading) {
+    return (
+      <>
+        <DashboardHeader title="Dashboard Overview" subtitle="Institution-wide statistics and insights" />
+        <LoadingState label="Loading platform overview..." />
+      </>
+    );
+  }
+
+  if (error || !overview.data) {
+    return (
+      <>
+        <DashboardHeader title="Dashboard Overview" subtitle="Institution-wide statistics and insights" />
+        <ErrorState message={error ?? "No data available."} onRetry={() => {
+          void overview.refetch(); void activity.refetch(); void trend.refetch();
+          void deptPerf.refetch(); void schools.refetch();
+        }} />
+      </>
+    );
+  }
+
+  const o = overview.data;
+  const statCards = [
+    { label: "Total Schools", value: o.totalSchools.toLocaleString(), change: o.schoolsChange, icon: School, color: "#4f46e5", bg: "#eef2ff" },
+    { label: "Total Students", value: o.totalStudents.toLocaleString(), change: o.studentsChange, icon: Users, color: "#7c3aed", bg: "#f5f3ff" },
+    { label: "Active Courses", value: o.activeCourses.toLocaleString(), change: o.coursesChange, icon: BookOpen, color: "#0891b2", bg: "#ecfeff" },
+    { label: "Avg Attendance", value: `${o.avgAttendance}%`, change: o.attendanceChange, icon: TrendingUp, color: "#059669", bg: "#ecfdf5" },
+  ];
+
+  const pendingItems = [
+    { label: "Trial Expirations", count: o.pending.trialExpirations, priority: "high", color: "#ef4444", bg: "#fef2f2" },
+    { label: "Support Tickets", count: o.pending.supportTickets, priority: "medium", color: "#f59e0b", bg: "#fffbeb" },
+    { label: "Plan Upgrade Requests", count: o.pending.planUpgradeRequests, priority: "low", color: "#10b981", bg: "#ecfdf5" },
+  ];
+
   return (
     <>
       <DashboardHeader title="Dashboard Overview" subtitle="Institution-wide statistics and insights" />
@@ -68,7 +74,7 @@ export default function DashboardPage() {
           className="rounded-xl px-8 py-6"
           style={{ background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)" }}
         >
-          <h2 className="text-[20px] font-bold text-white mb-1">Welcome back, Super Admin</h2>
+          <h2 className="text-[20px] font-bold text-white mb-1">Welcome back, {user?.name ?? "Admin"}</h2>
           <p className="text-[14px] text-indigo-200">
             Here&apos;s what&apos;s happening across all your institutions today.
           </p>
@@ -103,7 +109,7 @@ export default function DashboardPage() {
             <h3 className="text-[15px] font-semibold mb-1" style={{ color: "#111827" }}>Attendance Trend</h3>
             <p className="text-[12px] mb-6" style={{ color: "#9ca3af" }}>Monthly attendance rate across all institutions</p>
             <ResponsiveContainer width="100%" height={200}>
-              <AreaChart data={attendanceTrend}>
+              <AreaChart data={trend.data ?? []}>
                 <defs>
                   <linearGradient id="colorAtt" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.2} />
@@ -126,9 +132,9 @@ export default function DashboardPage() {
             <h3 className="text-[15px] font-semibold mb-1" style={{ color: "#111827" }}>Department Performance</h3>
             <p className="text-[12px] mb-6" style={{ color: "#9ca3af" }}>Attendance by department</p>
             <ResponsiveContainer width="100%" height={200}>
-              <BarChart data={deptPerformance} barSize={28}>
+              <BarChart data={deptPerf.data ?? []} barSize={28}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize: 10, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
+                <XAxis dataKey="dept" tick={{ fontSize: 10, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
                 <YAxis domain={[60, 100]} tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 12 }} />
                 <Bar dataKey="attendance" fill="#4f46e5" radius={[4, 4, 0, 0]} />
@@ -144,24 +150,27 @@ export default function DashboardPage() {
             <h3 className="text-[15px] font-semibold mb-1" style={{ color: "#111827" }}>Recent Activity</h3>
             <p className="text-[12px] mb-5" style={{ color: "#9ca3af" }}>Latest system events</p>
             <div className="space-y-4">
-              {recentActivity.map((a) => (
-                <div key={a.id} className="flex items-start gap-3 pb-4 border-b last:border-0" style={{ borderColor: "#f3f4f6" }}>
+              {(activity.data ?? []).map((item) => (
+                <div key={item.id} className="flex items-start gap-3 pb-4 border-b last:border-0" style={{ borderColor: "#f3f4f6" }}>
                   <div
                     className="w-8 h-8 rounded-full flex items-center justify-center text-[16px] flex-shrink-0"
                     style={{ background: "#f3f4f6" }}
                   >
-                    {activityIcons[a.type]}
+                    {activityIcons[item.type] ?? "•"}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-medium" style={{ color: "#111827" }}>{a.action}</div>
-                    <div className="text-[12px]" style={{ color: "#6b7280" }}>{a.subject}</div>
+                    <div className="text-[13px] font-medium" style={{ color: "#111827" }}>{item.action}</div>
+                    <div className="text-[12px]" style={{ color: "#6b7280" }}>{item.subject}</div>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <Clock size={11} color="#9ca3af" />
-                    <span className="text-[11px]" style={{ color: "#9ca3af" }}>{a.time}</span>
+                    <span className="text-[11px]" style={{ color: "#9ca3af" }}>{item.time}</span>
                   </div>
                 </div>
               ))}
+              {(activity.data ?? []).length === 0 && (
+                <p className="text-[13px] py-6 text-center" style={{ color: "#9ca3af" }}>No recent activity.</p>
+              )}
             </div>
           </div>
 
@@ -170,11 +179,7 @@ export default function DashboardPage() {
             <h3 className="text-[15px] font-semibold mb-1" style={{ color: "#111827" }}>Pending Actions</h3>
             <p className="text-[12px] mb-5" style={{ color: "#9ca3af" }}>Items requiring review</p>
             <div className="space-y-4">
-              {[
-                { label: "Trial Expirations", count: 2, priority: "high", color: "#ef4444", bg: "#fef2f2" },
-                { label: "Support Tickets", count: 5, priority: "medium", color: "#f59e0b", bg: "#fffbeb" },
-                { label: "Plan Upgrade Requests", count: 3, priority: "low", color: "#10b981", bg: "#ecfdf5" },
-              ].map((p) => (
+              {pendingItems.map((p) => (
                 <div key={p.label} className="p-4 rounded-lg" style={{ background: p.bg }}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[13px] font-medium" style={{ color: "#111827" }}>{p.label}</span>
@@ -202,40 +207,43 @@ export default function DashboardPage() {
               <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Onboarded Schools</h3>
               <p className="text-[12px]" style={{ color: "#9ca3af" }}>All institutions on the platform</p>
             </div>
-            <a href="/dashboard/schools" className="text-[13px] font-medium" style={{ color: "#4f46e5" }}>
+            <Link href="/dashboard/schools" className="text-[13px] font-medium" style={{ color: "#4f46e5" }}>
               View all →
-            </a>
+            </Link>
           </div>
           <div className="divide-y" style={{ borderColor: "#f3f4f6" }}>
-            {mockSchools.slice(0, 4).map((s) => (
-              <div key={s.id} className="flex items-center gap-4 px-6 py-4">
+            {(schools.data ?? []).slice(0, 4).map((school) => (
+              <div key={school.id} className="flex items-center gap-4 px-6 py-4">
                 <div
                   className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0"
                   style={{ background: "#4f46e5" }}
                 >
-                  {s.shortName.charAt(0)}
+                  {school.shortName.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[14px] font-semibold truncate" style={{ color: "#111827" }}>{s.name}</div>
-                  <div className="text-[12px]" style={{ color: "#9ca3af" }}>{s.city} · {s.plan}</div>
+                  <div className="text-[14px] font-semibold truncate" style={{ color: "#111827" }}>{school.name}</div>
+                  <div className="text-[12px]" style={{ color: "#9ca3af" }}>{school.city} · {school.plan}</div>
                 </div>
                 <div className="text-right flex-shrink-0">
                   <div className="text-[13px] font-semibold" style={{ color: "#111827" }}>
-                    {s.avgAttendance > 0 ? `${s.avgAttendance}%` : "—"}
+                    {school.avgAttendance > 0 ? `${school.avgAttendance}%` : "—"}
                   </div>
                   <div className="text-[11px]" style={{ color: "#9ca3af" }}>avg attendance</div>
                 </div>
                 <span
                   className="text-[11px] px-2.5 py-1 rounded-full font-medium flex-shrink-0"
                   style={{
-                    background: s.status === "active" ? "#ecfdf5" : s.status === "trial" ? "#fffbeb" : "#f3f4f6",
-                    color: s.status === "active" ? "#059669" : s.status === "trial" ? "#d97706" : "#6b7280",
+                    background: school.status === "active" ? "#ecfdf5" : school.status === "trial" ? "#fffbeb" : "#f3f4f6",
+                    color: school.status === "active" ? "#059669" : school.status === "trial" ? "#d97706" : "#6b7280",
                   }}
                 >
-                  {s.status}
+                  {school.status}
                 </span>
               </div>
             ))}
+            {(schools.data ?? []).length === 0 && (
+              <p className="text-[13px] py-8 text-center" style={{ color: "#9ca3af" }}>No schools onboarded yet.</p>
+            )}
           </div>
         </div>
       </div>

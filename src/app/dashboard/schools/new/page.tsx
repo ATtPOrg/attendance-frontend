@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import DashboardHeader from "@/components/dashboard/Header";
-import { ChevronLeft, Check } from "lucide-react";
+import { adminApi, ApiError } from "@/lib/api";
+import { ChevronLeft, Check, Loader2 } from "lucide-react";
 import Link from "next/link";
 
 const steps = ["School Info", "Contact & Location", "Plan & Access"];
@@ -10,6 +11,8 @@ const steps = ["School Info", "Contact & Location", "Plan & Access"];
 export default function NewSchoolPage() {
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -20,9 +23,21 @@ export default function NewSchoolPage() {
 
   const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
-  const handleNext = () => {
-    if (step < steps.length - 1) setStep((s) => s + 1);
-    else setDone(true);
+  const handleNext = async () => {
+    if (step < steps.length - 1) {
+      setStep((s) => s + 1);
+      return;
+    }
+    setError("");
+    setSubmitting(true);
+    try {
+      await adminApi.schools.create(form);
+      setDone(true);
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to onboard school. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   if (done) {
@@ -162,22 +177,29 @@ export default function NewSchoolPage() {
           </div>
 
           {/* Footer */}
-          <div className="px-8 py-5 border-t flex justify-between" style={{ borderColor: "#f3f4f6" }}>
-            <button
-              onClick={() => setStep((s) => Math.max(0, s - 1))}
-              disabled={step === 0}
-              className="px-5 py-2.5 rounded-lg text-[13px] font-medium border disabled:opacity-40"
-              style={{ borderColor: "#e5e7eb", color: "#374151" }}
-            >
-              Back
-            </button>
-            <button
-              onClick={handleNext}
-              className="px-6 py-2.5 rounded-lg text-[13px] font-medium text-white"
-              style={{ background: "#4f46e5" }}
-            >
-              {step === steps.length - 1 ? "Complete Onboarding →" : "Next →"}
-            </button>
+          <div className="px-8 py-5 border-t" style={{ borderColor: "#f3f4f6" }}>
+            {error && (
+              <p className="text-[13px] mb-3" style={{ color: "#dc2626" }}>{error}</p>
+            )}
+            <div className="flex justify-between">
+              <button
+                onClick={() => setStep((s) => Math.max(0, s - 1))}
+                disabled={step === 0 || submitting}
+                className="px-5 py-2.5 rounded-lg text-[13px] font-medium border disabled:opacity-40"
+                style={{ borderColor: "#e5e7eb", color: "#374151" }}
+              >
+                Back
+              </button>
+              <button
+                onClick={handleNext}
+                disabled={submitting}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-[13px] font-medium text-white disabled:opacity-60"
+                style={{ background: "#4f46e5" }}
+              >
+                {submitting && <Loader2 size={14} className="animate-spin" />}
+                {step === steps.length - 1 ? (submitting ? "Onboarding..." : "Complete Onboarding →") : "Next →"}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -185,7 +207,7 @@ export default function NewSchoolPage() {
   );
 }
 
-function Field({ label, fieldKey: _fieldKey, placeholder, value, onChange, type = "text" }: {
+function Field({ label, placeholder, value, onChange, type = "text" }: {
   label: string; fieldKey: string; placeholder: string;
   value: string; onChange: (v: string) => void; type?: string;
 }) {

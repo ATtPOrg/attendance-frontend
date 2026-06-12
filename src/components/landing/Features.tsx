@@ -82,7 +82,7 @@ export default function Features() {
 
       {/* Feature list */}
       <div>
-        {features.map((f, i) => (
+        {features.map((f) => (
           <div
             key={f.num}
             className="group grid md:grid-cols-[80px_1fr_200px] gap-4 md:gap-8 py-8 border-b transition-all duration-200 hover:pl-4 cursor-default"

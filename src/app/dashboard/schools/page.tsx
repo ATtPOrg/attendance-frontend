@@ -2,12 +2,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import DashboardHeader from "@/components/dashboard/Header";
-import { mockSchools } from "@/lib/mockData";
-import { Search, Plus, MoreVertical, Users, BookOpen, GraduationCap, Pencil, Trash2, Eye, Power } from "lucide-react";
+import { adminApi, ApiError } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
+import { LoadingState, ErrorState, InlineError } from "@/components/ui/Async";
+import type { School } from "@/lib/types";
+import { Search, Plus, MoreVertical, Users, BookOpen, GraduationCap, Pencil, Trash2, Eye, Power, Loader2 } from "lucide-react";
 import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
-
-type School = typeof mockSchools[number];
 
 const statusColors = {
   active: { bg: "#ecfdf5", text: "#059669" },
@@ -21,11 +22,26 @@ const planColors = {
   Starter: { bg: "#f0fdf4", text: "#16a34a" },
 };
 
-function EditSchoolModal({ school, open, onClose, onSave }: { school: School | null; open: boolean; onClose: () => void; onSave: (s: School) => void }) {
+function EditSchoolModal({ school, open, onClose, onSave }: { school: School | null; open: boolean; onClose: () => void; onSave: (s: School) => Promise<void> }) {
   const [form, setForm] = useState<School | null>(school);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!form) return null;
   const set = (k: keyof School, v: string) => setForm((p) => p ? { ...p, [k]: v } : p);
+
+  const handleSave = async () => {
+    setError(null);
+    setSaving(true);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to save changes.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <Modal open={open} onClose={onClose} title="Edit School" subtitle={school?.name} width="max-w-xl">
@@ -68,10 +84,13 @@ function EditSchoolModal({ school, open, onClose, onSave }: { school: School | n
             </Select>
           </FormField>
         </div>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={() => { onSave(form); onClose(); }}>Save Changes</BtnPrimary>
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <BtnPrimary onClick={handleSave} disabled={saving}>
+          {saving ? <span className="flex items-center gap-2"><Loader2 size={13} className="animate-spin" /> Saving...</span> : "Save Changes"}
+        </BtnPrimary>
       </ModalActions>
     </Modal>
   );
@@ -109,14 +128,16 @@ function SchoolMenu({ school, onEdit, onDelete, onToggle }: { school: School; on
 }
 
 export default function SchoolsPage() {
-  const [schools, setSchools] = useState(mockSchools);
+  const { data: schools, loading, error, refetch, setData } = useApi(() => adminApi.schools.list());
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "trial" | "inactive">("all");
   const [editTarget, setEditTarget] = useState<School | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<School | null>(null);
   const [toggleTarget, setToggleTarget] = useState<School | null>(null);
 
-  const filtered = schools.filter((s) => {
+  const list = schools ?? [];
+
+  const filtered = list.filter((s) => {
     const matchesSearch =
       s.name.toLowerCase().includes(search.toLowerCase()) ||
       s.shortName.toLowerCase().includes(search.toLowerCase()) ||
@@ -125,20 +146,41 @@ export default function SchoolsPage() {
     return matchesSearch && matchesFilter;
   });
 
-  const handleSave = (updated: School) =>
-    setSchools((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+  const handleSave = async (updated: School) => {
+    const saved = await adminApi.schools.update(updated.id, updated);
+    setData((prev) => (prev ?? []).map((s) => (s.id === saved.id ? saved : s)));
+  };
 
-  const handleDelete = () =>
-    setSchools((prev) => prev.filter((s) => s.id !== deleteTarget?.id));
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    await adminApi.schools.remove(deleteTarget.id);
+    setData((prev) => (prev ?? []).filter((s) => s.id !== deleteTarget.id));
+  };
 
-  const handleToggle = () =>
-    setSchools((prev) =>
-      prev.map((s) =>
-        s.id === toggleTarget?.id
-          ? { ...s, status: s.status === "active" ? "inactive" as const : "active" as const }
-          : s
-      )
+  const handleToggle = async () => {
+    if (!toggleTarget) return;
+    const next = toggleTarget.status === "active" ? "inactive" as const : "active" as const;
+    const saved = await adminApi.schools.setStatus(toggleTarget.id, next);
+    setData((prev) => (prev ?? []).map((s) => (s.id === saved.id ? saved : s)));
+  };
+
+  if (loading) {
+    return (
+      <>
+        <DashboardHeader title="Schools" subtitle="Manage onboarded institutions" />
+        <LoadingState label="Loading schools..." />
+      </>
     );
+  }
+
+  if (error) {
+    return (
+      <>
+        <DashboardHeader title="Schools" subtitle="Manage onboarded institutions" />
+        <ErrorState message={error} onRetry={refetch} />
+      </>
+    );
+  }
 
   return (
     <>
@@ -158,7 +200,7 @@ export default function SchoolsPage() {
                   fontFamily: "'Inter',sans-serif",
                 }}
               >
-                {f} {f === "all" ? `(${schools.length})` : `(${schools.filter((s) => s.status === f).length})`}
+                {f} {f === "all" ? `(${list.length})` : `(${list.filter((s) => s.status === f).length})`}
               </button>
             ))}
           </div>
@@ -270,6 +312,7 @@ export default function SchoolsPage() {
 
       {/* Modals */}
       <EditSchoolModal
+        key={editTarget?.id ?? "none"}
         school={editTarget}
         open={!!editTarget}
         onClose={() => setEditTarget(null)}

@@ -1,5 +1,4 @@
 "use client";
-import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -94,13 +93,13 @@ export default function Hero() {
               Live on 5+ institutions
             </div>
 
-            <Link
-              href="/login"
+            <a
+              href="#waitlist"
               className="inline-flex items-center gap-2 px-6 py-3 text-white text-[12px] uppercase tracking-[0.1em] transition-all duration-200 hover:opacity-80"
               style={{ fontFamily: "var(--font-dm-mono)", background: "var(--accent)" }}
             >
               Request Demo →
-            </Link>
+            </a>
           </div>
         </div>
 

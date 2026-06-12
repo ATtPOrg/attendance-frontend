@@ -2,31 +2,41 @@
 import { useState } from "react";
 import SchoolHeader from "@/components/school/Header";
 import { useSchoolAuthStore } from "@/stores/schoolAuthStore";
-import { mockProfessors } from "@/lib/mockData";
-import { Search, Plus, Pencil, Trash2, Users, Mail, BookOpen } from "lucide-react";
+import { schoolApi, ApiError } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
+import { LoadingState, ErrorState, InlineError } from "@/components/ui/Async";
+import type { Professor } from "@/lib/types";
+import { Search, Plus, Pencil, Trash2, Users, Mail, BookOpen, Loader2 } from "lucide-react";
 import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
-type Professor = typeof mockProfessors[number];
-
-const DEPARTMENTS = ["Computer Science", "Electrical Engineering", "Mechanical Engineering", "Business Administration", "Economics", "Medicine", "Arts & Humanities"];
-
-function ProfessorModal({ professor, open, onClose, onSave, schoolShortName }: {
-  professor: Partial<Professor> | null;
+function ProfessorModal({ professor, departments, open, onClose, onSave }: {
+  professor: Professor | null;
+  departments: string[];
   open: boolean;
   onClose: () => void;
-  onSave: (p: Professor) => void;
-  schoolShortName: string;
+  onSave: (p: Partial<Professor>) => Promise<void>;
 }) {
   const isNew = !professor?.id;
-  const blank: Partial<Professor> = { name: "", email: "", department: "Computer Science", school: schoolShortName, courses: 0, students: 0, status: "active", joinedAt: new Date().toISOString().split("T")[0] };
-  const [form, setForm] = useState<Partial<Professor>>(professor ?? blank);
+  const [form, setForm] = useState<Partial<Professor>>(professor ?? {
+    name: "", email: "", department: departments[0] ?? "", status: "active",
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const set = <K extends keyof Professor>(k: K, v: Professor[K]) => setForm((p) => ({ ...p, [k]: v }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name || !form.email) return;
-    onSave({ ...blank, ...form, id: form.id ?? `p${Date.now()}` } as Professor);
-    onClose();
+    setError(null);
+    setSaving(true);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to save professor.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -40,7 +50,7 @@ function ProfessorModal({ professor, open, onClose, onSave, schoolShortName }: {
         </FormField>
         <FormField label="Department" id="pdept">
           <Select id="pdept" value={form.department ?? ""} onChange={(e) => set("department", e.target.value)}>
-            {DEPARTMENTS.map((d) => <option key={d}>{d}</option>)}
+            {departments.map((d) => <option key={d}>{d}</option>)}
           </Select>
         </FormField>
         <FormField label="Status" id="pstatus">
@@ -49,10 +59,13 @@ function ProfessorModal({ professor, open, onClose, onSave, schoolShortName }: {
             <option value="inactive">Inactive</option>
           </Select>
         </FormField>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={handleSave}>{isNew ? "Add Professor" : "Save Changes"}</BtnPrimary>
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <BtnPrimary onClick={handleSave} disabled={saving}>
+          {saving ? <span className="flex items-center gap-2"><Loader2 size={13} className="animate-spin" /> Saving...</span> : (isNew ? "Add Professor" : "Save Changes")}
+        </BtnPrimary>
       </ModalActions>
     </Modal>
   );
@@ -107,12 +120,35 @@ function ProfessorCard({ professor, onEdit, onDelete }: { professor: Professor; 
 export default function SchoolProfessorsPage() {
   const { admin } = useSchoolAuthStore();
   const shortName = admin?.schoolShortName ?? "";
-  const [professors, setProfessors] = useState(mockProfessors.filter((p) => p.school === shortName));
+  const { data, loading, error, refetch, setData } = useApi(() => schoolApi.professors.list());
+  const departmentsQuery = useApi(() => schoolApi.departments.list());
+  const departments = (departmentsQuery.data ?? []).map((d) => d.name);
+
   const [search, setSearch] = useState("");
   const [deptFilter, setDeptFilter] = useState("all");
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Professor | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Professor | null>(null);
+
+  const professors = data ?? [];
+
+  if (loading) {
+    return (
+      <>
+        <SchoolHeader title="Professors" subtitle={shortName} />
+        <LoadingState label="Loading professors..." />
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <SchoolHeader title="Professors" subtitle={shortName} />
+        <ErrorState message={error} onRetry={refetch} />
+      </>
+    );
+  }
 
   const filtered = professors.filter((p) => {
     const q = search.toLowerCase();
@@ -121,12 +157,15 @@ export default function SchoolProfessorsPage() {
     return matchSearch && matchDept;
   });
 
-  const handleSave = (updated: Professor) => {
-    if (professors.find((p) => p.id === updated.id)) {
-      setProfessors((prev) => prev.map((p) => (p.id === updated.id ? updated : p)));
-    } else {
-      setProfessors((prev) => [...prev, updated]);
-    }
+  const handleCreate = async (form: Partial<Professor>) => {
+    const created = await schoolApi.professors.create(form);
+    setData((prev) => [...(prev ?? []), created]);
+  };
+
+  const handleUpdate = async (form: Partial<Professor>) => {
+    if (!editTarget) return;
+    const saved = await schoolApi.professors.update(editTarget.id, form);
+    setData((prev) => (prev ?? []).map((p) => (p.id === saved.id ? saved : p)));
   };
 
   return (
@@ -156,7 +195,7 @@ export default function SchoolProfessorsPage() {
             </div>
             <select value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
               <option value="all">All Departments</option>
-              {DEPARTMENTS.map((d) => <option key={d}>{d}</option>)}
+              {departments.map((d) => <option key={d}>{d}</option>)}
             </select>
           </div>
           <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#0f172a", fontFamily: "'Inter',sans-serif" }}>
@@ -180,12 +219,16 @@ export default function SchoolProfessorsPage() {
         )}
       </div>
 
-      <ProfessorModal open={addOpen} professor={null} onClose={() => setAddOpen(false)} onSave={handleSave} schoolShortName={shortName} />
-      <ProfessorModal open={!!editTarget} professor={editTarget} onClose={() => setEditTarget(null)} onSave={handleSave} schoolShortName={shortName} />
+      {addOpen && <ProfessorModal open professor={null} departments={departments} onClose={() => setAddOpen(false)} onSave={handleCreate} />}
+      {editTarget && <ProfessorModal key={editTarget.id} open professor={editTarget} departments={departments} onClose={() => setEditTarget(null)} onSave={handleUpdate} />}
       <ConfirmModal
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
-        onConfirm={() => setProfessors((prev) => prev.filter((p) => p.id !== deleteTarget?.id))}
+        onConfirm={async () => {
+          if (!deleteTarget) return;
+          await schoolApi.professors.remove(deleteTarget.id);
+          setData((prev) => (prev ?? []).filter((p) => p.id !== deleteTarget.id));
+        }}
         title="Remove Professor"
         message={`Remove ${deleteTarget?.name}? Their courses will be unassigned and attendance data preserved.`}
         confirmLabel="Remove"

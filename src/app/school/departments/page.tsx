@@ -2,20 +2,37 @@
 import { useState } from "react";
 import SchoolHeader from "@/components/school/Header";
 import { useSchoolAuthStore } from "@/stores/schoolAuthStore";
-import { mockFaculties, mockDepartments } from "@/lib/mockData";
-import { Search, Plus, Pencil, Trash2, Building2 } from "lucide-react";
+import { schoolApi, ApiError } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
+import { LoadingState, ErrorState, InlineError } from "@/components/ui/Async";
+import type { Faculty, Department } from "@/lib/types";
+import { Search, Plus, Pencil, Trash2, Building2, Loader2 } from "lucide-react";
 import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
-type Faculty = typeof mockFaculties[number];
-type Department = typeof mockDepartments[number];
-
 const FACULTY_COLORS = ["#3b82f6", "#7c3aed", "#ef4444", "#f97316", "#10b981", "#8b5cf6"];
 
-function FacultyModal({ faculty, open, onClose, onSave, colorIndex }: { faculty: Partial<Faculty> | null; open: boolean; onClose: () => void; onSave: (f: Faculty) => void; colorIndex: number }) {
+function FacultyModal({ faculty, open, onClose, onSave, colorIndex }: { faculty: Faculty | null; open: boolean; onClose: () => void; onSave: (f: Partial<Faculty>) => Promise<void>; colorIndex: number }) {
   const isNew = !faculty?.id;
-  const [form, setForm] = useState<Partial<Faculty>>(faculty ?? { name: "", dean: "", departments: 0, professors: 0, students: 0, color: FACULTY_COLORS[colorIndex % FACULTY_COLORS.length] });
+  const [form, setForm] = useState<Partial<Faculty>>(faculty ?? { name: "", dean: "", color: FACULTY_COLORS[colorIndex % FACULTY_COLORS.length] });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const set = <K extends keyof Faculty>(k: K, v: Faculty[K]) => setForm((p) => ({ ...p, [k]: v }));
+
+  const handleSave = async () => {
+    if (!form.name) return;
+    setError(null);
+    setSaving(true);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to save faculty.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <Modal open={open} onClose={onClose} title={isNew ? "Add Faculty" : "Edit Faculty"} subtitle={isNew ? "Create a new faculty" : faculty?.name}>
       <div className="space-y-4">
@@ -35,21 +52,39 @@ function FacultyModal({ faculty, open, onClose, onSave, colorIndex }: { faculty:
             </div>
           </div>
         </FormField>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={() => { if (form.name) { onSave({ ...form, id: form.id ?? `f${Date.now()}` } as Faculty); onClose(); } }}>
-          {isNew ? "Add Faculty" : "Save Changes"}
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <BtnPrimary onClick={handleSave} disabled={saving}>
+          {saving ? <span className="flex items-center gap-2"><Loader2 size={13} className="animate-spin" /> Saving...</span> : (isNew ? "Add Faculty" : "Save Changes")}
         </BtnPrimary>
       </ModalActions>
     </Modal>
   );
 }
 
-function DepartmentModal({ department, open, onClose, onSave, faculties }: { department: Partial<Department> | null; open: boolean; onClose: () => void; onSave: (d: Department) => void; faculties: Faculty[] }) {
+function DepartmentModal({ department, open, onClose, onSave, faculties }: { department: Department | null; open: boolean; onClose: () => void; onSave: (d: Partial<Department>) => Promise<void>; faculties: Faculty[] }) {
   const isNew = !department?.id;
-  const [form, setForm] = useState<Partial<Department>>(department ?? { name: "", faculty: faculties[0]?.name ?? "Engineering", hod: "", professors: 0, students: 0, courses: 0, attendanceRate: 0 });
+  const [form, setForm] = useState<Partial<Department>>(department ?? { name: "", facultyId: faculties[0]?.id, hod: "" });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const set = <K extends keyof Department>(k: K, v: Department[K]) => setForm((p) => ({ ...p, [k]: v }));
+
+  const handleSave = async () => {
+    if (!form.name) return;
+    setError(null);
+    setSaving(true);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to save department.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <Modal open={open} onClose={onClose} title={isNew ? "Add Department" : "Edit Department"} subtitle={isNew ? "Create a new department" : department?.name}>
       <div className="space-y-4">
@@ -57,18 +92,19 @@ function DepartmentModal({ department, open, onClose, onSave, faculties }: { dep
           <Input id="dname" value={form.name ?? ""} onChange={(e) => set("name", e.target.value)} placeholder="Computer Science" />
         </FormField>
         <FormField label="Faculty" id="dfaculty">
-          <Select id="dfaculty" value={form.faculty ?? ""} onChange={(e) => set("faculty", e.target.value)}>
-            {faculties.map((f) => <option key={f.id}>{f.name}</option>)}
+          <Select id="dfaculty" value={form.facultyId ?? ""} onChange={(e) => set("facultyId", e.target.value)}>
+            {faculties.map((f) => <option key={f.id} value={f.id}>{f.name}</option>)}
           </Select>
         </FormField>
         <FormField label="Head of Department (HOD)" id="dhod">
           <Input id="dhod" value={form.hod ?? ""} onChange={(e) => set("hod", e.target.value)} placeholder="Dr. Chukwu" />
         </FormField>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={() => { if (form.name) { onSave({ ...form, id: form.id ?? `d${Date.now()}` } as Department); onClose(); } }}>
-          {isNew ? "Add Department" : "Save Changes"}
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <BtnPrimary onClick={handleSave} disabled={saving}>
+          {saving ? <span className="flex items-center gap-2"><Loader2 size={13} className="animate-spin" /> Saving...</span> : (isNew ? "Add Department" : "Save Changes")}
         </BtnPrimary>
       </ModalActions>
     </Modal>
@@ -79,8 +115,9 @@ export default function SchoolDepartmentsPage() {
   const { admin } = useSchoolAuthStore();
   const shortName = admin?.schoolShortName ?? "";
 
-  const [faculties, setFaculties] = useState(mockFaculties);
-  const [departments, setDepartments] = useState(mockDepartments);
+  const facultiesQuery = useApi(() => schoolApi.faculties.list());
+  const departmentsQuery = useApi(() => schoolApi.departments.list());
+
   const [activeView, setActiveView] = useState<"faculties" | "departments">("faculties");
   const [search, setSearch] = useState("");
   const [addFacultyOpen, setAddFacultyOpen] = useState(false);
@@ -90,24 +127,54 @@ export default function SchoolDepartmentsPage() {
   const [editDept, setEditDept] = useState<Department | null>(null);
   const [deleteDept, setDeleteDept] = useState<Department | null>(null);
 
+  const faculties = facultiesQuery.data ?? [];
+  const departments = departmentsQuery.data ?? [];
+
+  const loading = facultiesQuery.loading || departmentsQuery.loading;
+  const error = facultiesQuery.error ?? departmentsQuery.error;
+
+  if (loading) {
+    return (
+      <>
+        <SchoolHeader title="Departments" subtitle={shortName} />
+        <LoadingState label="Loading faculties & departments..." />
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <SchoolHeader title="Departments" subtitle={shortName} />
+        <ErrorState message={error} onRetry={() => { void facultiesQuery.refetch(); void departmentsQuery.refetch(); }} />
+      </>
+    );
+  }
+
   const filteredDepts = departments.filter((d) =>
     d.name.toLowerCase().includes(search.toLowerCase()) || d.faculty.toLowerCase().includes(search.toLowerCase())
   );
 
-  const saveFaculty = (updated: Faculty) => {
-    if (faculties.find((f) => f.id === updated.id)) {
-      setFaculties((prev) => prev.map((f) => (f.id === updated.id ? updated : f)));
-    } else {
-      setFaculties((prev) => [...prev, updated]);
-    }
+  const createFaculty = async (form: Partial<Faculty>) => {
+    const created = await schoolApi.faculties.create(form);
+    facultiesQuery.setData((prev) => [...(prev ?? []), created]);
   };
 
-  const saveDept = (updated: Department) => {
-    if (departments.find((d) => d.id === updated.id)) {
-      setDepartments((prev) => prev.map((d) => (d.id === updated.id ? updated : d)));
-    } else {
-      setDepartments((prev) => [...prev, updated]);
-    }
+  const updateFaculty = async (form: Partial<Faculty>) => {
+    if (!editFaculty) return;
+    const saved = await schoolApi.faculties.update(editFaculty.id, form);
+    facultiesQuery.setData((prev) => (prev ?? []).map((f) => (f.id === saved.id ? saved : f)));
+  };
+
+  const createDept = async (form: Partial<Department>) => {
+    const created = await schoolApi.departments.create(form);
+    departmentsQuery.setData((prev) => [...(prev ?? []), created]);
+  };
+
+  const updateDept = async (form: Partial<Department>) => {
+    if (!editDept) return;
+    const saved = await schoolApi.departments.update(editDept.id, form);
+    departmentsQuery.setData((prev) => (prev ?? []).map((d) => (d.id === saved.id ? saved : d)));
   };
 
   return (
@@ -153,34 +220,43 @@ export default function SchoolDepartmentsPage() {
 
         {/* Faculties view */}
         {activeView === "faculties" && (
-          <div className="grid md:grid-cols-2 gap-4">
-            {faculties.map((f) => (
-              <div key={f.id} className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
-                <div className="px-5 py-4 flex items-center justify-between" style={{ background: f.color }}>
-                  <div>
-                    <div className="text-[15px] font-bold text-white">{f.name}</div>
-                    <div className="text-[11px] text-white/70">Dean: {f.dean || "Not assigned"}</div>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => setEditFaculty(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Pencil size={13} color="white" /></button>
-                    <button onClick={() => setDeleteFaculty(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Trash2 size={13} color="white" /></button>
-                  </div>
-                </div>
-                <div className="px-5 py-4 grid grid-cols-3 text-center gap-2">
-                  {[
-                    { value: f.departments, label: "Depts" },
-                    { value: f.professors, label: "Professors" },
-                    { value: f.students.toLocaleString(), label: "Students" },
-                  ].map((s) => (
-                    <div key={s.label}>
-                      <div className="text-[20px] font-bold" style={{ color: "#111827" }}>{s.value}</div>
-                      <div className="text-[11px]" style={{ color: "#9ca3af" }}>{s.label}</div>
+          <>
+            <div className="grid md:grid-cols-2 gap-4">
+              {faculties.map((f) => (
+                <div key={f.id} className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
+                  <div className="px-5 py-4 flex items-center justify-between" style={{ background: f.color }}>
+                    <div>
+                      <div className="text-[15px] font-bold text-white">{f.name}</div>
+                      <div className="text-[12px] text-white/70">Dean: {f.dean || "Not assigned"}</div>
                     </div>
-                  ))}
+                    <div className="flex gap-1">
+                      <button onClick={() => setEditFaculty(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Pencil size={13} color="white" /></button>
+                      <button onClick={() => setDeleteFaculty(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Trash2 size={13} color="white" /></button>
+                    </div>
+                  </div>
+                  <div className="px-5 py-4 grid grid-cols-3 text-center gap-2">
+                    {[
+                      { value: f.departments, label: "Depts" },
+                      { value: f.professors, label: "Professors" },
+                      { value: f.students.toLocaleString(), label: "Students" },
+                    ].map((s) => (
+                      <div key={s.label}>
+                        <div className="text-[20px] font-bold" style={{ color: "#111827" }}>{s.value}</div>
+                        <div className="text-[11px]" style={{ color: "#9ca3af" }}>{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              ))}
+            </div>
+            {faculties.length === 0 && (
+              <div className="bg-white rounded-xl border py-16 text-center" style={{ borderColor: "#e5e7eb" }}>
+                <Building2 size={32} color="#d1d5db" className="mx-auto mb-3" />
+                <p className="text-[14px]" style={{ color: "#9ca3af" }}>No faculties yet.</p>
+                <button onClick={() => setAddFacultyOpen(true)} className="mt-3 text-[13px] font-medium" style={{ color: "#4f46e5" }}>+ Add first faculty</button>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         )}
 
         {/* Departments view */}
@@ -232,12 +308,36 @@ export default function SchoolDepartmentsPage() {
       </div>
 
       {/* Modals */}
-      <FacultyModal open={addFacultyOpen} faculty={null} onClose={() => setAddFacultyOpen(false)} onSave={saveFaculty} colorIndex={faculties.length} />
-      <FacultyModal open={!!editFaculty} faculty={editFaculty} onClose={() => setEditFaculty(null)} onSave={saveFaculty} colorIndex={0} />
-      <ConfirmModal open={!!deleteFaculty} onClose={() => setDeleteFaculty(null)} onConfirm={() => setFaculties((prev) => prev.filter((f) => f.id !== deleteFaculty?.id))} title="Delete Faculty" message={`Delete ${deleteFaculty?.name} faculty? All departments under it will become unassigned.`} confirmLabel="Delete" danger />
-      <DepartmentModal open={addDeptOpen} department={null} onClose={() => setAddDeptOpen(false)} onSave={saveDept} faculties={faculties} />
-      <DepartmentModal open={!!editDept} department={editDept} onClose={() => setEditDept(null)} onSave={saveDept} faculties={faculties} />
-      <ConfirmModal open={!!deleteDept} onClose={() => setDeleteDept(null)} onConfirm={() => setDepartments((prev) => prev.filter((d) => d.id !== deleteDept?.id))} title="Delete Department" message={`Delete the ${deleteDept?.name} department?`} confirmLabel="Delete" danger />
+      {addFacultyOpen && <FacultyModal open faculty={null} onClose={() => setAddFacultyOpen(false)} onSave={createFaculty} colorIndex={faculties.length} />}
+      {editFaculty && <FacultyModal key={editFaculty.id} open faculty={editFaculty} onClose={() => setEditFaculty(null)} onSave={updateFaculty} colorIndex={0} />}
+      <ConfirmModal
+        open={!!deleteFaculty}
+        onClose={() => setDeleteFaculty(null)}
+        onConfirm={async () => {
+          if (!deleteFaculty) return;
+          await schoolApi.faculties.remove(deleteFaculty.id);
+          facultiesQuery.setData((prev) => (prev ?? []).filter((f) => f.id !== deleteFaculty.id));
+        }}
+        title="Delete Faculty"
+        message={`Delete ${deleteFaculty?.name} faculty? All departments under it will become unassigned.`}
+        confirmLabel="Delete"
+        danger
+      />
+      {addDeptOpen && <DepartmentModal open department={null} onClose={() => setAddDeptOpen(false)} onSave={createDept} faculties={faculties} />}
+      {editDept && <DepartmentModal key={editDept.id} open department={editDept} onClose={() => setEditDept(null)} onSave={updateDept} faculties={faculties} />}
+      <ConfirmModal
+        open={!!deleteDept}
+        onClose={() => setDeleteDept(null)}
+        onConfirm={async () => {
+          if (!deleteDept) return;
+          await schoolApi.departments.remove(deleteDept.id);
+          departmentsQuery.setData((prev) => (prev ?? []).filter((d) => d.id !== deleteDept.id));
+        }}
+        title="Delete Department"
+        message={`Delete the ${deleteDept?.name} department?`}
+        confirmLabel="Delete"
+        danger
+      />
     </>
   );
 }

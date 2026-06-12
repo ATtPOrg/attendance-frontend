@@ -22,8 +22,10 @@ export default function SchoolLoginPage() {
     try {
       await login(email, password);
       router.push("/school/dashboard");
-    } catch {
-      setError("No institution found for these credentials. Check your email and try again.");
+    } catch (err) {
+      setError(err instanceof Error && err.message
+        ? err.message
+        : "No institution found for these credentials. Check your email and try again.");
     } finally {
       setLoading(false);
     }
@@ -172,17 +174,8 @@ export default function SchoolLoginPage() {
 
           <div className="mt-8 pt-6 border-t" style={{ borderColor: "var(--line)" }}>
             <p className="text-[11px] text-center" style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}>
-              Platform administrator?{" "}
-              <Link href="/login" style={{ color: "var(--accent)" }}>Super Admin login →</Link>
-            </p>
-          </div>
-
-          {/* Demo hint */}
-          <div className="mt-6 p-4 rounded-lg" style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}>
-            <p className="text-[11px] font-semibold mb-1" style={{ fontFamily: "var(--font-dm-mono)", color: "#64748b" }}>DEMO CREDENTIALS</p>
-            <p className="text-[11px]" style={{ fontFamily: "var(--font-dm-mono)", color: "#94a3b8" }}>
-              Email: <span className="text-slate-600">admin@unilag.edu.ng</span><br />
-              Password: <span className="text-slate-600">any value</span>
+              Not onboarded yet?{" "}
+              <Link href="/#waitlist" style={{ color: "var(--accent)" }}>Join the waitlist →</Link>
             </p>
           </div>
         </div>

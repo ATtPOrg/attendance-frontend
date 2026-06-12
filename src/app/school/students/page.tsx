@@ -2,14 +2,14 @@
 import { useState } from "react";
 import SchoolHeader from "@/components/school/Header";
 import { useSchoolAuthStore } from "@/stores/schoolAuthStore";
-import { mockStudents } from "@/lib/mockData";
-import { Search, Plus, Pencil, Trash2, GraduationCap, ChevronUp, ChevronDown } from "lucide-react";
+import { schoolApi, ApiError } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
+import { LoadingState, ErrorState, InlineError } from "@/components/ui/Async";
+import type { Student } from "@/lib/types";
+import { Search, Plus, Pencil, Trash2, GraduationCap, ChevronUp, ChevronDown, Loader2 } from "lucide-react";
 import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
-type Student = typeof mockStudents[number];
-
-const DEPARTMENTS = ["Computer Science", "Electrical Engineering", "Mechanical Engineering", "Business Administration", "Economics", "Medicine", "Arts & Humanities"];
 const LEVELS = ["100", "200", "300", "400", "500", "600"];
 
 function AttendanceBadge({ rate }: { rate: number }) {
@@ -22,22 +22,33 @@ function AttendanceBadge({ rate }: { rate: number }) {
   );
 }
 
-function StudentModal({ student, open, onClose, onSave, schoolShortName }: {
-  student: Partial<Student> | null;
+function StudentModal({ student, departments, open, onClose, onSave }: {
+  student: Student | null;
+  departments: string[];
   open: boolean;
   onClose: () => void;
-  onSave: (s: Student) => void;
-  schoolShortName: string;
+  onSave: (form: Partial<Student>) => Promise<void>;
 }) {
   const isNew = !student?.id;
-  const blank: Partial<Student> = { name: "", matricNo: "", email: "", department: "Computer Science", school: schoolShortName, level: "100", status: "active", attendanceRate: 0, enrolledAt: new Date().toISOString().split("T")[0] };
-  const [form, setForm] = useState<Partial<Student>>(student ?? blank);
+  const [form, setForm] = useState<Partial<Student>>(student ?? {
+    name: "", matricNo: "", email: "", department: departments[0] ?? "", level: "100", status: "active",
+  });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const set = <K extends keyof Student>(k: K, v: Student[K]) => setForm((p) => ({ ...p, [k]: v }));
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name || !form.matricNo) return;
-    onSave({ ...blank, ...form, id: form.id ?? `s${Date.now()}` } as Student);
-    onClose();
+    setError(null);
+    setSaving(true);
+    try {
+      await onSave(form);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to save student.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -57,7 +68,7 @@ function StudentModal({ student, open, onClose, onSave, schoolShortName }: {
         <div className="grid grid-cols-2 gap-4">
           <FormField label="Department" id="sdept">
             <Select id="sdept" value={form.department ?? ""} onChange={(e) => set("department", e.target.value)}>
-              {DEPARTMENTS.map((d) => <option key={d}>{d}</option>)}
+              {departments.map((d) => <option key={d}>{d}</option>)}
             </Select>
           </FormField>
           <FormField label="Level" id="slevel">
@@ -72,10 +83,13 @@ function StudentModal({ student, open, onClose, onSave, schoolShortName }: {
             <option value="suspended">Suspended</option>
           </Select>
         </FormField>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={handleSave}>{isNew ? "Enroll Student" : "Save Changes"}</BtnPrimary>
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <BtnPrimary onClick={handleSave} disabled={saving}>
+          {saving ? <span className="flex items-center gap-2"><Loader2 size={13} className="animate-spin" /> Saving...</span> : (isNew ? "Enroll Student" : "Save Changes")}
+        </BtnPrimary>
       </ModalActions>
     </Modal>
   );
@@ -86,7 +100,10 @@ type SortKey = "name" | "department" | "level" | "attendanceRate";
 export default function SchoolStudentsPage() {
   const { admin } = useSchoolAuthStore();
   const shortName = admin?.schoolShortName ?? "";
-  const [students, setStudents] = useState(mockStudents.filter((s) => s.school === shortName));
+  const { data, loading, error, refetch, setData } = useApi(() => schoolApi.students.list());
+  const departmentsQuery = useApi(() => schoolApi.departments.list());
+  const departments = (departmentsQuery.data ?? []).map((d) => d.name);
+
   const [search, setSearch] = useState("");
   const [levelFilter, setLevelFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -95,11 +112,31 @@ export default function SchoolStudentsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Student | null>(null);
   const [sort, setSort] = useState<{ key: SortKey; dir: "asc" | "desc" }>({ key: "name", dir: "asc" });
 
+  const students = data ?? [];
+
+  if (loading) {
+    return (
+      <>
+        <SchoolHeader title="Students" subtitle={shortName} />
+        <LoadingState label="Loading students..." />
+      </>
+    );
+  }
+
+  if (error) {
+    return (
+      <>
+        <SchoolHeader title="Students" subtitle={shortName} />
+        <ErrorState message={error} onRetry={refetch} />
+      </>
+    );
+  }
+
   const filtered = students
     .filter((s) => {
       const q = search.toLowerCase();
       const matchSearch = s.name.toLowerCase().includes(q) || s.matricNo.toLowerCase().includes(q);
-      const matchLevel = levelFilter === "all" || s.level === levelFilter;
+      const matchLevel = levelFilter === "all" || `${s.level}L` === levelFilter;
       const matchStatus = statusFilter === "all" || s.status === statusFilter;
       return matchSearch && matchLevel && matchStatus;
     })
@@ -115,12 +152,15 @@ export default function SchoolStudentsPage() {
   const SortIcon = ({ k }: { k: SortKey }) =>
     sort.key === k ? (sort.dir === "asc" ? <ChevronUp size={12} /> : <ChevronDown size={12} />) : null;
 
-  const handleSave = (updated: Student) => {
-    if (students.find((s) => s.id === updated.id)) {
-      setStudents((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
-    } else {
-      setStudents((prev) => [...prev, updated]);
-    }
+  const handleCreate = async (form: Partial<Student>) => {
+    const created = await schoolApi.students.create(form);
+    setData((prev) => [...(prev ?? []), created]);
+  };
+
+  const handleUpdate = async (form: Partial<Student>) => {
+    if (!editTarget) return;
+    const saved = await schoolApi.students.update(editTarget.id, form);
+    setData((prev) => (prev ?? []).map((s) => (s.id === saved.id ? saved : s)));
   };
 
   const avgAttendance = students.length
@@ -132,7 +172,7 @@ export default function SchoolStudentsPage() {
       <SchoolHeader title="Students" subtitle={`${students.length} students at ${shortName}`} />
       <div className="p-8 space-y-5">
         {/* Stats */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Total Students", value: students.length.toLocaleString(), color: "#4f46e5" },
             { label: "Active", value: students.filter((s) => s.status === "active").length, color: "#059669" },
@@ -241,12 +281,16 @@ export default function SchoolStudentsPage() {
         </div>
       </div>
 
-      <StudentModal open={addOpen} student={null} onClose={() => setAddOpen(false)} onSave={handleSave} schoolShortName={shortName} />
-      <StudentModal open={!!editTarget} student={editTarget} onClose={() => setEditTarget(null)} onSave={handleSave} schoolShortName={shortName} />
+      {addOpen && <StudentModal open student={null} departments={departments} onClose={() => setAddOpen(false)} onSave={handleCreate} />}
+      {editTarget && <StudentModal key={editTarget.id} open student={editTarget} departments={departments} onClose={() => setEditTarget(null)} onSave={handleUpdate} />}
       <ConfirmModal
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
-        onConfirm={() => setStudents((prev) => prev.filter((s) => s.id !== deleteTarget?.id))}
+        onConfirm={async () => {
+          if (!deleteTarget) return;
+          await schoolApi.students.remove(deleteTarget.id);
+          setData((prev) => (prev ?? []).filter((s) => s.id !== deleteTarget.id));
+        }}
         title="Remove Student"
         message={`Remove ${deleteTarget?.name} (${deleteTarget?.matricNo}) from ${shortName}?`}
         confirmLabel="Remove"

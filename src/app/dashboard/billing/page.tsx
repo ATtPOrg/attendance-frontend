@@ -1,17 +1,13 @@
 "use client";
 import { useState } from "react";
 import DashboardHeader from "@/components/dashboard/Header";
-import { mockSchools } from "@/lib/mockData";
-import { Search, Download, CreditCard, TrendingUp, AlertCircle } from "lucide-react";
-import Modal from "@/components/ui/Modal";
-import { FormField, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
-import { ConfirmModal } from "@/components/ui/Modal";
-
-const PLAN_PRICES: Record<string, string> = {
-  Enterprise: "₦12,000,000",
-  Professional: "₦4,800,000",
-  Starter: "₦1,800,000",
-};
+import { adminApi, ApiError } from "@/lib/api";
+import { useApi } from "@/hooks/useApi";
+import { LoadingState, ErrorState, InlineError } from "@/components/ui/Async";
+import type { School } from "@/lib/types";
+import { Search, Download, CreditCard, TrendingUp, AlertCircle, Loader2 } from "lucide-react";
+import Modal, { ConfirmModal } from "@/components/ui/Modal";
+import { ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
 const planColors = {
   Enterprise: { bg: "#eef2ff", text: "#4f46e5" },
@@ -25,14 +21,33 @@ const statusColors = {
   inactive: { bg: "#f3f4f6", text: "#6b7280" },
 };
 
-function ChangePlanModal({ school, open, onClose, onSave }: {
-  school: typeof mockSchools[number] | null;
+const formatNaira = (n: number) => `₦${n.toLocaleString()}`;
+
+function ChangePlanModal({ school, planPrices, open, onClose, onSave }: {
+  school: School | null;
+  planPrices: Record<string, number>;
   open: boolean;
   onClose: () => void;
-  onSave: (schoolId: string, plan: string) => void;
+  onSave: (schoolId: string, plan: string) => Promise<void>;
 }) {
   const [plan, setPlan] = useState(school?.plan ?? "Starter");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   if (!school) return null;
+
+  const handleSave = async () => {
+    setError(null);
+    setSaving(true);
+    try {
+      await onSave(school.id, plan as string);
+      onClose();
+    } catch (e) {
+      setError(e instanceof ApiError ? e.message : "Failed to change plan.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <Modal open={open} onClose={onClose} title="Change Plan" subtitle={school.name} width="max-w-md">
       <div className="space-y-4">
@@ -48,55 +63,98 @@ function ChangePlanModal({ school, open, onClose, onSave }: {
               >
                 <div>
                   <div className="text-[14px] font-semibold" style={{ color: "#111827" }}>{p}</div>
-                  <div className="text-[12px]" style={{ color: "#9ca3af" }}>{PLAN_PRICES[p]} / year</div>
+                  <div className="text-[12px]" style={{ color: "#9ca3af" }}>{formatNaira(planPrices[p] ?? 0)} / year</div>
                 </div>
                 <span className="text-[12px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: pc.bg, color: pc.text }}>{p}</span>
               </button>
             );
           })}
         </div>
+        <InlineError message={error} />
       </div>
       <ModalActions>
-        <BtnSecondary onClick={onClose}>Cancel</BtnSecondary>
-        <BtnPrimary onClick={() => { onSave(school.id, plan); onClose(); }}>Confirm Change</BtnPrimary>
+        <BtnSecondary onClick={onClose} disabled={saving}>Cancel</BtnSecondary>
+        <BtnPrimary onClick={handleSave} disabled={saving}>
+          {saving ? <span className="flex items-center gap-2"><Loader2 size={13} className="animate-spin" /> Saving...</span> : "Confirm Change"}
+        </BtnPrimary>
       </ModalActions>
     </Modal>
   );
 }
 
 export default function BillingPage() {
-  const [schools, setSchools] = useState(mockSchools);
+  const schools = useApi(() => adminApi.schools.list());
+  const summary = useApi(() => adminApi.billingSummary());
   const [search, setSearch] = useState("");
-  const [planTarget, setPlanTarget] = useState<typeof mockSchools[number] | null>(null);
-  const [suspendTarget, setSuspendTarget] = useState<typeof mockSchools[number] | null>(null);
+  const [planTarget, setPlanTarget] = useState<School | null>(null);
+  const [suspendTarget, setSuspendTarget] = useState<School | null>(null);
+  const [exporting, setExporting] = useState(false);
 
-  const filtered = schools.filter((s) =>
+  const loading = schools.loading || summary.loading;
+  const error = schools.error ?? summary.error;
+
+  if (loading) {
+    return (
+      <>
+        <DashboardHeader title="Billing" subtitle="Manage school subscriptions and plans" />
+        <LoadingState label="Loading billing..." />
+      </>
+    );
+  }
+
+  if (error || !summary.data) {
+    return (
+      <>
+        <DashboardHeader title="Billing" subtitle="Manage school subscriptions and plans" />
+        <ErrorState message={error ?? "No data available."} onRetry={() => { void schools.refetch(); void summary.refetch(); }} />
+      </>
+    );
+  }
+
+  const list = schools.data ?? [];
+  const sum = summary.data;
+  const planPrices = sum.planPrices;
+
+  const filtered = list.filter((s) =>
     s.name.toLowerCase().includes(search.toLowerCase()) || s.shortName.toLowerCase().includes(search.toLowerCase())
   );
 
-  const totalRevenue = schools.filter((s) => s.status === "active").reduce((a, s) => {
-    if (s.plan === "Enterprise") return a + 12_000_000;
-    if (s.plan === "Professional") return a + 4_800_000;
-    return a + 1_800_000;
-  }, 0);
+  const handlePlanChange = async (schoolId: string, plan: string) => {
+    const saved = await adminApi.schools.setPlan(schoolId, plan);
+    schools.setData((prev) => (prev ?? []).map((s) => (s.id === saved.id ? saved : s)));
+    void summary.refetch();
+  };
 
-  const handlePlanChange = (schoolId: string, plan: string) =>
-    setSchools((prev) => prev.map((s) => s.id === schoolId ? { ...s, plan } : s));
+  const handleToggle = async () => {
+    if (!suspendTarget) return;
+    const next = suspendTarget.status === "active" ? "inactive" as const : "active" as const;
+    const saved = await adminApi.schools.setStatus(suspendTarget.id, next);
+    schools.setData((prev) => (prev ?? []).map((s) => (s.id === saved.id ? saved : s)));
+    void summary.refetch();
+  };
 
-  const handleToggle = (schoolId: string) =>
-    setSchools((prev) => prev.map((s) => s.id === schoolId ? { ...s, status: s.status === "active" ? "inactive" as const : "active" as const } : s));
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await adminApi.exportBilling();
+    } catch {
+      // Non-fatal: surfacing via alert keeps the page simple.
+    } finally {
+      setExporting(false);
+    }
+  };
 
   return (
     <>
       <DashboardHeader title="Billing" subtitle="Manage school subscriptions and plans" />
       <div className="p-8 space-y-6">
         {/* Revenue cards */}
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Annual Revenue", value: `₦${(totalRevenue / 1_000_000).toFixed(1)}M`, icon: TrendingUp, color: "#059669", bg: "#ecfdf5" },
-            { label: "Active Subscriptions", value: schools.filter((s) => s.status === "active").length, icon: CreditCard, color: "#4f46e5", bg: "#eef2ff" },
-            { label: "Trial Accounts", value: schools.filter((s) => s.status === "trial").length, icon: AlertCircle, color: "#d97706", bg: "#fffbeb" },
-            { label: "Inactive", value: schools.filter((s) => s.status === "inactive").length, icon: AlertCircle, color: "#6b7280", bg: "#f3f4f6" },
+            { label: "Annual Revenue", value: `₦${(sum.annualRevenue / 1_000_000).toFixed(1)}M`, icon: TrendingUp, color: "#059669", bg: "#ecfdf5" },
+            { label: "Active Subscriptions", value: sum.activeSubscriptions, icon: CreditCard, color: "#4f46e5", bg: "#eef2ff" },
+            { label: "Trial Accounts", value: sum.trialAccounts, icon: AlertCircle, color: "#d97706", bg: "#fffbeb" },
+            { label: "Inactive", value: sum.inactiveAccounts, icon: AlertCircle, color: "#6b7280", bg: "#f3f4f6" },
           ].map(({ label, value, icon: Icon, color, bg }) => (
             <div key={label} className="bg-white rounded-xl border p-5 flex items-start gap-4" style={{ borderColor: "#e5e7eb" }}>
               <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: bg }}>
@@ -111,19 +169,20 @@ export default function BillingPage() {
         </div>
 
         {/* Plan breakdown */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-3 gap-4">
           {["Enterprise", "Professional", "Starter"].map((plan) => {
             const pc = planColors[plan as keyof typeof planColors];
-            const count = schools.filter((s) => s.plan === plan).length;
+            const count = list.filter((s) => s.plan === plan).length;
+            const price = planPrices[plan] ?? 0;
             return (
               <div key={plan} className="bg-white rounded-xl border p-5" style={{ borderColor: "#e5e7eb" }}>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[12px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: pc.bg, color: pc.text }}>{plan}</span>
                   <span className="text-[20px] font-bold" style={{ color: "#111827" }}>{count}</span>
                 </div>
-                <div className="text-[12px]" style={{ color: "#9ca3af" }}>{PLAN_PRICES[plan]} / school / year</div>
+                <div className="text-[12px]" style={{ color: "#9ca3af" }}>{formatNaira(price)} / school / year</div>
                 <div className="text-[13px] font-semibold mt-1" style={{ color: "#111827" }}>
-                  ₦{((count * parseInt(PLAN_PRICES[plan].replace(/[₦,]/g, ""))) / 1_000_000).toFixed(1)}M total
+                  ₦{((count * price) / 1_000_000).toFixed(1)}M total
                 </div>
               </div>
             );
@@ -139,8 +198,13 @@ export default function BillingPage() {
                 <Search size={14} color="#9ca3af" />
                 <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search schools..." className="text-[13px] outline-none w-40 bg-transparent" style={{ color: "#111827" }} />
               </div>
-              <button className="flex items-center gap-2 px-3 py-2 rounded-lg border text-[13px] font-medium transition-colors hover:bg-gray-50" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
-                <Download size={14} /> Export
+              <button
+                onClick={handleExport}
+                disabled={exporting}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg border text-[13px] font-medium transition-colors hover:bg-gray-50 disabled:opacity-50"
+                style={{ borderColor: "#e5e7eb", color: "#374151" }}
+              >
+                {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />} Export
               </button>
             </div>
           </div>
@@ -173,7 +237,7 @@ export default function BillingPage() {
                       <td className="px-6 py-4">
                         <span className="text-[12px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: pc.bg, color: pc.text }}>{school.plan}</span>
                       </td>
-                      <td className="px-6 py-4 font-semibold" style={{ color: "#111827" }}>{PLAN_PRICES[school.plan]}</td>
+                      <td className="px-6 py-4 font-semibold" style={{ color: "#111827" }}>{formatNaira(planPrices[school.plan as string] ?? 0)}</td>
                       <td className="px-6 py-4">
                         <span className="text-[12px] px-2.5 py-0.5 rounded-full font-medium capitalize" style={{ background: sc.bg, color: sc.text }}>{school.status}</span>
                       </td>
@@ -204,14 +268,24 @@ export default function BillingPage() {
               </tbody>
             </table>
           </div>
+          {filtered.length === 0 && <div className="py-12 text-center text-[14px]" style={{ color: "#9ca3af" }}>No schools found.</div>}
         </div>
       </div>
 
-      <ChangePlanModal school={planTarget} open={!!planTarget} onClose={() => setPlanTarget(null)} onSave={handlePlanChange} />
+      {planTarget && (
+        <ChangePlanModal
+          key={planTarget.id}
+          school={planTarget}
+          planPrices={planPrices}
+          open
+          onClose={() => setPlanTarget(null)}
+          onSave={handlePlanChange}
+        />
+      )}
       <ConfirmModal
         open={!!suspendTarget}
         onClose={() => setSuspendTarget(null)}
-        onConfirm={() => { if (suspendTarget) handleToggle(suspendTarget.id); }}
+        onConfirm={handleToggle}
         title={suspendTarget?.status === "active" ? "Suspend School" : "Activate School"}
         message={
           suspendTarget?.status === "active"

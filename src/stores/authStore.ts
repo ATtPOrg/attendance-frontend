@@ -1,16 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: "super_admin" | "org_admin";
-}
+import { adminApi } from "@/lib/api";
+import type { AdminUser } from "@/lib/types";
 
 interface AuthStore {
-  user: User | null;
+  user: AdminUser | null;
   token: string | null;
+  refreshToken: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: () => boolean;
@@ -21,22 +17,18 @@ export const useAuthStore = create<AuthStore>()(
     (set, get) => ({
       user: null,
       token: null,
+      refreshToken: null,
 
-      login: async (email: string, _password: string) => {
-        // Mock auth — replace with real API call
-        await new Promise((r) => setTimeout(r, 800));
-        set({
-          token: "mock-jwt-token",
-          user: {
-            id: "1",
-            name: "Super Admin",
-            email,
-            role: "super_admin",
-          },
-        });
+      login: async (email: string, password: string) => {
+        const { token, refreshToken, user } = await adminApi.login(email, password);
+        set({ token, refreshToken, user });
       },
 
-      logout: () => set({ user: null, token: null }),
+      logout: () => {
+        // Best-effort server-side invalidation; never block local cleanup.
+        adminApi.logout().catch(() => {});
+        set({ user: null, token: null, refreshToken: null });
+      },
 
       isAuthenticated: () => !!get().token,
     }),
