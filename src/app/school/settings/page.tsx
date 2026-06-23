@@ -42,7 +42,7 @@ function Toggle({ label, description, checked, onChange }: { label: string; desc
         <div className="text-[14px] font-medium" style={{ color: "#111827" }}>{label}</div>
         {description && <div className="text-[12px] mt-0.5" style={{ color: "#9ca3af" }}>{description}</div>}
       </div>
-      <button onClick={() => onChange(!checked)} className="relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-8" style={{ background: checked ? "#0f172a" : "#e5e7eb" }}>
+      <button onClick={() => onChange(!checked)} className="relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-8" style={{ background: checked ? "#570000" : "#e5e7eb" }}>
         <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all" style={{ left: checked ? "22px" : "2px" }} />
       </button>
     </div>
@@ -61,8 +61,8 @@ function SchoolProfileSection() {
 
   const school = schoolQuery.data;
   const form = draft ?? {
-    name: school.name, shortName: school.shortName, email: school.email,
-    phone: school.phone, city: school.city, address: school.address ?? "",
+    name: school.name ?? "", shortName: school.shortName ?? "", email: school.email ?? "",
+    phone: school.phone ?? "", city: school.city ?? "", address: school.address ?? "",
   };
   const set = (k: keyof typeof form, v: string) => { setDraft({ ...form, [k]: v }); setSaved(false); };
 
@@ -90,7 +90,7 @@ function SchoolProfileSection() {
       </div>
 
       <div className="flex items-center gap-4 pb-5 border-b" style={{ borderColor: "#f3f4f6" }}>
-        <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-[18px] font-bold" style={{ background: "#0f172a" }}>
+        <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-[18px] font-bold" style={{ background: "#570000" }}>
           {school.shortName.slice(0, 2)}
         </div>
         <div>
@@ -180,7 +180,7 @@ function AdminAccountSection() {
       </div>
 
       <div className="flex items-center gap-4 pb-5 border-b" style={{ borderColor: "#f3f4f6" }}>
-        <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-[20px] font-bold" style={{ background: "#4f46e5" }}>
+        <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-[20px] font-bold" style={{ background: "#570000" }}>
           {form.name?.charAt(0) ?? "A"}
         </div>
         <div>
@@ -402,8 +402,8 @@ export default function SchoolSettingsPage() {
                   onClick={() => setActiveTab(id)}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all text-left"
                   style={{
-                    color: activeTab === id ? "#4f46e5" : "#6b7280",
-                    background: activeTab === id ? "#eef2ff" : "transparent",
+                    color: activeTab === id ? "#570000" : "#6b7280",
+                    background: activeTab === id ? "#FFF8F6" : "transparent",
                     fontFamily: "'Inter',sans-serif",
                   }}
                 >

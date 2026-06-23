@@ -47,7 +47,7 @@ function Toggle({ label, description, checked, onChange }: { label: string; desc
       <button
         onClick={() => onChange(!checked)}
         className="relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-8"
-        style={{ background: checked ? "#4f46e5" : "#e5e7eb" }}
+        style={{ background: checked ? "#570000" : "#e5e7eb" }}
       >
         <span
           className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all"
@@ -88,7 +88,9 @@ function ProfileSection() {
     setError(null);
     setSaving(true);
     try {
-      await adminApi.updateMe(profile);
+      const updated = await adminApi.updateMe(profile);
+      me.setData(updated);
+      setForm(null);
       setDirty(false);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
@@ -108,7 +110,7 @@ function ProfileSection() {
 
       {/* Avatar */}
       <div className="flex items-center gap-5 pb-6 border-b" style={{ borderColor: "#f3f4f6" }}>
-        <div className="w-16 h-16 rounded-full flex items-center justify-center text-white text-[22px] font-bold" style={{ background: "#4f46e5" }}>
+        <div className="w-16 h-16 rounded-full flex items-center justify-center text-white text-[22px] font-bold" style={{ background: "#570000" }}>
           {profile.name?.charAt(0) ?? "A"}
         </div>
         <div>
@@ -459,7 +461,7 @@ function BillingSection() {
       </div>
 
       {/* Current plan */}
-      <div className="rounded-xl p-6 text-white" style={{ background: "linear-gradient(135deg,#4f46e5,#7c3aed)" }}>
+      <div className="rounded-xl p-6 text-white" style={{ background: "linear-gradient(135deg,#570000,#3D0000)" }}>
         <div className="text-[11px] uppercase tracking-wider mb-1" style={{ color: "rgba(255,255,255,0.6)" }}>Current Plan</div>
         <div className="text-[28px] font-bold mb-1">Enterprise</div>
         <div className="text-[13px] mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>Unlimited schools · Unlimited users · Priority support</div>
@@ -502,7 +504,7 @@ function BillingSection() {
             <div className="flex items-center gap-4">
               <span className="text-[13px] font-semibold" style={{ color: "#111827" }}>₦{inv.amount.toLocaleString()}</span>
               <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: "#ecfdf5", color: "#059669" }}>{inv.status}</span>
-              <button onClick={() => void adminApi.downloadInvoice(inv.id)} className="text-[12px] font-medium" style={{ color: "#4f46e5" }}>Download</button>
+              <button onClick={() => void adminApi.downloadInvoice(inv.id)} className="text-[12px] font-medium" style={{ color: "#570000" }}>Download</button>
             </div>
           </div>
         ))}
@@ -629,7 +631,7 @@ function ApiSection() {
         onClick={handleGenerate}
         disabled={generating}
         className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium border transition-colors hover:bg-gray-50 disabled:opacity-50"
-        style={{ borderColor: "#e5e7eb", color: "#4f46e5" }}
+        style={{ borderColor: "#e5e7eb", color: "#570000" }}
       >
         {generating ? <Loader2 size={15} className="animate-spin" /> : <Key size={15} />} Generate New API Key
       </button>
@@ -653,7 +655,7 @@ function ApiSection() {
                 type="checkbox"
                 checked={webhook.events.includes(event)}
                 onChange={() => toggleEvent(event)}
-                className="w-4 h-4 accent-indigo-600"
+                className="w-4 h-4 accent-[#570000]"
               />
               <span className="font-mono text-[12px]" style={{ color: "#374151" }}>{event}</span>
             </label>
@@ -709,8 +711,8 @@ export default function SettingsPage() {
                   onClick={() => setActiveTab(id)}
                   className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all text-left"
                   style={{
-                    color: activeTab === id ? "#4f46e5" : "#6b7280",
-                    background: activeTab === id ? "#eef2ff" : "transparent",
+                    color: activeTab === id ? "#570000" : "#6b7280",
+                    background: activeTab === id ? "#FFF8F6" : "transparent",
                     fontFamily: "'Inter',sans-serif",
                   }}
                 >

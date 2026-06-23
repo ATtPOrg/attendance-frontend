@@ -9,13 +9,13 @@ import { adminApi } from "@/lib/api";
 import { useApi } from "@/hooks/useApi";
 import { LoadingState, ErrorState } from "@/components/ui/Async";
 import { useAuthStore } from "@/stores/authStore";
-import { School, Users, BookOpen, TrendingUp, Clock, ArrowUpRight } from "lucide-react";
+import { School, Users, BookOpen, TrendingUp, Clock, ArrowUpRight, ArrowRight, Ticket, PauseCircle } from "lucide-react";
 
-const activityIcons: Record<string, string> = {
-  onboard: "🏫",
-  upgrade: "⬆️",
-  ticket: "🎫",
-  suspend: "⏸️",
+const activityIcons: Record<string, React.ElementType> = {
+  onboard: School,
+  upgrade: ArrowUpRight,
+  ticket: Ticket,
+  suspend: PauseCircle,
 };
 
 export default function DashboardPage() {
@@ -52,8 +52,8 @@ export default function DashboardPage() {
 
   const o = overview.data;
   const statCards = [
-    { label: "Total Schools", value: o.totalSchools.toLocaleString(), change: o.schoolsChange, icon: School, color: "#4f46e5", bg: "#eef2ff" },
-    { label: "Total Students", value: o.totalStudents.toLocaleString(), change: o.studentsChange, icon: Users, color: "#7c3aed", bg: "#f5f3ff" },
+    { label: "Total Schools", value: o.totalSchools.toLocaleString(), change: o.schoolsChange, icon: School, color: "#570000", bg: "#F0D5CE" },
+    { label: "Total Students", value: o.totalStudents.toLocaleString(), change: o.studentsChange, icon: Users, color: "#570000", bg: "#F0D5CE" },
     { label: "Active Courses", value: o.activeCourses.toLocaleString(), change: o.coursesChange, icon: BookOpen, color: "#0891b2", bg: "#ecfeff" },
     { label: "Avg Attendance", value: `${o.avgAttendance}%`, change: o.attendanceChange, icon: TrendingUp, color: "#059669", bg: "#ecfdf5" },
   ];
@@ -72,10 +72,10 @@ export default function DashboardPage() {
         {/* Welcome banner */}
         <div
           className="rounded-xl px-8 py-6"
-          style={{ background: "linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)" }}
+          style={{ background: "linear-gradient(135deg, #570000 0%, #3D0000 100%)" }}
         >
           <h2 className="text-[20px] font-bold text-white mb-1">Welcome back, {user?.name ?? "Admin"}</h2>
-          <p className="text-[14px] text-indigo-200">
+          <p className="text-[14px] text-[#9B6060]">
             Here&apos;s what&apos;s happening across all your institutions today.
           </p>
         </div>
@@ -112,8 +112,8 @@ export default function DashboardPage() {
               <AreaChart data={trend.data ?? []}>
                 <defs>
                   <linearGradient id="colorAtt" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.2} />
-                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#570000" stopOpacity={0.2} />
+                    <stop offset="95%" stopColor="#570000" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
@@ -121,7 +121,7 @@ export default function DashboardPage() {
                 <YAxis domain={[70, 100]} tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 12 }} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Area type="monotone" dataKey="attendance" name="Attendance %" stroke="#4f46e5" strokeWidth={2} fill="url(#colorAtt)" />
+                <Area type="monotone" dataKey="attendance" name="Attendance %" stroke="#570000" strokeWidth={2} fill="url(#colorAtt)" />
                 <Area type="monotone" dataKey="target" name="Target" stroke="#d1d5db" strokeWidth={1.5} strokeDasharray="4 4" fill="none" />
               </AreaChart>
             </ResponsiveContainer>
@@ -137,7 +137,7 @@ export default function DashboardPage() {
                 <XAxis dataKey="dept" tick={{ fontSize: 10, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
                 <YAxis domain={[60, 100]} tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} />
                 <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #e5e7eb", fontSize: 12 }} />
-                <Bar dataKey="attendance" fill="#4f46e5" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="attendance" fill="#570000" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -153,10 +153,10 @@ export default function DashboardPage() {
               {(activity.data ?? []).map((item) => (
                 <div key={item.id} className="flex items-start gap-3 pb-4 border-b last:border-0" style={{ borderColor: "#f3f4f6" }}>
                   <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-[16px] flex-shrink-0"
+                    className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
                     style={{ background: "#f3f4f6" }}
                   >
-                    {activityIcons[item.type] ?? "•"}
+                    {(() => { const Icon = activityIcons[item.type]; return Icon ? <Icon size={15} color="#6b7280" /> : <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />; })()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="text-[13px] font-medium" style={{ color: "#111827" }}>{item.action}</div>
@@ -191,8 +191,8 @@ export default function DashboardPage() {
                     </span>
                   </div>
                   <div className="text-[26px] font-bold" style={{ color: p.color }}>{p.count}</div>
-                  <button className="text-[12px] font-medium mt-1" style={{ color: p.color }}>
-                    Review now →
+                  <button className="flex items-center gap-1 text-[12px] font-medium mt-1" style={{ color: p.color }}>
+                    Review now <ArrowRight size={12} />
                   </button>
                 </div>
               ))}
@@ -207,8 +207,8 @@ export default function DashboardPage() {
               <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Onboarded Schools</h3>
               <p className="text-[12px]" style={{ color: "#9ca3af" }}>All institutions on the platform</p>
             </div>
-            <Link href="/dashboard/schools" className="text-[13px] font-medium" style={{ color: "#4f46e5" }}>
-              View all →
+            <Link href="/dashboard/schools" className="flex items-center gap-1 text-[13px] font-medium" style={{ color: "#570000" }}>
+              View all <ArrowRight size={13} />
             </Link>
           </div>
           <div className="divide-y" style={{ borderColor: "#f3f4f6" }}>
@@ -216,7 +216,7 @@ export default function DashboardPage() {
               <div key={school.id} className="flex items-center gap-4 px-6 py-4">
                 <div
                   className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0"
-                  style={{ background: "#4f46e5" }}
+                  style={{ background: "#570000" }}
                 >
                   {school.shortName.charAt(0)}
                 </div>

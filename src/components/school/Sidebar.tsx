@@ -49,7 +49,7 @@ export default function SchoolSidebar() {
       >
         {/* School identity */}
         <div className="flex items-center gap-3 px-5 py-4 border-b" style={{ borderColor: "#e5e7eb" }}>
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-[13px] font-bold flex-shrink-0" style={{ background: "#0f172a" }}>
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-[13px] font-bold flex-shrink-0" style={{ background: "#570000" }}>
             {initials}
           </div>
           <div className="min-w-0">
@@ -74,8 +74,8 @@ export default function SchoolSidebar() {
                   onClick={close}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-150"
                   style={{
-                    color: active ? "#4f46e5" : "#6b7280",
-                    background: active ? "#eef2ff" : "transparent",
+                    color: active ? "#570000" : "#6b7280",
+                    background: active ? "#FFF8F6" : "transparent",
                     fontFamily: "'Inter',sans-serif",
                   }}
                 >
@@ -93,7 +93,7 @@ export default function SchoolSidebar() {
             href="/school/settings"
             onClick={close}
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[13px] font-medium transition-all duration-150"
-            style={{ color: pathname === "/school/settings" ? "#4f46e5" : "#6b7280", background: pathname === "/school/settings" ? "#eef2ff" : "transparent", fontFamily: "'Inter',sans-serif" }}
+            style={{ color: pathname === "/school/settings" ? "#570000" : "#6b7280", background: pathname === "/school/settings" ? "#FFF8F6" : "transparent", fontFamily: "'Inter',sans-serif" }}
           >
             <Settings size={17} strokeWidth={1.8} />
             Settings
@@ -109,7 +109,7 @@ export default function SchoolSidebar() {
 
           {/* Admin chip */}
           <div className="mt-3 flex items-center gap-2.5 px-3 py-3 rounded-lg" style={{ background: "#f9fafb" }}>
-            <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style={{ background: "#4f46e5" }}>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0" style={{ background: "#570000" }}>
               {admin?.name?.charAt(0) ?? "A"}
             </div>
             <div className="min-w-0">
@@ -122,7 +122,7 @@ export default function SchoolSidebar() {
           <div className="mt-2 px-3 py-2 rounded-lg flex items-center gap-2" style={{ background: "#f1f5f9" }}>
             <Image src="/logo_new.png" alt="ATP-Go" width={16} height={16} className="rounded" />
             <span className="text-[10px] tracking-wider" style={{ fontFamily: "'Inter',sans-serif", color: "#94a3b8" }}>
-              Powered by <strong style={{ color: "#4f46e5" }}>ATP-Go</strong>
+              Powered by <strong style={{ color: "#570000" }}>ATP-Go</strong>
             </span>
           </div>
         </div>

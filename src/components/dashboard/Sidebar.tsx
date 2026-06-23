@@ -66,8 +66,8 @@ export default function Sidebar() {
                   onClick={close}
                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all duration-150"
                   style={{
-                    color: active ? "#4f46e5" : "#6b7280",
-                    background: active ? "#eef2ff" : "transparent",
+                    color: active ? "#570000" : "#6b7280",
+                    background: active ? "#FFF8F6" : "transparent",
                     fontFamily: "'Inter',sans-serif",
                   }}
                 >
@@ -103,7 +103,7 @@ export default function Sidebar() {
           <div className="mt-3 flex items-center gap-3 px-3 py-3 rounded-lg" style={{ background: "#f9fafb" }}>
             <div
               className="w-8 h-8 rounded-full flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0"
-              style={{ background: "#4f46e5" }}
+              style={{ background: "#570000" }}
             >
               {user?.name?.charAt(0) ?? "A"}
             </div>

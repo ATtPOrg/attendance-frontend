@@ -2,10 +2,18 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ArrowRight } from "lucide-react";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const sectionHref = (label: string) => {
+    const id = label.toLowerCase().replace(/\s+/g, "-");
+    return pathname === "/" ? `#${id}` : `/#${id}`;
+  };
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -39,7 +47,7 @@ export default function Navbar() {
           {["Features", "How It Works", "Pricing", "Contact"].map((item) => (
             <li key={item}>
               <a
-                href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+                href={sectionHref(item)}
                 className="text-[12px] uppercase tracking-[0.1em] transition-colors duration-200 hover:text-[var(--charcoal)]"
                 style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}
               >
@@ -62,13 +70,13 @@ export default function Navbar() {
           >
             Sign In
           </Link>
-          <a
-            href="#waitlist"
+          <Link
+            href="/waitlist/demo"
             className="text-[12px] uppercase tracking-[0.1em] px-5 py-2.5 text-white transition-all duration-200"
             style={{ fontFamily: "var(--font-dm-mono)", background: "var(--charcoal)" }}
           >
-            Get Demo →
-          </a>
+            <span className="flex items-center gap-1.5">Get Demo <ArrowRight size={13} /></span>
+          </Link>
         </div>
 
         {/* Hamburger — animates to ✕ when open */}
@@ -108,7 +116,7 @@ export default function Navbar() {
           {["Features", "How It Works", "Pricing", "Contact"].map((item) => (
             <a
               key={item}
-              href={`#${item.toLowerCase().replace(/\s+/g, "-")}`}
+              href={sectionHref(item)}
               onClick={() => setMenuOpen(false)}
               className="text-[13px] uppercase tracking-[0.1em] py-3 border-b"
               style={{ fontFamily: "var(--font-dm-mono)", color: "var(--charcoal)", borderColor: "var(--line)" }}
@@ -122,7 +130,7 @@ export default function Navbar() {
             className="text-[13px] uppercase tracking-[0.1em] py-3"
             style={{ fontFamily: "var(--font-dm-mono)", color: "var(--accent)" }}
           >
-            Sign In →
+            <span className="flex items-center gap-1.5">Sign In <ArrowRight size={13} /></span>
           </Link>
         </div>
       </div>

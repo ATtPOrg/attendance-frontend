@@ -20,9 +20,9 @@ export default function Page() {
               <span className="text-[14px] font-medium" style={{ color: "#374151" }}>View all schools</span>
               <ArrowRight size={16} color="#9ca3af" />
             </Link>
-            <Link href="/school/login" className="flex items-center justify-between px-4 py-3 rounded-xl border hover:bg-indigo-50 transition-colors" style={{ borderColor: "#e5e7eb" }}>
-              <span className="text-[14px] font-medium" style={{ color: "#4f46e5" }}>School Admin portal</span>
-              <ArrowRight size={16} color="#4f46e5" />
+            <Link href="/school/login" className="flex items-center justify-between px-4 py-3 rounded-xl border hover:bg-[#FFF8F6] transition-colors" style={{ borderColor: "#e5e7eb" }}>
+              <span className="text-[14px] font-medium" style={{ color: "#570000" }}>School Admin portal</span>
+              <ArrowRight size={16} color="#570000" />
             </Link>
           </div>
         </div>

@@ -4,7 +4,7 @@ import { useSchoolAuthStore } from "@/stores/schoolAuthStore";
 import { schoolApi } from "@/lib/api";
 import { useApi } from "@/hooks/useApi";
 import { LoadingState, ErrorState } from "@/components/ui/Async";
-import { GraduationCap, Users, BookOpen, TrendingUp, AlertTriangle, CheckCircle2, XCircle } from "lucide-react";
+import { GraduationCap, Users, BookOpen, TrendingUp, AlertTriangle, CheckCircle2, XCircle, ArrowRight } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 export default function SchoolDashboardPage() {
@@ -40,13 +40,13 @@ export default function SchoolDashboardPage() {
       />
       <div className="p-8 space-y-6">
         {/* Welcome banner */}
-        <div className="rounded-2xl p-6 text-white relative overflow-hidden" style={{ background: "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)" }}>
+        <div className="rounded-2xl p-6 text-white relative overflow-hidden" style={{ background: "linear-gradient(135deg, #570000 0%, #3D0000 100%)" }}>
           <div className="absolute right-8 top-0 bottom-0 flex items-center select-none pointer-events-none" style={{
             fontFamily: "var(--font-fraunces)",
             fontSize: "120px",
             fontWeight: 100,
             color: "transparent",
-            WebkitTextStroke: "1px rgba(99,102,241,0.2)",
+            WebkitTextStroke: "1px rgba(255,255,255,0.08)",
           }}>
             {shortName}
           </div>
@@ -60,8 +60,8 @@ export default function SchoolDashboardPage() {
         {/* Stat cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Total Students", value: stats.totalStudents.toLocaleString(), icon: GraduationCap, color: "#4f46e5", bg: "#eef2ff" },
-            { label: "Professors", value: stats.totalProfessors.toLocaleString(), icon: Users, color: "#7c3aed", bg: "#f5f3ff" },
+            { label: "Total Students", value: stats.totalStudents.toLocaleString(), icon: GraduationCap, color: "#570000", bg: "#F0D5CE" },
+            { label: "Professors", value: stats.totalProfessors.toLocaleString(), icon: Users, color: "#570000", bg: "#F0D5CE" },
             { label: "Active Courses", value: stats.activeCourses.toLocaleString(), icon: BookOpen, color: "#059669", bg: "#ecfdf5" },
             { label: "Avg Attendance", value: `${stats.avgAttendance.toFixed(1)}%`, icon: TrendingUp, color: stats.avgAttendance >= 85 ? "#059669" : "#d97706", bg: "#fffbeb" },
           ].map(({ label, value, icon: Icon, color, bg }) => (
@@ -86,7 +86,7 @@ export default function SchoolDashboardPage() {
                 <p className="text-[12px]" style={{ color: "#9ca3af" }}>6-month average for {shortName}</p>
               </div>
               <div className="flex items-center gap-4 text-[11px]" style={{ color: "#9ca3af" }}>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: "#4f46e5" }} />Actual</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: "#570000" }} />Actual</span>
                 <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: "#e5e7eb" }} />Target</span>
               </div>
             </div>
@@ -94,8 +94,8 @@ export default function SchoolDashboardPage() {
               <AreaChart data={trend} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="schoolAtt" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.15} />
-                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#570000" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#570000" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
@@ -103,7 +103,7 @@ export default function SchoolDashboardPage() {
                 <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} domain={[60, 100]} />
                 <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #f3f4f6", fontSize: 12 }} />
                 <Area type="monotone" dataKey="target" stroke="#e5e7eb" strokeWidth={2} strokeDasharray="4 3" fill="none" name="Target" />
-                <Area type="monotone" dataKey="attendance" stroke="#4f46e5" strokeWidth={2} fill="url(#schoolAtt)" name="Attendance" />
+                <Area type="monotone" dataKey="attendance" stroke="#570000" strokeWidth={2} fill="url(#schoolAtt)" name="Attendance" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -144,7 +144,7 @@ export default function SchoolDashboardPage() {
         <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
           <div className="px-6 py-4 border-b flex items-center justify-between" style={{ borderColor: "#f3f4f6" }}>
             <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Recent Sessions</h3>
-            <a href="/school/attendance" className="text-[12px] font-medium" style={{ color: "#4f46e5" }}>View all →</a>
+            <a href="/school/attendance" className="flex items-center gap-1 text-[12px] font-medium" style={{ color: "#570000" }}>View all <ArrowRight size={13} /></a>
           </div>
           {recentSessions.length > 0 ? (
             <table className="w-full text-[13px]" style={{ fontFamily: "'Inter',sans-serif" }}>

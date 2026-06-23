@@ -8,6 +8,7 @@ interface SchoolAuthStore {
   token: string | null;
   refreshToken: string | null;
   login: (email: string, password: string) => Promise<void>;
+  refresh: () => Promise<boolean>;
   logout: () => void;
   isAuthenticated: () => boolean;
 }
@@ -22,6 +23,19 @@ export const useSchoolAuthStore = create<SchoolAuthStore>()(
       login: async (email: string, password: string) => {
         const { token, refreshToken, admin } = await schoolApi.login(email, password);
         set({ token, refreshToken, admin });
+      },
+
+      refresh: async () => {
+        const { refreshToken } = get();
+        if (!refreshToken) return false;
+        try {
+          const result = await schoolApi.refresh(refreshToken);
+          set({ token: result.token, refreshToken: result.refreshToken, admin: result.admin });
+          return true;
+        } catch {
+          set({ admin: null, token: null, refreshToken: null });
+          return false;
+        }
       },
 
       logout: () => {

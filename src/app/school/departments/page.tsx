@@ -10,7 +10,7 @@ import { Search, Plus, Pencil, Trash2, Building2, Loader2 } from "lucide-react";
 import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
-const FACULTY_COLORS = ["#3b82f6", "#7c3aed", "#ef4444", "#f97316", "#10b981", "#8b5cf6"];
+const FACULTY_COLORS = ["#9B6060", "#3D0000", "#ef4444", "#f97316", "#10b981", "#570000"];
 
 function FacultyModal({ faculty, open, onClose, onSave, colorIndex }: { faculty: Faculty | null; open: boolean; onClose: () => void; onSave: (f: Partial<Faculty>) => Promise<void>; colorIndex: number }) {
   const isNew = !faculty?.id;
@@ -44,7 +44,7 @@ function FacultyModal({ faculty, open, onClose, onSave, colorIndex }: { faculty:
         </FormField>
         <FormField label="Header Color" id="fcolor">
           <div className="flex items-center gap-3">
-            <input type="color" value={form.color ?? "#3b82f6"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" style={{ borderColor: "#e5e7eb" }} />
+            <input type="color" value={form.color ?? "#9B6060"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" style={{ borderColor: "#e5e7eb" }} />
             <div className="flex gap-2">
               {FACULTY_COLORS.map((c) => (
                 <button key={c} onClick={() => set("color", c)} className="w-6 h-6 rounded-full border-2 transition-all" style={{ background: c, borderColor: form.color === c ? "#111827" : "transparent" }} />
@@ -190,7 +190,7 @@ export default function SchoolDepartmentsPage() {
                 onClick={() => setActiveView(v)}
                 className="px-5 py-2 text-[13px] font-medium capitalize transition-colors"
                 style={{
-                  background: activeView === v ? "#0f172a" : "#fff",
+                  background: activeView === v ? "#570000" : "#fff",
                   color: activeView === v ? "#fff" : "#6b7280",
                   fontFamily: "'Inter',sans-serif",
                 }}
@@ -211,7 +211,7 @@ export default function SchoolDepartmentsPage() {
             <button
               onClick={() => activeView === "faculties" ? setAddFacultyOpen(true) : setAddDeptOpen(true)}
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium"
-              style={{ background: "#0f172a", fontFamily: "'Inter',sans-serif" }}
+              style={{ background: "#570000", fontFamily: "'Inter',sans-serif" }}
             >
               <Plus size={15} /> Add {activeView === "faculties" ? "Faculty" : "Department"}
             </button>
@@ -253,7 +253,7 @@ export default function SchoolDepartmentsPage() {
               <div className="bg-white rounded-xl border py-16 text-center" style={{ borderColor: "#e5e7eb" }}>
                 <Building2 size={32} color="#d1d5db" className="mx-auto mb-3" />
                 <p className="text-[14px]" style={{ color: "#9ca3af" }}>No faculties yet.</p>
-                <button onClick={() => setAddFacultyOpen(true)} className="mt-3 text-[13px] font-medium" style={{ color: "#4f46e5" }}>+ Add first faculty</button>
+                <button onClick={() => setAddFacultyOpen(true)} className="mt-3 text-[13px] font-medium" style={{ color: "#570000" }}>+ Add first faculty</button>
               </div>
             )}
           </>
@@ -288,7 +288,7 @@ export default function SchoolDepartmentsPage() {
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex gap-1.5">
-                          <button onClick={() => setEditDept(d)} className="p-1.5 rounded-lg hover:bg-indigo-50"><Pencil size={13} color="#4f46e5" /></button>
+                          <button onClick={() => setEditDept(d)} className="p-1.5 rounded-lg hover:bg-[#FFF8F6]"><Pencil size={13} color="#570000" /></button>
                           <button onClick={() => setDeleteDept(d)} className="p-1.5 rounded-lg hover:bg-red-50"><Trash2 size={13} color="#ef4444" /></button>
                         </div>
                       </td>

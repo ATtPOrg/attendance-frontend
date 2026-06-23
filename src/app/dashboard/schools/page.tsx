@@ -17,8 +17,8 @@ const statusColors = {
 };
 
 const planColors = {
-  Enterprise: { bg: "#eef2ff", text: "#4f46e5" },
-  Professional: { bg: "#f5f3ff", text: "#7c3aed" },
+  Enterprise: { bg: "#F0D5CE", text: "#570000" },
+  Professional: { bg: "#F0D5CE", text: "#570000" },
   Starter: { bg: "#f0fdf4", text: "#16a34a" },
 };
 
@@ -195,8 +195,8 @@ export default function SchoolsPage() {
                 onClick={() => setFilter(f)}
                 className="px-4 py-1.5 rounded-full text-[12px] font-medium capitalize transition-all"
                 style={{
-                  background: filter === f ? "#4f46e5" : "#f3f4f6",
-                  color: filter === f ? "white" : "#6b7280",
+                  background: filter === f ? "#FED65B" : "#f3f4f6",
+                  color: filter === f ? "#570000" : "#6b7280",
                   fontFamily: "'Inter',sans-serif",
                 }}
               >
@@ -218,7 +218,7 @@ export default function SchoolsPage() {
             <Link
               href="/dashboard/schools/new"
               className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium"
-              style={{ background: "#4f46e5", fontFamily: "'Inter',sans-serif" }}
+              style={{ background: "#FED65B", color: "#570000", fontFamily: "'Inter',sans-serif" }}
             >
               <Plus size={15} />
               Add School
@@ -235,7 +235,7 @@ export default function SchoolsPage() {
               <div key={school.id} className="bg-white rounded-xl border overflow-hidden hover:shadow-md transition-shadow" style={{ borderColor: "#e5e7eb" }}>
                 <div className="px-5 py-4 border-b flex items-center justify-between" style={{ borderColor: "#f3f4f6" }}>
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-[14px] font-bold" style={{ background: "#4f46e5" }}>
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-[14px] font-bold" style={{ background: "#570000" }}>
                       {school.shortName.slice(0, 2)}
                     </div>
                     <div>
@@ -303,7 +303,7 @@ export default function SchoolsPage() {
         {filtered.length === 0 && (
           <div className="text-center py-16">
             <p className="text-[15px]" style={{ color: "#9ca3af" }}>No schools found matching your search.</p>
-            <Link href="/dashboard/schools/new" className="text-[14px] font-medium mt-2 block" style={{ color: "#4f46e5" }}>
+            <Link href="/dashboard/schools/new" className="text-[14px] font-medium mt-2 block" style={{ color: "#570000" }}>
               + Onboard a new school
             </Link>
           </div>
