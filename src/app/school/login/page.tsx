@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -23,9 +24,11 @@ export default function SchoolLoginPage() {
       await login(email, password);
       router.push("/school/dashboard");
     } catch (err) {
-      setError(err instanceof Error && err.message
-        ? err.message
-        : "No institution found for these credentials. Check your email and try again.");
+      setError(
+        err instanceof Error && err.message
+          ? err.message
+          : "No institution found for these credentials. Check your email and try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -34,39 +37,46 @@ export default function SchoolLoginPage() {
   return (
     <div className="min-h-screen grid md:grid-cols-2" style={{ background: "var(--paper)" }}>
       {/* Left panel */}
-      <div className="hidden md:flex flex-col justify-between p-12 relative overflow-hidden" style={{ background: "#0f172a" }}>
-        <div className="absolute inset-0 opacity-[0.06]" style={{
-          backgroundImage: "linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)",
-          backgroundSize: "40px 40px",
-        }} />
+      <div className="hidden md:flex flex-col justify-between p-12 relative overflow-hidden bg-slate-900">
+        <div 
+          className="absolute inset-0 opacity-[0.06]" 
+          style={{
+            backgroundImage: "linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }} 
+        />
 
         {/* Watermark */}
-        <div className="absolute right-6 bottom-20 select-none pointer-events-none leading-none" style={{
-          fontFamily: "var(--font-fraunces)",
-          fontSize: "180px",
-          fontWeight: 100,
-          color: "transparent",
-          WebkitTextStroke: "1px rgba(99,102,241,0.18)",
-          letterSpacing: "-0.05em",
-        }}>
+        <div 
+          className="absolute right-6 bottom-20 select-none pointer-events-none leading-none text-transparent" 
+          style={{
+            fontFamily: "var(--font-fraunces)",
+            fontSize: "180px",
+            fontWeight: 100,
+            WebkitTextStroke: "1px rgba(99,102,241,0.18)",
+            letterSpacing: "-0.05em",
+          }}
+        >
           SCH
         </div>
 
         <Link href="/" className="relative z-10 flex items-center gap-2.5">
           <Image src="/logo_new.png" alt="ATP-Go" width={32} height={32} className="rounded-lg" />
-          <span className="font-bold text-[14px]" style={{ fontFamily: "var(--font-syne)", color: "#e2e8f0" }}>
+          <span className="font-bold text-[14px] text-slate-200" style={{ fontFamily: "var(--font-syne)" }}>
             ATP<span style={{ color: "var(--accent)" }}>-Go</span>
           </span>
         </Link>
 
         <div className="relative z-10">
-          <h2 className="mb-4 leading-tight tracking-tight" style={{
-            fontFamily: "var(--font-syne)",
-            fontSize: "clamp(28px,3vw,46px)",
-            fontWeight: 800,
-            color: "#f1f5f9",
-            letterSpacing: "-0.03em",
-          }}>
+          <h2 
+            className="mb-4 leading-tight tracking-tight text-slate-100" 
+            style={{
+              fontFamily: "var(--font-syne)",
+              fontSize: "clamp(28px,3vw,46px)",
+              fontWeight: 800,
+              letterSpacing: "-0.03em",
+            }}
+          >
             School Admin<br />
             <em style={{ fontFamily: "var(--font-fraunces)", fontWeight: 300, fontStyle: "italic", color: "var(--accent)" }}>
               Portal.
@@ -85,7 +95,7 @@ export default function SchoolLoginPage() {
               <div key={item.label} className="flex items-start gap-3">
                 <span className="mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "var(--accent)" }} />
                 <div>
-                  <div className="text-[13px] font-semibold" style={{ color: "#e2e8f0" }}>{item.label}</div>
+                  <div className="text-[13px] font-semibold text-slate-200">{item.label}</div>
                   <div className="text-[11px]" style={{ color: "rgba(226,232,240,0.4)" }}>{item.desc}</div>
                 </div>
               </div>
@@ -109,13 +119,16 @@ export default function SchoolLoginPage() {
           </Link>
 
           <div className="section-label mb-2">School Portal</div>
-          <h1 className="mb-1 tracking-tight" style={{
-            fontFamily: "var(--font-syne)",
-            fontSize: "28px",
-            fontWeight: 800,
-            color: "var(--charcoal)",
-            letterSpacing: "-0.02em",
-          }}>
+          <h1 
+            className="mb-1 tracking-tight" 
+            style={{
+              fontFamily: "var(--font-syne)",
+              fontSize: "28px",
+              fontWeight: 800,
+              color: "var(--charcoal)",
+              letterSpacing: "-0.02em",
+            }}
+          >
             Sign in
           </h1>
           <p className="text-[13px] mb-8" style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}>
@@ -134,7 +147,8 @@ export default function SchoolLoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full bg-transparent border-b pb-2 text-[14px] outline-none transition-colors"
+                disabled={loading}
+                className="w-full bg-transparent border-b pb-2 text-[14px] outline-none transition-colors focus:border-slate-400 disabled:opacity-50"
                 style={{ fontFamily: "var(--font-dm-mono)", color: "var(--charcoal)", borderColor: "var(--line)" }}
               />
             </div>
@@ -151,22 +165,33 @@ export default function SchoolLoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  className="w-full bg-transparent border-b pb-2 text-[14px] outline-none transition-colors pr-8"
+                  disabled={loading}
+                  className="w-full bg-transparent border-b pb-2 text-[14px] outline-none transition-colors pr-8 focus:border-slate-400 disabled:opacity-50"
                   style={{ fontFamily: "var(--font-dm-mono)", color: "var(--charcoal)", borderColor: "var(--line)" }}
                 />
-                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-0 top-0">
+                <button 
+                  type="button" 
+                  onClick={() => setShowPw(!showPw)} 
+                  className="absolute right-0 top-0 disabled:opacity-50"
+                  disabled={loading}
+                  aria-label={showPw ? "Hide password" : "Show password"}
+                >
                   {showPw ? <EyeOff size={16} color="#9ca3af" /> : <Eye size={16} color="#9ca3af" />}
                 </button>
               </div>
             </div>
 
-            {error && <p className="text-[12px]" style={{ fontFamily: "var(--font-dm-mono)", color: "#ef4444" }}>{error}</p>}
+            {error && (
+              <p className="text-[12px] text-red-500" style={{ fontFamily: "var(--font-dm-mono)" }}>
+                {error}
+              </p>
+            )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 text-[12px] uppercase tracking-[0.12em] text-white transition-opacity duration-200 disabled:opacity-60"
-              style={{ fontFamily: "var(--font-dm-mono)", background: "#0f172a" }}
+              className="w-full py-3.5 text-[12px] uppercase tracking-[0.12em] text-white bg-slate-900 transition-opacity duration-200 disabled:opacity-60"
+              style={{ fontFamily: "var(--font-dm-mono)" }}
             >
               {loading ? "Signing in..." : "Sign In →"}
             </button>
@@ -175,7 +200,9 @@ export default function SchoolLoginPage() {
           <div className="mt-8 pt-6 border-t" style={{ borderColor: "var(--line)" }}>
             <p className="text-[11px] text-center" style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}>
               Not onboarded yet?{" "}
-              <Link href="/#waitlist" style={{ color: "var(--accent)" }}>Join the waitlist →</Link>
+              <Link href="/waitlist/demo" style={{ color: "var(--accent)" }}>
+                Join the waitlist →
+              </Link>
             </p>
           </div>
         </div>

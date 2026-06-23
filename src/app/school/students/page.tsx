@@ -174,7 +174,7 @@ export default function SchoolStudentsPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total Students", value: students.length.toLocaleString(), color: "#4f46e5" },
+            { label: "Total Students", value: students.length.toLocaleString(), color: "#570000" },
             { label: "Active", value: students.filter((s) => s.status === "active").length, color: "#059669" },
             { label: "Suspended", value: students.filter((s) => s.status === "suspended").length, color: "#dc2626" },
             { label: "Avg Attendance", value: `${avgAttendance}%`, color: "#d97706" },
@@ -203,7 +203,7 @@ export default function SchoolStudentsPage() {
               <option value="suspended">Suspended</option>
             </select>
           </div>
-          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#0f172a", fontFamily: "'Inter',sans-serif" }}>
+          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#570000", fontFamily: "'Inter',sans-serif" }}>
             <Plus size={15} /> Enroll Student
           </button>
         </div>
@@ -239,7 +239,7 @@ export default function SchoolStudentsPage() {
                   <tr key={s.id} className="border-b hover:bg-gray-50 transition-colors" style={{ borderColor: i === filtered.length - 1 ? "transparent" : "#f3f4f6" }}>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style={{ background: "#4f46e5" }}>
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style={{ background: "#570000" }}>
                           {s.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
                         </div>
                         <span className="font-medium" style={{ color: "#111827" }}>{s.name}</span>
@@ -248,7 +248,7 @@ export default function SchoolStudentsPage() {
                     <td className="px-5 py-3.5 font-mono text-[12px]" style={{ color: "#6b7280" }}>{s.matricNo}</td>
                     <td className="px-5 py-3.5" style={{ color: "#374151" }}>{s.department}</td>
                     <td className="px-5 py-3.5">
-                      <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: "#eef2ff", color: "#4f46e5" }}>{s.level}L</span>
+                      <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: "#F0D5CE", color: "#570000" }}>{s.level}L</span>
                     </td>
                     <td className="px-5 py-3.5"><AttendanceBadge rate={s.attendanceRate} /></td>
                     <td className="px-5 py-3.5">
@@ -259,7 +259,7 @@ export default function SchoolStudentsPage() {
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex gap-2">
-                        <button onClick={() => setEditTarget(s)} className="p-1.5 rounded-lg hover:bg-indigo-50 transition-colors"><Pencil size={13} color="#4f46e5" /></button>
+                        <button onClick={() => setEditTarget(s)} className="p-1.5 rounded-lg hover:bg-[#FFF8F6] transition-colors"><Pencil size={13} color="#570000" /></button>
                         <button onClick={() => setDeleteTarget(s)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors"><Trash2 size={13} color="#ef4444" /></button>
                       </div>
                     </td>
@@ -272,7 +272,7 @@ export default function SchoolStudentsPage() {
             <div className="py-16 text-center">
               <GraduationCap size={32} color="#d1d5db" className="mx-auto mb-3" />
               <p className="text-[14px]" style={{ color: "#9ca3af" }}>No students found.</p>
-              {students.length === 0 && <button onClick={() => setAddOpen(true)} className="mt-2 text-[13px] font-medium" style={{ color: "#4f46e5" }}>Enroll first student</button>}
+              {students.length === 0 && <button onClick={() => setAddOpen(true)} className="mt-2 text-[13px] font-medium" style={{ color: "#570000" }}>Enroll first student</button>}
             </div>
           )}
           <div className="px-5 py-3 border-t flex items-center justify-between" style={{ borderColor: "#f3f4f6", background: "#f9fafb" }}>

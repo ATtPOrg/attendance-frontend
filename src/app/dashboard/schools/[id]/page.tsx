@@ -12,7 +12,7 @@ import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
 const tabs = ["Overview", "Faculties", "Departments", "Professors", "Students", "Courses"];
-const FACULTY_COLORS = ["#3b82f6", "#7c3aed", "#ef4444", "#f97316", "#10b981", "#8b5cf6"];
+const FACULTY_COLORS = ["#9B6060", "#3D0000", "#ef4444", "#f97316", "#10b981", "#570000"];
 const LEVELS = ["100", "200", "300", "400", "500", "600"];
 
 function SaveButton({ saving, children, onClick }: { saving: boolean; children: React.ReactNode; onClick: () => void }) {
@@ -26,7 +26,7 @@ function SaveButton({ saving, children, onClick }: { saving: boolean; children: 
 // ─── Faculty modal ────────────────────────────────────────────────────────────
 function FacultyModal({ faculty, open, onClose, onSave }: { faculty: Faculty | null; open: boolean; onClose: () => void; onSave: (f: Partial<Faculty>) => Promise<void> }) {
   const isNew = !faculty?.id;
-  const [form, setForm] = useState<Partial<Faculty>>(faculty ?? { name: "", dean: "", color: "#3b82f6" });
+  const [form, setForm] = useState<Partial<Faculty>>(faculty ?? { name: "", dean: "", color: "#9B6060" });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const set = <K extends keyof Faculty>(k: K, v: Faculty[K]) => setForm((p) => ({ ...p, [k]: v }));
@@ -56,7 +56,7 @@ function FacultyModal({ faculty, open, onClose, onSave }: { faculty: Faculty | n
         </FormField>
         <FormField label="Header Color" id="fcolor">
           <div className="flex items-center gap-3">
-            <input type="color" value={form.color ?? "#3b82f6"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" style={{ borderColor: "#e5e7eb" }} />
+            <input type="color" value={form.color ?? "#9B6060"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" style={{ borderColor: "#e5e7eb" }} />
             <div className="flex gap-2">
               {FACULTY_COLORS.map((c) => (
                 <button key={c} onClick={() => set("color", c)} className="w-6 h-6 rounded-full border-2 transition-all" style={{ background: c, borderColor: form.color === c ? "#111827" : "transparent" }} />
@@ -303,7 +303,7 @@ export default function SchoolDetailPage() {
         <div className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-[18px] font-bold" style={{ background: "#4f46e5" }}>
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-[18px] font-bold" style={{ background: "#570000" }}>
                 {school.shortName.slice(0, 2)}
               </div>
               <div>
@@ -315,7 +315,7 @@ export default function SchoolDetailPage() {
               <span className="px-3 py-1 rounded-full text-[12px] font-medium" style={{ background: school.status === "active" ? "#ecfdf5" : school.status === "trial" ? "#fffbeb" : "#f3f4f6", color: school.status === "active" ? "#059669" : school.status === "trial" ? "#d97706" : "#6b7280" }}>
                 {school.status}
               </span>
-              <span className="px-3 py-1 rounded-full text-[12px] font-medium" style={{ background: "#eef2ff", color: "#4f46e5" }}>{school.plan}</span>
+              <span className="px-3 py-1 rounded-full text-[12px] font-medium" style={{ background: "#F0D5CE", color: "#570000" }}>{school.plan}</span>
             </div>
           </div>
           <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -340,7 +340,7 @@ export default function SchoolDetailPage() {
               key={t}
               onClick={() => setActiveTab(t)}
               className="px-5 py-3 text-[13px] font-medium whitespace-nowrap border-b-2 transition-all"
-              style={{ borderColor: activeTab === t ? "#4f46e5" : "transparent", color: activeTab === t ? "#4f46e5" : "#6b7280" }}
+              style={{ borderColor: activeTab === t ? "#570000" : "transparent", color: activeTab === t ? "#570000" : "#6b7280" }}
             >
               {t}
             </button>
@@ -383,7 +383,7 @@ function OverviewTab({ school }: { school: School }) {
       <div className="space-y-4">
         <div className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
           <h3 className="text-[15px] font-semibold mb-4" style={{ color: "#111827" }}>Subscription</h3>
-          <div className="rounded-lg p-5" style={{ background: "linear-gradient(135deg, #4f46e5, #7c3aed)" }}>
+          <div className="rounded-lg p-5" style={{ background: "linear-gradient(135deg, #570000, #3D0000)" }}>
             <div className="text-[11px] mb-1 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.6)" }}>{school.plan} Plan</div>
             <div className="text-[22px] font-bold text-white capitalize">{school.status}</div>
             <div className="text-[12px] mt-2" style={{ color: "rgba(255,255,255,0.6)" }}>Renews annually</div>
@@ -432,7 +432,7 @@ function FacultiesTab({ schoolId }: { schoolId: string }) {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Faculties ({faculties.length})</h3>
-        <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#4f46e5" }}>
+        <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium" style={{ background: "#FED65B", color: "#570000" }}>
           <Plus size={15} /> Add Faculty
         </button>
       </div>
@@ -526,7 +526,7 @@ function DepartmentsTab({ schoolId }: { schoolId: string }) {
             <Search size={14} color="#9ca3af" />
             <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search departments..." className="text-[13px] outline-none bg-transparent w-40" style={{ color: "#111827" }} />
           </div>
-          <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#4f46e5" }}>
+          <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium" style={{ background: "#FED65B", color: "#570000" }}>
             <Plus size={14} /> Add Department
           </button>
         </div>
@@ -560,7 +560,7 @@ function DepartmentsTab({ schoolId }: { schoolId: string }) {
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex gap-1.5">
-                      <button onClick={() => setEditTarget(d)} className="p-1.5 rounded-lg hover:bg-indigo-50 transition-colors"><Pencil size={13} color="#4f46e5" /></button>
+                      <button onClick={() => setEditTarget(d)} className="p-1.5 rounded-lg hover:bg-[#FFF8F6] transition-colors"><Pencil size={13} color="#570000" /></button>
                       <button onClick={() => setDeleteTarget(d)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors"><Trash2 size={13} color="#ef4444" /></button>
                     </div>
                   </td>
@@ -609,7 +609,7 @@ function ProfessorsTab({ schoolId, departments }: { schoolId: string; department
     <div>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Professors ({professors.length})</h3>
-        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#4f46e5" }}>
+        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium" style={{ background: "#FED65B", color: "#570000" }}>
           <Plus size={14} /> Add Professor
         </button>
       </div>
@@ -630,7 +630,7 @@ function ProfessorsTab({ schoolId, departments }: { schoolId: string; department
                   <div className="text-[11px]" style={{ color: "#9ca3af" }}>{p.email}</div>
                 </td>
                 <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{p.department}</td>
-                <td className="px-5 py-3.5 font-medium" style={{ color: "#4f46e5" }}>{p.courses}</td>
+                <td className="px-5 py-3.5 font-medium" style={{ color: "#570000" }}>{p.courses}</td>
                 <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{p.students}</td>
                 <td className="px-5 py-3.5">
                   <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: p.status === "active" ? "#ecfdf5" : "#f3f4f6", color: p.status === "active" ? "#059669" : "#6b7280" }}>{p.status}</span>
@@ -665,7 +665,7 @@ function StudentsTab({ schoolId, departments }: { schoolId: string; departments:
     <div>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Students ({students.length})</h3>
-        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#4f46e5" }}>
+        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium" style={{ background: "#FED65B", color: "#570000" }}>
           <Plus size={14} /> Add Student
         </button>
       </div>
@@ -692,7 +692,7 @@ function StudentsTab({ schoolId, departments }: { schoolId: string; departments:
                   <td className="px-5 py-3.5 font-mono text-[12px]" style={{ color: "#6b7280" }}>{s.matricNo}</td>
                   <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{s.department}</td>
                   <td className="px-5 py-3.5">
-                    <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: "#eef2ff", color: "#4f46e5" }}>{s.level}L</span>
+                    <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: "#F0D5CE", color: "#570000" }}>{s.level}L</span>
                   </td>
                   <td className="px-5 py-3.5">
                     <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full" style={{ background: rateBg, color: rateColor }}>{rate.toFixed(1)}%</span>
@@ -731,7 +731,7 @@ function CoursesTab({ schoolId, departments }: { schoolId: string; departments: 
     <div>
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Courses ({courses.length})</h3>
-        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#4f46e5" }}>
+        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium" style={{ background: "#FED65B", color: "#570000" }}>
           <Plus size={14} /> Add Course
         </button>
       </div>
@@ -752,7 +752,7 @@ function CoursesTab({ schoolId, departments }: { schoolId: string; departments: 
               return (
                 <tr key={c.id} className="border-b hover:bg-gray-50" style={{ borderColor: i === courses.length - 1 ? "transparent" : "#f3f4f6" }}>
                   <td className="px-5 py-3.5">
-                    <span className="font-mono text-[12px] font-semibold px-2 py-1 rounded" style={{ background: "#eef2ff", color: "#4f46e5" }}>{c.code}</span>
+                    <span className="font-mono text-[12px] font-semibold px-2 py-1 rounded" style={{ background: "#F0D5CE", color: "#570000" }}>{c.code}</span>
                   </td>
                   <td className="px-5 py-3.5">
                     <div className="font-medium" style={{ color: "#111827" }}>{c.title}</div>

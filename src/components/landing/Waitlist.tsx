@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { CheckCircle2, ArrowRight } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "";
 
@@ -104,7 +105,7 @@ export default function Waitlist() {
                 fontFamily: "var(--font-fraunces)",
                 fontWeight: 300,
                 fontStyle: "italic",
-                color: "var(--accent)",
+                color: "var(--accent-on-dark)",
               }}
             >
               institution.
@@ -124,7 +125,7 @@ export default function Waitlist() {
               "Dedicated onboarding support",
             ].map((point) => (
               <div key={point} className="flex items-start gap-3">
-                <span style={{ color: "var(--accent)" }} className="mt-0.5 flex-shrink-0">✦</span>
+                <CheckCircle2 size={13} className="mt-0.5 flex-shrink-0" style={{ color: "var(--accent-on-dark)" }} />
                 <span
                   className="text-[12px] leading-[1.7]"
                   style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.6)" }}
@@ -150,7 +151,7 @@ export default function Waitlist() {
                     fontFamily: "var(--font-fraunces)",
                     fontWeight: 300,
                     fontStyle: "italic",
-                    color: "var(--accent)",
+                    color: "var(--accent-on-dark)",
                   }}
                 >
                   {state.name}.
@@ -321,11 +322,11 @@ export default function Waitlist() {
                 className="px-10 py-4 text-[12px] uppercase tracking-[0.12em] transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{
                   fontFamily: "var(--font-dm-mono)",
-                  background: "var(--accent)",
-                  color: "white",
+                  background: "var(--accent-on-dark)",
+                  color: "#1A1814",
                 }}
               >
-                {state.status === "loading" ? "Submitting…" : "Join Waitlist →"}
+                {state.status === "loading" ? "Submitting…" : <span className="flex items-center gap-2">Join Waitlist <ArrowRight size={14} /></span>}
               </button>
             </form>
           )}

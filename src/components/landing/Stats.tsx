@@ -55,7 +55,7 @@ export default function Stats() {
         {stats.map((s) => (
           <div
             key={s.label}
-            className="px-4 py-6 md:px-8 md:py-10 transition-colors duration-200 hover:bg-blue-50"
+            className="px-4 py-6 md:px-8 md:py-10 transition-colors duration-200 hover:bg-[#FFF8F6]"
             style={{ background: "var(--paper)" }}
           >
             <div

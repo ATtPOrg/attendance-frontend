@@ -34,10 +34,10 @@ export default function Marquee() {
               {item}
             </span>
             <span
-              className="text-[var(--accent)] opacity-100 px-2"
-              style={{ fontFamily: "var(--font-dm-mono)", fontSize: "11px" }}
+              className="opacity-100 px-2 flex items-center"
+              style={{ color: "var(--accent-on-dark)" }}
             >
-              ✦
+              <span className="w-1 h-1 rounded-full inline-block" style={{ background: "var(--accent-on-dark)" }} />
             </span>
           </span>
         ))}

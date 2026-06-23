@@ -43,6 +43,7 @@ export interface Professor {
   students: number;
   joinedAt: string;
   status: "active" | "inactive";
+  temporaryPassword?: string | null;
 }
 
 export interface Course {

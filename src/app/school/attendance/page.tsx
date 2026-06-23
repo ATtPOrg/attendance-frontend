@@ -110,9 +110,9 @@ export default function SchoolAttendancePage() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total Sessions", value: records.length, color: "#4f46e5" },
+            { label: "Total Sessions", value: records.length, color: "#570000" },
             { label: "Students Present", value: records.reduce((a, r) => a + r.present, 0).toLocaleString(), color: "#059669" },
-            { label: "Verified Sessions", value: records.filter((r) => r.verified).length, color: "#7c3aed" },
+            { label: "Verified Sessions", value: records.filter((r) => r.verified).length, color: "#570000" },
             { label: "Overall Rate", value: records.length ? `${(records.reduce((a, r) => a + r.percentage, 0) / records.length).toFixed(1)}%` : "—", color: "#d97706" },
           ].map((s) => (
             <div key={s.label} className="bg-white rounded-xl border p-4" style={{ borderColor: "#e5e7eb" }}>
@@ -130,7 +130,7 @@ export default function SchoolAttendancePage() {
               <p className="text-[12px]" style={{ color: "#9ca3af" }}>6-month average for {shortName}</p>
             </div>
             <div className="flex gap-4 text-[12px]" style={{ color: "#9ca3af" }}>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block" style={{ background: "#0f172a" }} />Actual</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block" style={{ background: "#570000" }} />Actual</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block" style={{ background: "#e5e7eb" }} />Target</span>
             </div>
           </div>
@@ -138,8 +138,8 @@ export default function SchoolAttendancePage() {
             <AreaChart data={trend.data ?? []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="satt" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#0f172a" stopOpacity={0.12} />
-                  <stop offset="95%" stopColor="#0f172a" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#570000" stopOpacity={0.12} />
+                  <stop offset="95%" stopColor="#570000" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
@@ -147,7 +147,7 @@ export default function SchoolAttendancePage() {
               <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} domain={[60, 100]} />
               <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #f3f4f6", fontSize: 12 }} />
               <Area type="monotone" dataKey="target" stroke="#e5e7eb" strokeWidth={2} strokeDasharray="4 3" fill="none" name="Target" />
-              <Area type="monotone" dataKey="attendance" stroke="#0f172a" strokeWidth={2} fill="url(#satt)" name="Attendance" />
+              <Area type="monotone" dataKey="attendance" stroke="#570000" strokeWidth={2} fill="url(#satt)" name="Attendance" />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -225,7 +225,7 @@ export default function SchoolAttendancePage() {
                           <td className="px-5 py-3.5">
                             {record.verified ? <CheckCircle2 size={16} color="#059669" /> : <XCircle size={16} color="#d97706" />}
                           </td>
-                          <td className="px-5 py-3.5 text-[12px]" style={{ color: "#4f46e5" }}>Details</td>
+                          <td className="px-5 py-3.5 text-[12px]" style={{ color: "#570000" }}>Details</td>
                         </tr>
                       );
                     })}

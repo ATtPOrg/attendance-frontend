@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Heart } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -28,7 +29,7 @@ export default function Footer() {
         className="text-[12px]"
         style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}
       >
-        Built with <span style={{ color: "var(--accent)" }}>♥</span> for Nigerian institutions
+        Built with <Heart size={11} className="inline-block" style={{ color: "var(--accent)" }} /> for Nigerian institutions
       </div>
     </footer>
   );

@@ -5,7 +5,7 @@ import { Loader2, AlertCircle, RefreshCw } from "lucide-react";
 export function LoadingState({ label = "Loading..." }: { label?: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 gap-3">
-      <Loader2 size={26} color="#4f46e5" className="animate-spin" />
+      <Loader2 size={26} color="#570000" className="animate-spin" />
       <span className="text-[13px]" style={{ color: "#9ca3af", fontFamily: "'Inter',sans-serif" }}>{label}</span>
     </div>
   );

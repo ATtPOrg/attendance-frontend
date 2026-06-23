@@ -1,4 +1,5 @@
 "use client";
+import { ArrowRight } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -24,7 +25,7 @@ export default function Hero() {
           fontSize: "clamp(120px,22vw,320px)",
           fontWeight: 100,
           color: "transparent",
-          WebkitTextStroke: "1px rgba(0,71,255,0.07)",
+          WebkitTextStroke: "1px rgba(87,0,0,0.07)",
           letterSpacing: "-0.05em",
         }}
       >
@@ -94,11 +95,11 @@ export default function Hero() {
             </div>
 
             <a
-              href="#waitlist"
+              href="/waitlist/demo"
               className="inline-flex items-center gap-2 px-6 py-3 text-white text-[12px] uppercase tracking-[0.1em] transition-all duration-200 hover:opacity-80"
               style={{ fontFamily: "var(--font-dm-mono)", background: "var(--accent)" }}
             >
-              Request Demo →
+              Request Demo <ArrowRight size={14} />
             </a>
           </div>
         </div>

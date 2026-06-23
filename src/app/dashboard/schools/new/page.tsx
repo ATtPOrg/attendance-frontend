@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import DashboardHeader from "@/components/dashboard/Header";
 import { adminApi, ApiError } from "@/lib/api";
-import { ChevronLeft, Check, Loader2 } from "lucide-react";
+import { ChevronLeft, Check, Loader2, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 const steps = ["School Info", "Contact & Location", "Plan & Access"];
@@ -61,8 +61,8 @@ export default function NewSchoolPage() {
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => router.push("/dashboard/schools")}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-medium text-white"
-                style={{ background: "#4f46e5" }}
+                className="px-5 py-2.5 rounded-lg text-[13px] font-medium"
+                style={{ background: "#FED65B", color: "#570000" }}
               >
                 View All Schools
               </button>
@@ -100,7 +100,7 @@ export default function NewSchoolPage() {
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold transition-all"
                   style={{
-                    background: i <= step ? "#4f46e5" : "#e5e7eb",
+                    background: i <= step ? "#570000" : "#e5e7eb",
                     color: i <= step ? "white" : "#9ca3af",
                   }}
                 >
@@ -108,7 +108,7 @@ export default function NewSchoolPage() {
                 </div>
                 <span
                   className="text-[13px] font-medium hidden sm:block"
-                  style={{ color: i === step ? "#4f46e5" : "#9ca3af" }}
+                  style={{ color: i === step ? "#570000" : "#9ca3af" }}
                 >
                   {s}
                 </span>
@@ -116,7 +116,7 @@ export default function NewSchoolPage() {
               {i < steps.length - 1 && (
                 <div
                   className="flex-1 h-px mx-4 w-12"
-                  style={{ background: i < step ? "#4f46e5" : "#e5e7eb" }}
+                  style={{ background: i < step ? "#570000" : "#e5e7eb" }}
                 />
               )}
             </div>
@@ -158,9 +158,9 @@ export default function NewSchoolPage() {
                         onClick={() => update("plan", p)}
                         className="py-3 rounded-lg border text-[13px] font-medium transition-all"
                         style={{
-                          borderColor: form.plan === p ? "#4f46e5" : "#e5e7eb",
-                          background: form.plan === p ? "#eef2ff" : "white",
-                          color: form.plan === p ? "#4f46e5" : "#374151",
+                          borderColor: form.plan === p ? "#570000" : "#e5e7eb",
+                          background: form.plan === p ? "#F0D5CE" : "white",
+                          color: form.plan === p ? "#570000" : "#374151",
                         }}
                       >
                         {p}
@@ -193,11 +193,13 @@ export default function NewSchoolPage() {
               <button
                 onClick={handleNext}
                 disabled={submitting}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-[13px] font-medium text-white disabled:opacity-60"
-                style={{ background: "#4f46e5" }}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-[13px] font-medium disabled:opacity-60"
+                style={{ background: "#FED65B", color: "#570000" }}
               >
                 {submitting && <Loader2 size={14} className="animate-spin" />}
-                {step === steps.length - 1 ? (submitting ? "Onboarding..." : "Complete Onboarding →") : "Next →"}
+                {step === steps.length - 1
+                  ? (submitting ? "Onboarding..." : <span className="flex items-center gap-2">Complete Onboarding <ArrowRight size={14} /></span>)
+                  : <span className="flex items-center gap-2">Next <ArrowRight size={14} /></span>}
               </button>
             </div>
           </div>
@@ -219,7 +221,7 @@ function Field({ label, placeholder, value, onChange, type = "text" }: {
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-2.5 rounded-lg border text-[14px] outline-none transition-colors focus:border-indigo-500"
+        className="w-full px-4 py-2.5 rounded-lg border text-[14px] outline-none transition-colors focus:border-[#570000]"
         style={{ borderColor: "#e5e7eb", color: "#111827", fontFamily: "'Inter',sans-serif" }}
       />
     </div>

@@ -174,8 +174,8 @@ export function ConfirmModal({ open, onClose, onConfirm, title, message, confirm
           <button
             onClick={handleConfirm}
             disabled={busy}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-            style={{ background: danger ? "#ef4444" : "#4f46e5" }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-opacity hover:opacity-90 disabled:opacity-60 ${danger ? "text-white" : "text-[#570000]"}`}
+            style={{ background: danger ? "#ef4444" : "#FED65B" }}
           >
             {busy && <Loader2 size={13} className="animate-spin" />}
             {confirmLabel}

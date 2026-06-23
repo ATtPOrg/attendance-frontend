@@ -27,7 +27,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 export function Input({ className = "", fullWidth = true, ...props }: InputProps) {
   return (
     <input
-      className={`${fullWidth ? "w-full" : ""} px-3 py-2.5 rounded-lg border text-[14px] outline-none transition-colors focus:border-indigo-400 ${className}`}
+      className={`${fullWidth ? "w-full" : ""} px-3 py-2.5 rounded-lg border text-[14px] outline-none transition-colors focus:border-[#570000] ${className}`}
       style={{ borderColor: "#e5e7eb", color: "#111827", fontFamily: "'Inter',sans-serif", background: "#fff" }}
       {...props}
     />
@@ -41,7 +41,7 @@ interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
 export function Select({ className = "", fullWidth = true, children, ...props }: SelectProps) {
   return (
     <select
-      className={`${fullWidth ? "w-full" : ""} px-3 py-2.5 rounded-lg border text-[14px] outline-none transition-colors focus:border-indigo-400 ${className}`}
+      className={`${fullWidth ? "w-full" : ""} px-3 py-2.5 rounded-lg border text-[14px] outline-none transition-colors focus:border-[#570000] ${className}`}
       style={{ borderColor: "#e5e7eb", color: "#111827", fontFamily: "'Inter',sans-serif", background: "#fff" }}
       {...props}
     >
@@ -53,7 +53,7 @@ export function Select({ className = "", fullWidth = true, children, ...props }:
 export function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <textarea
-      className="w-full px-3 py-2.5 rounded-lg border text-[14px] outline-none transition-colors focus:border-indigo-400 resize-none"
+      className="w-full px-3 py-2.5 rounded-lg border text-[14px] outline-none transition-colors focus:border-[#570000] resize-none"
       style={{ borderColor: "#e5e7eb", color: "#111827", fontFamily: "'Inter',sans-serif", background: "#fff" }}
       rows={3}
       {...props}
@@ -72,8 +72,8 @@ export function ModalActions({ children }: { children: React.ReactNode }) {
 export function BtnPrimary({ children, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
-      className="px-5 py-2.5 rounded-lg text-[13px] font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-60"
-      style={{ background: "#4f46e5", fontFamily: "'Inter',sans-serif" }}
+      className="px-5 py-2.5 rounded-lg text-[13px] font-semibold transition-opacity hover:opacity-90 disabled:opacity-60"
+      style={{ background: "#FED65B", color: "#570000", fontFamily: "'Inter',sans-serif" }}
       {...props}
     >
       {children}

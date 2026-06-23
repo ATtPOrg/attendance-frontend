@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuthStore } from "@/stores/authStore";
 import { ApiError } from "@/lib/api";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck, ArrowRight } from "lucide-react";
 
 /**
  * Super Admin access — intentionally unlinked from the rest of the site.
@@ -51,12 +51,12 @@ export default function SysAdminLoginPage() {
             className="font-bold text-[15px] tracking-tight"
             style={{ fontFamily: "var(--font-syne)", color: "var(--ivory)" }}
           >
-            ATP<span style={{ color: "var(--accent)" }}>-Go</span>
+            ATP<span style={{ color: "var(--accent-on-dark)" }}>-Go</span>
           </span>
         </div>
 
         <div className="flex items-center gap-2 mb-2">
-          <ShieldCheck size={14} color="var(--accent)" />
+          <ShieldCheck size={14} color="var(--accent-on-dark)" />
           <span
             className="text-[10px] uppercase tracking-[0.18em]"
             style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.45)" }}
@@ -123,10 +123,10 @@ export default function SysAdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 text-[12px] uppercase tracking-[0.12em] text-white transition-opacity duration-200 disabled:opacity-60"
-            style={{ fontFamily: "var(--font-dm-mono)", background: "var(--accent)" }}
+            className="w-full py-3.5 text-[12px] uppercase tracking-[0.12em] transition-opacity duration-200 disabled:opacity-60"
+            style={{ fontFamily: "var(--font-dm-mono)", background: "var(--accent-on-dark)", color: "#1A1814" }}
           >
-            {loading ? "Signing in..." : "Sign In →"}
+            {loading ? "Signing in..." : <span className="flex items-center justify-center gap-2">Sign In <ArrowRight size={14} /></span>}
           </button>
         </form>
 

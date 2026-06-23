@@ -6,7 +6,7 @@ import { schoolApi, ApiError } from "@/lib/api";
 import { useApi } from "@/hooks/useApi";
 import { LoadingState, ErrorState, InlineError } from "@/components/ui/Async";
 import type { Professor } from "@/lib/types";
-import { Search, Plus, Pencil, Trash2, Users, Mail, BookOpen, Loader2 } from "lucide-react";
+import { Search, Plus, Pencil, Trash2, Users, Mail, BookOpen, Loader2, Copy, Check } from "lucide-react";
 import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
@@ -71,11 +71,51 @@ function ProfessorModal({ professor, departments, open, onClose, onSave }: {
   );
 }
 
+function CredentialsModal({ professor, onClose }: { professor: Professor; onClose: () => void }) {
+  const [copied, setCopied] = useState(false);
+  const copy = () => {
+    navigator.clipboard.writeText(professor.temporaryPassword ?? "").then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+  return (
+    <Modal open onClose={onClose} title="Professor Added" subtitle={professor.name ?? undefined} width="max-w-md">
+      <div className="space-y-4">
+        <p className="text-[13px]" style={{ color: "#6b7280" }}>
+          Share these login credentials with the professor. The password is only shown once.
+        </p>
+        <div className="rounded-xl border p-4 space-y-3" style={{ borderColor: "#e5e7eb", background: "#f9fafb" }}>
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-wider mb-1" style={{ color: "#9ca3af" }}>Email</div>
+            <div className="text-[14px] font-medium" style={{ color: "#111827" }}>{professor.email}</div>
+          </div>
+          <div>
+            <div className="text-[11px] font-semibold uppercase tracking-wider mb-1" style={{ color: "#9ca3af" }}>Temporary Password</div>
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-[14px] font-mono font-semibold" style={{ color: "#570000" }}>{professor.temporaryPassword ?? "—"}</div>
+              <button onClick={copy} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[12px] font-medium transition-colors hover:bg-white" style={{ borderColor: "#e5e7eb", color: copied ? "#059669" : "#374151" }}>
+                {copied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy</>}
+              </button>
+            </div>
+          </div>
+        </div>
+        <p className="text-[11px]" style={{ color: "#9ca3af" }}>
+          The professor will be prompted to change this password on first login.
+        </p>
+      </div>
+      <ModalActions>
+        <BtnPrimary onClick={onClose}>Done</BtnPrimary>
+      </ModalActions>
+    </Modal>
+  );
+}
+
 function ProfessorCard({ professor, onEdit, onDelete }: { professor: Professor; onEdit: () => void; onDelete: () => void }) {
   return (
     <div className="bg-white rounded-xl border overflow-hidden hover:shadow-md transition-shadow" style={{ borderColor: "#e5e7eb" }}>
       <div className="px-5 py-4 flex items-center gap-3 border-b" style={{ borderColor: "#f3f4f6" }}>
-        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0" style={{ background: "#7c3aed" }}>
+        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0" style={{ background: "#570000" }}>
           {professor.name.split(" ").find((n) => n.length > 1)?.[0] ?? "P"}
         </div>
         <div className="min-w-0 flex-1">
@@ -106,7 +146,7 @@ function ProfessorCard({ professor, onEdit, onDelete }: { professor: Professor; 
         ))}
       </div>
       <div className="px-5 py-3 border-t flex gap-2" style={{ borderColor: "#f3f4f6", background: "#fafafa" }}>
-        <button onClick={onEdit} className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border text-[12px] font-medium transition-colors hover:bg-indigo-50" style={{ borderColor: "#e5e7eb", color: "#4f46e5" }}>
+        <button onClick={onEdit} className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border text-[12px] font-medium transition-colors hover:bg-[#FFF8F6]" style={{ borderColor: "#e5e7eb", color: "#570000" }}>
           <Pencil size={13} /> Edit
         </button>
         <button onClick={onDelete} className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border text-[12px] font-medium transition-colors hover:bg-red-50" style={{ borderColor: "#e5e7eb", color: "#ef4444" }}>
@@ -129,6 +169,7 @@ export default function SchoolProfessorsPage() {
   const [addOpen, setAddOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Professor | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Professor | null>(null);
+  const [createdProfessor, setCreatedProfessor] = useState<Professor | null>(null);
 
   const professors = data ?? [];
 
@@ -160,6 +201,7 @@ export default function SchoolProfessorsPage() {
   const handleCreate = async (form: Partial<Professor>) => {
     const created = await schoolApi.professors.create(form);
     setData((prev) => [...(prev ?? []), created]);
+    setCreatedProfessor(created);
   };
 
   const handleUpdate = async (form: Partial<Professor>) => {
@@ -175,9 +217,9 @@ export default function SchoolProfessorsPage() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label: "Total Professors", value: professors.length, color: "#7c3aed" },
+            { label: "Total Professors", value: professors.length, color: "#570000" },
             { label: "Active", value: professors.filter((p) => p.status === "active").length, color: "#059669" },
-            { label: "Total Students Taught", value: professors.reduce((a, p) => a + p.students, 0).toLocaleString(), color: "#4f46e5" },
+            { label: "Total Students Taught", value: professors.reduce((a, p) => a + p.students, 0).toLocaleString(), color: "#570000" },
           ].map((s) => (
             <div key={s.label} className="bg-white rounded-xl border p-4" style={{ borderColor: "#e5e7eb" }}>
               <div className="text-[26px] font-bold" style={{ color: s.color }}>{s.value}</div>
@@ -198,7 +240,7 @@ export default function SchoolProfessorsPage() {
               {departments.map((d) => <option key={d}>{d}</option>)}
             </select>
           </div>
-          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#0f172a", fontFamily: "'Inter',sans-serif" }}>
+          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#570000", fontFamily: "'Inter',sans-serif" }}>
             <Plus size={15} /> Add Professor
           </button>
         </div>
@@ -214,12 +256,13 @@ export default function SchoolProfessorsPage() {
           <div className="bg-white rounded-xl border py-16 text-center" style={{ borderColor: "#e5e7eb" }}>
             <Users size={32} color="#d1d5db" className="mx-auto mb-3" />
             <p className="text-[14px]" style={{ color: "#9ca3af" }}>No professors found.</p>
-            <button onClick={() => setAddOpen(true)} className="mt-3 text-[13px] font-medium" style={{ color: "#4f46e5" }}>+ Add first professor</button>
+            <button onClick={() => setAddOpen(true)} className="mt-3 text-[13px] font-medium" style={{ color: "#570000" }}>+ Add first professor</button>
           </div>
         )}
       </div>
 
       {addOpen && <ProfessorModal open professor={null} departments={departments} onClose={() => setAddOpen(false)} onSave={handleCreate} />}
+      {createdProfessor && <CredentialsModal professor={createdProfessor} onClose={() => setCreatedProfessor(null)} />}
       {editTarget && <ProfessorModal key={editTarget.id} open professor={editTarget} departments={departments} onClose={() => setEditTarget(null)} onSave={handleUpdate} />}
       <ConfirmModal
         open={!!deleteTarget}

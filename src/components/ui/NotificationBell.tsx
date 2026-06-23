@@ -66,7 +66,7 @@ export default function NotificationBell({ fetchNotifications, markAllRead }: Pr
                   onClick={handleMarkAllRead}
                   disabled={marking}
                   className="flex items-center gap-1 text-[11px] font-medium disabled:opacity-50"
-                  style={{ color: "#4f46e5" }}
+                  style={{ color: "#570000" }}
                 >
                   {marking ? <Loader2 size={11} className="animate-spin" /> : <CheckCheck size={12} />}
                   Mark all read
@@ -94,11 +94,11 @@ export default function NotificationBell({ fetchNotifications, markAllRead }: Pr
                 <div
                   key={n.id}
                   className="flex items-start gap-3 px-4 py-3 border-b last:border-0"
-                  style={{ borderColor: "#f3f4f6", background: n.read ? "white" : "#f5f8ff" }}
+                  style={{ borderColor: "#f3f4f6", background: n.read ? "white" : "#FFF8F6" }}
                 >
                   <span
                     className="mt-1.5 w-2 h-2 rounded-full flex-shrink-0"
-                    style={{ background: n.read ? "#e5e7eb" : "#4f46e5" }}
+                    style={{ background: n.read ? "#e5e7eb" : "#570000" }}
                   />
                   <div className="min-w-0">
                     <div className="text-[13px] font-medium leading-snug" style={{ color: "#111827" }}>{n.title}</div>

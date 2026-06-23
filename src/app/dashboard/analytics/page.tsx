@@ -5,7 +5,7 @@ import { useApi } from "@/hooks/useApi";
 import { LoadingState, ErrorState } from "@/components/ui/Async";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
-const COLORS = ["#4f46e5", "#7c3aed", "#059669", "#d97706", "#ef4444", "#0ea5e9"];
+const COLORS = ["#570000", "#9B6060", "#059669", "#d97706", "#ef4444", "#0ea5e9"];
 
 export default function AnalyticsPage() {
   const schools = useApi(() => adminApi.schools.list());
@@ -53,9 +53,9 @@ export default function AnalyticsPage() {
         {/* Top stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Platform Schools", value: list.length, color: "#4f46e5" },
+            { label: "Platform Schools", value: list.length, color: "#570000" },
             { label: "Total Students", value: totalStudents.toLocaleString(), color: "#059669" },
-            { label: "Total Professors", value: totalProfessors.toLocaleString(), color: "#7c3aed" },
+            { label: "Total Professors", value: totalProfessors.toLocaleString(), color: "#9B6060" },
             { label: "Avg Attendance", value: `${avgAttendance}%`, color: "#d97706" },
           ].map((s) => (
             <div key={s.label} className="bg-white rounded-xl border p-5" style={{ borderColor: "#e5e7eb" }}>
@@ -74,8 +74,8 @@ export default function AnalyticsPage() {
               <AreaChart data={trend.data ?? []} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="analAtt" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#4f46e5" stopOpacity={0.15} />
-                    <stop offset="95%" stopColor="#4f46e5" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#570000" stopOpacity={0.15} />
+                    <stop offset="95%" stopColor="#570000" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
@@ -83,7 +83,7 @@ export default function AnalyticsPage() {
                 <YAxis tick={{ fontSize: 11, fill: "#9ca3af" }} axisLine={false} tickLine={false} domain={[70, 100]} />
                 <Tooltip contentStyle={{ borderRadius: 8, border: "1px solid #f3f4f6", fontSize: 12 }} />
                 <Area type="monotone" dataKey="target" stroke="#e5e7eb" strokeWidth={2} strokeDasharray="4 3" fill="none" name="Target (85%)" />
-                <Area type="monotone" dataKey="attendance" stroke="#4f46e5" strokeWidth={2.5} fill="url(#analAtt)" name="Actual" />
+                <Area type="monotone" dataKey="attendance" stroke="#570000" strokeWidth={2.5} fill="url(#analAtt)" name="Actual" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -115,9 +115,9 @@ export default function AnalyticsPage() {
                 <span className="w-6 text-[12px] font-bold text-center" style={{ color: i === 0 ? "#d97706" : "#9ca3af" }}>#{i + 1}</span>
                 <span className="w-16 text-[13px] font-semibold" style={{ color: "#374151" }}>{s.name}</span>
                 <div className="flex-1 h-2.5 rounded-full overflow-hidden" style={{ background: "#f3f4f6" }}>
-                  <div className="h-full rounded-full" style={{ width: `${s.attendance}%`, background: s.attendance >= 90 ? "#22c55e" : s.attendance >= 80 ? "#4f46e5" : "#f59e0b" }} />
+                  <div className="h-full rounded-full" style={{ width: `${s.attendance}%`, background: s.attendance >= 90 ? "#22c55e" : s.attendance >= 80 ? "#570000" : "#f59e0b" }} />
                 </div>
-                <span className="w-14 text-right text-[13px] font-bold" style={{ color: s.attendance >= 90 ? "#059669" : s.attendance >= 80 ? "#4f46e5" : "#d97706" }}>{s.attendance}%</span>
+                <span className="w-14 text-right text-[13px] font-bold" style={{ color: s.attendance >= 90 ? "#059669" : s.attendance >= 80 ? "#570000" : "#d97706" }}>{s.attendance}%</span>
               </div>
             ))}
             {schoolAttendance.length === 0 && (

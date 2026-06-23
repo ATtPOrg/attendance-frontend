@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Check, ArrowRight } from "lucide-react";
 
 const plans = [
   {
@@ -74,7 +75,7 @@ export default function Pricing() {
         }}
       >
         Simple pricing.<br />
-        <em style={{ fontFamily: "var(--font-fraunces)", fontWeight: 300, fontStyle: "italic", color: "var(--accent)" }}>
+        <em style={{ fontFamily: "var(--font-fraunces)", fontWeight: 300, fontStyle: "italic", color: "var(--accent-on-dark)" }}>
           No surprises.
         </em>
       </h2>
@@ -85,13 +86,13 @@ export default function Pricing() {
             key={plan.name}
             className="p-5 md:p-8 flex flex-col"
             style={{
-              background: plan.highlight ? "var(--accent)" : "rgba(255,255,255,0.04)",
+              background: plan.highlight ? "var(--accent-on-dark)" : "rgba(255,255,255,0.04)",
               border: `1px solid ${plan.highlight ? "transparent" : "rgba(255,255,255,0.08)"}`,
             }}
           >
             <div
               className="text-[11px] uppercase tracking-[0.2em] mb-4"
-              style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "rgba(255,255,255,0.8)" : "rgba(245,240,232,0.4)" }}
+              style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "rgba(26,24,20,0.7)" : "rgba(245,240,232,0.4)" }}
             >
               {plan.name}
             </div>
@@ -102,7 +103,7 @@ export default function Pricing() {
                   fontFamily: "var(--font-fraunces)",
                   fontSize: "clamp(32px,4vw,48px)",
                   fontWeight: 300,
-                  color: plan.highlight ? "white" : "var(--ivory)",
+                  color: plan.highlight ? "#1A1814" : "var(--ivory)",
                   lineHeight: 1,
                 }}
               >
@@ -111,7 +112,7 @@ export default function Pricing() {
               {plan.period && (
                 <span
                   className="text-[13px]"
-                  style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "rgba(255,255,255,0.7)" : "rgba(245,240,232,0.4)" }}
+                  style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "rgba(26,24,20,0.6)" : "rgba(245,240,232,0.4)" }}
                 >
                   {plan.period}
                 </span>
@@ -120,7 +121,7 @@ export default function Pricing() {
 
             <p
               className="text-[12px] leading-[1.7] mb-8"
-              style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "rgba(255,255,255,0.8)" : "rgba(245,240,232,0.5)" }}
+              style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "rgba(26,24,20,0.65)" : "rgba(245,240,232,0.5)" }}
             >
               {plan.desc}
             </p>
@@ -130,9 +131,9 @@ export default function Pricing() {
                 <li
                   key={f}
                   className="flex items-start gap-2.5 text-[12px] leading-[1.6]"
-                  style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "white" : "var(--ivory)" }}
+                  style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "#1A1814" : "var(--ivory)" }}
                 >
-                  <span style={{ color: plan.highlight ? "white" : "var(--accent)" }} className="mt-0.5">✓</span>
+                  <Check size={12} className="mt-0.5 flex-shrink-0" style={{ color: plan.highlight ? "#570000" : "var(--accent-on-dark)" }} />
                   {f}
                 </li>
               ))}
@@ -144,11 +145,11 @@ export default function Pricing() {
               style={{
                 fontFamily: "var(--font-dm-mono)",
                 background: plan.highlight ? "white" : "transparent",
-                color: plan.highlight ? "var(--accent)" : "var(--ivory)",
+                color: plan.highlight ? "#570000" : "var(--ivory)",
                 border: plan.highlight ? "none" : "1px solid rgba(255,255,255,0.2)",
               }}
             >
-              {plan.cta} →
+              <span className="flex items-center justify-center gap-2">{plan.cta} <ArrowRight size={13} /></span>
             </Link>
           </div>
         ))}

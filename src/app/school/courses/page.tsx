@@ -160,7 +160,7 @@ export default function SchoolCoursesPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total Courses", value: courses.length, color: "#4f46e5" },
+            { label: "Total Courses", value: courses.length, color: "#570000" },
             { label: "Active", value: activeCourses.length, color: "#059669" },
             { label: "Inactive", value: courses.filter((c) => c.status === "inactive").length, color: "#6b7280" },
             { label: "Avg Attendance", value: `${avgAttendance}%`, color: "#d97706" },
@@ -189,7 +189,7 @@ export default function SchoolCoursesPage() {
               <option value="inactive">Inactive</option>
             </select>
           </div>
-          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#0f172a", fontFamily: "'Inter',sans-serif" }}>
+          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#570000", fontFamily: "'Inter',sans-serif" }}>
             <Plus size={15} /> Add Course
           </button>
         </div>
@@ -213,7 +213,7 @@ export default function SchoolCoursesPage() {
                   return (
                     <tr key={c.id} className="border-b hover:bg-gray-50 transition-colors" style={{ borderColor: i === filtered.length - 1 ? "transparent" : "#f3f4f6" }}>
                       <td className="px-5 py-3.5">
-                        <span className="font-mono text-[12px] font-semibold px-2.5 py-1 rounded-lg" style={{ background: "#eef2ff", color: "#4f46e5" }}>{c.code}</span>
+                        <span className="font-mono text-[12px] font-semibold px-2.5 py-1 rounded-lg" style={{ background: "#F0D5CE", color: "#570000" }}>{c.code}</span>
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="font-medium" style={{ color: "#111827" }}>{c.title}</div>
@@ -236,7 +236,7 @@ export default function SchoolCoursesPage() {
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex gap-2">
-                          <button onClick={() => setEditTarget(c)} className="p-1.5 rounded-lg hover:bg-indigo-50"><Pencil size={13} color="#4f46e5" /></button>
+                          <button onClick={() => setEditTarget(c)} className="p-1.5 rounded-lg hover:bg-[#FFF8F6]"><Pencil size={13} color="#570000" /></button>
                           <button onClick={() => setDeleteTarget(c)} className="p-1.5 rounded-lg hover:bg-red-50"><Trash2 size={13} color="#ef4444" /></button>
                         </div>
                       </td>

@@ -229,6 +229,10 @@ export const schoolApi = {
     request<{ token: string; refreshToken: string; admin: SchoolAdmin }>("/school-admin/auth/login", {
       method: "POST", body: { email, password },
     }),
+  refresh: (refreshToken: string) =>
+    request<{ token: string; refreshToken: string; admin: SchoolAdmin }>("/school-admin/auth/refresh", {
+      method: "POST", body: { refreshToken },
+    }),
   logout: () => s<void>("/school-admin/auth/logout", { method: "POST" }),
   changePassword: (oldPassword: string, newPassword: string) =>
     s<void>("/school-admin/auth/change-password", { method: "POST", body: { oldPassword, newPassword } }),

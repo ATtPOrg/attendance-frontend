@@ -10,8 +10,8 @@ import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
 const planColors = {
-  Enterprise: { bg: "#eef2ff", text: "#4f46e5" },
-  Professional: { bg: "#f5f3ff", text: "#7c3aed" },
+  Enterprise: { bg: "#F0D5CE", text: "#570000" },
+  Professional: { bg: "#F0D5CE", text: "#570000" },
   Starter: { bg: "#f0fdf4", text: "#16a34a" },
 };
 
@@ -59,7 +59,7 @@ function ChangePlanModal({ school, planPrices, open, onClose, onSave }: {
                 key={p}
                 onClick={() => setPlan(p)}
                 className="flex items-center justify-between p-4 rounded-xl border-2 transition-all text-left"
-                style={{ borderColor: plan === p ? "#4f46e5" : "#e5e7eb", background: plan === p ? "#f5f8ff" : "#fff" }}
+                style={{ borderColor: plan === p ? "#570000" : "#e5e7eb", background: plan === p ? "#FFF8F6" : "#fff" }}
               >
                 <div>
                   <div className="text-[14px] font-semibold" style={{ color: "#111827" }}>{p}</div>
@@ -152,7 +152,7 @@ export default function BillingPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Annual Revenue", value: `₦${(sum.annualRevenue / 1_000_000).toFixed(1)}M`, icon: TrendingUp, color: "#059669", bg: "#ecfdf5" },
-            { label: "Active Subscriptions", value: sum.activeSubscriptions, icon: CreditCard, color: "#4f46e5", bg: "#eef2ff" },
+            { label: "Active Subscriptions", value: sum.activeSubscriptions, icon: CreditCard, color: "#570000", bg: "#F0D5CE" },
             { label: "Trial Accounts", value: sum.trialAccounts, icon: AlertCircle, color: "#d97706", bg: "#fffbeb" },
             { label: "Inactive", value: sum.inactiveAccounts, icon: AlertCircle, color: "#6b7280", bg: "#f3f4f6" },
           ].map(({ label, value, icon: Icon, color, bg }) => (
@@ -225,7 +225,7 @@ export default function BillingPage() {
                     <tr key={school.id} className="border-b hover:bg-gray-50 transition-colors" style={{ borderColor: i === filtered.length - 1 ? "transparent" : "#f3f4f6" }}>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold" style={{ background: "#4f46e5" }}>
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold" style={{ background: "#570000" }}>
                             {school.shortName.slice(0, 2)}
                           </div>
                           <div>
@@ -249,7 +249,7 @@ export default function BillingPage() {
                           <button
                             onClick={() => setPlanTarget(school)}
                             className="text-[12px] font-medium px-3 py-1.5 rounded-lg border transition-colors hover:bg-gray-50"
-                            style={{ borderColor: "#e5e7eb", color: "#4f46e5" }}
+                            style={{ borderColor: "#e5e7eb", color: "#570000" }}
                           >
                             Change Plan
                           </button>
