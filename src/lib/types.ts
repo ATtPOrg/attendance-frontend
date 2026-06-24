@@ -127,6 +127,8 @@ export interface AdminOverview {
     trialExpirations: number;
     supportTickets: number;
     planUpgradeRequests: number;
+    pendingWaitlist: number;
+    inactiveAccounts: number;
   };
 }
 

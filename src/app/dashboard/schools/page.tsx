@@ -1,5 +1,6 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import DashboardHeader from "@/components/dashboard/Header";
 import { adminApi, ApiError } from "@/lib/api";
@@ -127,10 +128,16 @@ function SchoolMenu({ school, onEdit, onDelete, onToggle }: { school: School; on
   );
 }
 
-export default function SchoolsPage() {
+function SchoolsPageInner() {
+  const params = useSearchParams();
+  const initialStatus = params.get("status") as "all" | "active" | "trial" | "inactive" | null;
   const { data: schools, loading, error, refetch, setData } = useApi(() => adminApi.schools.list());
   const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState<"all" | "active" | "trial" | "inactive">("all");
+  const [filter, setFilter] = useState<"all" | "active" | "trial" | "inactive">(
+    (initialStatus && ["active", "trial", "inactive"].includes(initialStatus))
+      ? initialStatus as "active" | "trial" | "inactive"
+      : "all"
+  );
   const [editTarget, setEditTarget] = useState<School | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<School | null>(null);
   const [toggleTarget, setToggleTarget] = useState<School | null>(null);
@@ -341,5 +348,13 @@ export default function SchoolsPage() {
         danger={toggleTarget?.status === "active"}
       />
     </>
+  );
+}
+
+export default function SchoolsPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-[14px]" style={{ color: "#9ca3af" }}>Loading...</div>}>
+      <SchoolsPageInner />
+    </Suspense>
   );
 }

@@ -61,9 +61,30 @@ export default function DashboardPage() {
   ];
 
   const pendingItems = [
-    { label: "Trial Expirations", count: o.pending.trialExpirations, priority: "high", color: "#ef4444", bg: "#fef2f2" },
-    { label: "Support Tickets", count: o.pending.supportTickets, priority: "medium", color: "#f59e0b", bg: "#fffbeb" },
-    { label: "Plan Upgrade Requests", count: o.pending.planUpgradeRequests, priority: "low", color: "#10b981", bg: "#ecfdf5" },
+    {
+      label: "Pending Onboarding",
+      count: o.pending.pendingWaitlist,
+      priority: "high",
+      color: "#d97706",
+      bg: "#fffbeb",
+      href: "#waitlist",
+    },
+    {
+      label: "Trial Accounts",
+      count: o.pending.trialExpirations,
+      priority: "medium",
+      color: "#f59e0b",
+      bg: "#fff7ed",
+      href: "/dashboard/schools?status=trial",
+    },
+    {
+      label: "Inactive Schools",
+      count: o.pending.inactiveAccounts,
+      priority: "low",
+      color: "#6b7280",
+      bg: "#f9fafb",
+      href: "/dashboard/schools?status=inactive",
+    },
   ];
 
   return (
@@ -182,7 +203,7 @@ export default function DashboardPage() {
             <p className="text-[12px] mb-5" style={{ color: "#9ca3af" }}>Items requiring review</p>
             <div className="space-y-4">
               {pendingItems.map((p) => (
-                <div key={p.label} className="p-4 rounded-lg" style={{ background: p.bg }}>
+                <Link key={p.label} href={p.href} className="block p-4 rounded-lg" style={{ background: p.bg }}>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[13px] font-medium" style={{ color: "#111827" }}>{p.label}</span>
                     <span
@@ -193,10 +214,10 @@ export default function DashboardPage() {
                     </span>
                   </div>
                   <div className="text-[26px] font-bold" style={{ color: p.color }}>{p.count}</div>
-                  <button className="flex items-center gap-1 text-[12px] font-medium mt-1" style={{ color: p.color }}>
-                    Review now <ArrowRight size={12} />
-                  </button>
-                </div>
+                  <span className="flex items-center gap-1 text-[12px] font-medium mt-1" style={{ color: p.color }}>
+                    Review →
+                  </span>
+                </Link>
               ))}
             </div>
           </div>
@@ -250,7 +271,9 @@ export default function DashboardPage() {
         </div>
 
         {/* Waitlist */}
-        <WaitlistPanel entries={waitlist.data ?? []} loading={waitlist.loading} />
+        <div id="waitlist">
+          <WaitlistPanel entries={waitlist.data ?? []} loading={waitlist.loading} />
+        </div>
       </div>
     </>
   );
@@ -270,6 +293,8 @@ function waitlistOnboardUrl(entry: WaitlistEntry): string {
 
 function WaitlistPanel({ entries, loading }: { entries: WaitlistEntry[]; loading: boolean }) {
   const pending = entries.filter((e) => e.status === "pending");
+  const approvedCount = entries.filter((e) => e.status === "approved").length;
+  const rejectedCount = entries.filter((e) => e.status === "rejected").length;
 
   return (
     <div className="bg-white rounded-xl border" style={{ borderColor: "#e5e7eb" }}>
@@ -299,11 +324,11 @@ function WaitlistPanel({ entries, loading }: { entries: WaitlistEntry[]; loading
 
       {loading ? (
         <p className="text-[13px] py-8 text-center" style={{ color: "#9ca3af" }}>Loading...</p>
-      ) : entries.length === 0 ? (
-        <p className="text-[13px] py-8 text-center" style={{ color: "#9ca3af" }}>No waitlist submissions yet.</p>
+      ) : pending.length === 0 ? (
+        <p className="text-[13px] py-8 text-center" style={{ color: "#9ca3af" }}>No pending waitlist submissions.</p>
       ) : (
         <div className="divide-y" style={{ borderColor: "#f3f4f6" }}>
-          {entries.slice(0, 8).map((entry) => (
+          {pending.slice(0, 8).map((entry) => (
             <div key={entry.id} className="flex items-start gap-4 px-6 py-4">
               <div
                 className="w-9 h-9 rounded-lg flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5"
@@ -338,28 +363,29 @@ function WaitlistPanel({ entries, loading }: { entries: WaitlistEntry[]; loading
               <div className="flex flex-col items-end gap-2 flex-shrink-0">
                 <span
                   className="text-[11px] px-2.5 py-1 rounded-full font-medium"
-                  style={{
-                    background: entry.status === "pending" ? "#fffbeb" : entry.status === "approved" ? "#ecfdf5" : "#fef2f2",
-                    color: entry.status === "pending" ? "#d97706" : entry.status === "approved" ? "#059669" : "#dc2626",
-                  }}
+                  style={{ background: "#fffbeb", color: "#d97706" }}
                 >
-                  {entry.status}
+                  pending
                 </span>
                 <span className="text-[11px]" style={{ color: "#9ca3af" }}>
                   {new Date(entry.createdAt).toLocaleDateString()}
                 </span>
-                {entry.status === "pending" && (
-                  <Link
-                    href={waitlistOnboardUrl(entry)}
-                    className="flex items-center gap-1 text-[12px] font-semibold"
-                    style={{ color: "#570000" }}
-                  >
-                    Onboard <ArrowRight size={11} />
-                  </Link>
-                )}
+                <Link
+                  href={waitlistOnboardUrl(entry)}
+                  className="flex items-center gap-1 text-[12px] font-semibold"
+                  style={{ color: "#570000" }}
+                >
+                  Onboard <ArrowRight size={11} />
+                </Link>
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {approvedCount + rejectedCount > 0 && (
+        <div className="px-6 py-3 border-t text-[12px]" style={{ borderColor: "#f3f4f6", color: "#9ca3af" }}>
+          {approvedCount} approved · {rejectedCount} rejected
         </div>
       )}
     </div>
