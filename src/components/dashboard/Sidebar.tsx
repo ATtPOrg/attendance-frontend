@@ -45,7 +45,7 @@ export default function Sidebar() {
       >
         {/* Logo */}
         <div className="flex items-center gap-3 px-6 py-5 border-b" style={{ borderColor: "#e5e7eb" }}>
-          <Image src="/logo_new.png" alt="ATP-Go" width={36} height={36} className="rounded-lg" />
+          <Image src="/logo.png" alt="ATP-Go" width={36} height={36} className="rounded-lg" />
           <div>
             <div className="text-[14px] font-bold" style={{ fontFamily: "'Inter',sans-serif", color: "#111827" }}>
               ATP-Go

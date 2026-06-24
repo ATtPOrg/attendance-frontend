@@ -120,7 +120,7 @@ export default function SchoolSidebar() {
 
           {/* ATP-Go badge */}
           <div className="mt-2 px-3 py-2 rounded-lg flex items-center gap-2" style={{ background: "#f1f5f9" }}>
-            <Image src="/logo_new.png" alt="ATP-Go" width={16} height={16} className="rounded" />
+            <Image src="/logo.png" alt="ATP-Go" width={16} height={16} className="rounded" />
             <span className="text-[10px] tracking-wider" style={{ fontFamily: "'Inter',sans-serif", color: "#94a3b8" }}>
               Powered by <strong style={{ color: "#570000" }}>ATP-Go</strong>
             </span>

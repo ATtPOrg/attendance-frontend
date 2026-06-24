@@ -33,7 +33,7 @@ export default function Navbar() {
       >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
-          <Image src="/logo_new.png" alt="ATP-Go" width={36} height={36} className="rounded-lg" />
+          <Image src="/logo.png" alt="ATP-Go" width={36} height={36} className="rounded-lg" />
           <span
             className="font-bold text-[15px] tracking-tight"
             style={{ fontFamily: "var(--font-syne)", color: "var(--charcoal)" }}
