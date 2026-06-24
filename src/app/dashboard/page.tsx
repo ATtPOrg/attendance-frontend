@@ -312,14 +312,19 @@ function WaitlistPanel({
 }) {
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [rejectingId, setRejectingId] = useState<string | null>(null);
+  const [rejectError, setRejectError] = useState<string | null>(null);
 
   const handleReject = async (id: string) => {
     setRejectingId(id);
+    setRejectError(null);
     try {
       await onReject(id);
+      setConfirmingId(null);
+    } catch (e) {
+      setRejectError(e instanceof Error ? e.message : "Failed to reject. Please try again.");
+      setConfirmingId(null);
     } finally {
       setRejectingId(null);
-      setConfirmingId(null);
     }
   };
 
@@ -353,6 +358,11 @@ function WaitlistPanel({
         </Link>
       </div>
 
+      {rejectError && (
+        <div className="mx-6 mt-4 px-4 py-2 rounded-lg text-[12px]" style={{ background: "#fee2e2", color: "#dc2626" }}>
+          {rejectError}
+        </div>
+      )}
       {loading ? (
         <p className="text-[13px] py-8 text-center" style={{ color: "#9ca3af" }}>Loading...</p>
       ) : pending.length === 0 ? (

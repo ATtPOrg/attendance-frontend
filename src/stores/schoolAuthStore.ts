@@ -44,7 +44,16 @@ export const useSchoolAuthStore = create<SchoolAuthStore>()(
         set({ admin: null, token: null, refreshToken: null });
       },
 
-      isAuthenticated: () => !!get().token,
+      isAuthenticated: () => {
+        const { token } = get();
+        if (!token) return false;
+        try {
+          const payload = JSON.parse(atob(token.split(".")[1]));
+          return payload.exp * 1000 > Date.now();
+        } catch {
+          return false;
+        }
+      },
     }),
     { name: "atp-school-auth" }
   )

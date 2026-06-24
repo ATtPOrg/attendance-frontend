@@ -17,7 +17,65 @@ export class ApiError extends Error {
   }
 }
 
+/** Normalise FastAPI `detail` into a human-readable string.
+ *  - string → returned as-is
+ *  - array (Pydantic 422 validation errors) → "field: message; field: message"
+ *  - anything else → generic fallback
+ */
+function extractDetail(detail: unknown): string {
+  if (typeof detail === "string") return detail;
+  if (Array.isArray(detail)) {
+    return detail
+      .map((e) => {
+        if (typeof e !== "object" || e === null) return String(e);
+        const d = e as { msg?: string; loc?: unknown[] };
+        const loc = Array.isArray(d.loc) ? d.loc : [];
+        const field = loc.length > 1 ? String(loc[loc.length - 1]) : null;
+        const msg = d.msg ?? "invalid value";
+        return field ? `${field}: ${msg}` : msg;
+      })
+      .join("; ");
+  }
+  return "An unexpected error occurred.";
+}
+
 type Portal = "admin" | "school";
+
+// Module-level refresh lock to prevent concurrent refresh races
+const _refreshing: Partial<Record<Portal, Promise<boolean>>> = {};
+
+async function tryRefresh(portal: Portal): Promise<boolean> {
+  if (_refreshing[portal]) return _refreshing[portal]!;
+  _refreshing[portal] = (async () => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS[portal]);
+      const refreshToken = raw ? JSON.parse(raw)?.state?.refreshToken : null;
+      if (!refreshToken) return false;
+      const endpoint = portal === "admin" ? "/admin/auth/refresh" : "/school-admin/auth/refresh";
+      const res = await fetch(`${API_URL}${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refreshToken }),
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      // Update localStorage directly (avoid import cycle with stores)
+      const stored = JSON.parse(localStorage.getItem(STORAGE_KEYS[portal]) ?? "{}");
+      stored.state = { ...stored.state, token: data.token, refreshToken: data.refreshToken };
+      if (data.user) stored.state.user = data.user;
+      if (data.admin) stored.state.admin = data.admin;
+      localStorage.setItem(STORAGE_KEYS[portal], JSON.stringify(stored));
+      return true;
+    } catch {
+      return false;
+    }
+  })();
+  try {
+    return await _refreshing[portal]!;
+  } finally {
+    delete _refreshing[portal];
+  }
+}
 
 // Tokens live in the zustand-persisted stores. Read them straight from
 // localStorage to avoid an import cycle (stores import this module for login).
@@ -85,14 +143,19 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     throw new ApiError(0, "Network error. Please check your connection.");
   }
 
-  if (res.status === 401 && portal && !path.includes("/auth/login")) {
+  if (res.status === 401 && portal && !path.includes("/auth/login") && !path.includes("/auth/refresh")) {
+    const refreshed = await tryRefresh(portal);
+    if (refreshed) return request<T>(path, options);
     handleUnauthorized(portal);
     throw new ApiError(401, "Session expired. Please sign in again.");
   }
 
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, data?.detail ?? `Request failed (${res.status}).`);
+    const msg = data?.detail !== undefined
+      ? extractDetail(data.detail)
+      : `Request failed (${res.status}).`;
+    throw new ApiError(res.status, msg);
   }
 
   if (res.status === 204) return undefined as T;
@@ -108,7 +171,10 @@ export async function downloadFile(path: string, portal: Portal, filename: strin
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    throw new ApiError(res.status, data?.detail ?? `Download failed (${res.status}).`);
+    const msg = data?.detail !== undefined
+      ? extractDetail(data.detail)
+      : `Download failed (${res.status}).`;
+    throw new ApiError(res.status, msg);
   }
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);
@@ -129,6 +195,10 @@ export const adminApi = {
   login: (email: string, password: string) =>
     request<{ token: string; refreshToken: string; user: AdminUser }>("/admin/auth/login", {
       method: "POST", body: { email, password },
+    }),
+  refresh: (refreshToken: string) =>
+    request<{ token: string; refreshToken: string; user: AdminUser }>("/admin/auth/refresh", {
+      method: "POST", body: { refreshToken },
     }),
   logout: () => a<void>("/admin/auth/logout", { method: "POST" }),
   changePassword: (oldPassword: string, newPassword: string) =>
