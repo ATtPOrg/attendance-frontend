@@ -122,7 +122,7 @@ export default function Waitlist() {
 
         {/* Left — copy */}
         <div>
-          <div className="section-label mb-6 text-[rgba(245,240,232,0.4)]">
+          <div className="section-label mb-6 text-[var(--accent-on-dark)]">
             Early Access
           </div>
           <h2
