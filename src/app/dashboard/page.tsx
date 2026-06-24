@@ -282,14 +282,15 @@ export default function DashboardPage() {
 }
 
 function waitlistOnboardUrl(entry: WaitlistEntry): string {
-  const p = new URLSearchParams({
-    from: entry.id,
-    sName: entry.schoolName,
-    aName: entry.contactName,
-    aEmail: entry.email,
-    ...(entry.phone ? { phone: entry.phone } : {}),
-    ...(entry.country ? { country: entry.country } : {}),
-  });
+  const p = new URLSearchParams({ from: entry.id, sName: entry.schoolName });
+  if (entry.shortName)        p.set("shortName",  entry.shortName);
+  if (entry.contactName)      p.set("aName",       entry.contactName);
+  if (entry.email)            p.set("aEmail",      entry.email);
+  if (entry.institutionEmail) p.set("iEmail",      entry.institutionEmail);
+  if (entry.phone)            p.set("phone",       entry.phone);
+  if (entry.country)          p.set("country",     entry.country);
+  if (entry.city)             p.set("city",        entry.city);
+  if (entry.address)          p.set("address",     entry.address);
   return `/dashboard/schools/new?${p.toString()}`;
 }
 

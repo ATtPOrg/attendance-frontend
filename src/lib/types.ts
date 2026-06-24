@@ -233,10 +233,14 @@ export interface AdminUser {
 export interface WaitlistEntry {
   id: string;
   schoolName: string;
+  shortName: string | null;
   contactName: string;
   email: string;
+  institutionEmail: string | null;
   phone: string | null;
   country: string | null;
+  city: string | null;
+  address: string | null;
   schoolType: string | null;
   estimatedUsers: number | null;
   message: string | null;

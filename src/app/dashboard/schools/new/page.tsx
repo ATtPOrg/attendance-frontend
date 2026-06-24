@@ -19,16 +19,16 @@ function NewSchoolForm() {
   const waitlistId = params.get("from") ?? "";
 
   const [form, setForm] = useState({
-    name: params.get("sName") ?? "",
-    shortName: "",
-    email: "",
-    phone: params.get("phone") ?? "",
-    country: params.get("country") ?? "Nigeria",
-    city: "",
-    address: "",
-    plan: "Starter",
-    adminName: params.get("aName") ?? "",
-    adminEmail: params.get("aEmail") ?? "",
+    name:       params.get("sName")    ?? "",
+    shortName:  params.get("shortName") ?? "",
+    email:      params.get("iEmail")   ?? "",
+    phone:      params.get("phone")    ?? "",
+    country:    params.get("country")  ?? "Nigeria",
+    city:       params.get("city")     ?? "",
+    address:    params.get("address")  ?? "",
+    plan:       "Starter",
+    adminName:  params.get("aName")    ?? "",
+    adminEmail: params.get("aEmail")   ?? "",
   });
 
   // If a waitlistId is present but no pre-fill came through params, it's a safety fallback.
