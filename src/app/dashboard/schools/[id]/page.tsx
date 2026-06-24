@@ -56,10 +56,10 @@ function FacultyModal({ faculty, open, onClose, onSave }: { faculty: Faculty | n
         </FormField>
         <FormField label="Header Color" id="fcolor">
           <div className="flex items-center gap-3">
-            <input type="color" value={form.color ?? "#9B6060"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" style={{ borderColor: "#e5e7eb" }} />
+            <input id="fcolor" type="color" aria-label="Custom color picker" value={form.color ?? "#9B6060"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" style={{ borderColor: "#e5e7eb" }} />
             <div className="flex gap-2">
               {FACULTY_COLORS.map((c) => (
-                <button key={c} onClick={() => set("color", c)} className="w-6 h-6 rounded-full border-2 transition-all" style={{ background: c, borderColor: form.color === c ? "#111827" : "transparent" }} />
+                <button key={c} aria-label={`Select color ${c}`} onClick={() => set("color", c)} className="w-6 h-6 rounded-full border-2 transition-all" style={{ background: c, borderColor: form.color === c ? "#111827" : "transparent" }} />
               ))}
             </div>
           </div>
@@ -445,8 +445,8 @@ function FacultiesTab({ schoolId }: { schoolId: string }) {
                 <div className="text-[12px] text-white/70">Dean: {f.dean || "Not assigned"}</div>
               </div>
               <div className="flex gap-1">
-                <button onClick={() => setEditTarget(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Pencil size={14} color="white" /></button>
-                <button onClick={() => setDeleteTarget(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Trash2 size={14} color="white" /></button>
+                <button aria-label={`Edit ${f.name}`} onClick={() => setEditTarget(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Pencil size={14} color="white" /></button>
+                <button aria-label={`Delete ${f.name}`} onClick={() => setDeleteTarget(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Trash2 size={14} color="white" /></button>
               </div>
             </div>
             <div className="px-5 py-4 grid grid-cols-3 gap-2 text-center">
@@ -524,7 +524,7 @@ function DepartmentsTab({ schoolId }: { schoolId: string }) {
         <div className="flex gap-2">
           <div className="flex items-center gap-2 px-3 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
             <Search size={14} color="#9ca3af" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search departments..." className="text-[13px] outline-none bg-transparent w-40" style={{ color: "#111827" }} />
+            <input aria-label="Search departments" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search departments..." className="text-[13px] outline-none bg-transparent w-40" style={{ color: "#111827" }} />
           </div>
           <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium" style={{ background: "#FED65B", color: "#570000" }}>
             <Plus size={14} /> Add Department
@@ -560,8 +560,8 @@ function DepartmentsTab({ schoolId }: { schoolId: string }) {
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex gap-1.5">
-                      <button onClick={() => setEditTarget(d)} className="p-1.5 rounded-lg hover:bg-[#FFF8F6] transition-colors"><Pencil size={13} color="#570000" /></button>
-                      <button onClick={() => setDeleteTarget(d)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors"><Trash2 size={13} color="#ef4444" /></button>
+                      <button aria-label={`Edit ${d.name}`} onClick={() => setEditTarget(d)} className="p-1.5 rounded-lg hover:bg-[#FFF8F6] transition-colors"><Pencil size={13} color="#570000" /></button>
+                      <button aria-label={`Delete ${d.name}`} onClick={() => setDeleteTarget(d)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors"><Trash2 size={13} color="#ef4444" /></button>
                     </div>
                   </td>
                 </tr>

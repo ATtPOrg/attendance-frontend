@@ -1,6 +1,6 @@
 // API client for the ATP-Go web admin. Every endpoint here is documented in api.md.
 import type {
-  School, Student, Professor, Course, Faculty, Department,
+  School, Student, Professor, Course, CourseLecturer, Faculty, Department,
   AttendanceSession, TrendPoint, DeptPerformance, ActivityItem,
   AdminOverview, SchoolDashboard, BillingSummary, Invoice, ApiKey,
   LoginSession, PlatformConfig, NotificationPrefs, WebhookConfig,
@@ -345,10 +345,19 @@ export const schoolApi = {
   // Courses
   courses: {
     list: () => s<Course[]>("/school-admin/courses"),
-    create: (body: Partial<Course>) => s<Course>("/school-admin/courses", { method: "POST", body }),
-    update: (id: string, body: Partial<Course>) =>
+    create: (body: Partial<Course> & { lecturerIds?: string[] }) =>
+      s<Course>("/school-admin/courses", { method: "POST", body }),
+    update: (id: string, body: Partial<Course> & { lecturerIds?: string[] }) =>
       s<Course>(`/school-admin/courses/${id}`, { method: "PUT", body }),
     remove: (id: string) => s<void>(`/school-admin/courses/${id}`, { method: "DELETE" }),
+    lecturers: (courseId: string) =>
+      s<CourseLecturer[]>(`/school-admin/courses/${courseId}/lecturers`),
+    addLecturer: (courseId: string, professorId: string) =>
+      s<CourseLecturer>(`/school-admin/courses/${courseId}/lecturers`, {
+        method: "POST", body: { professorId },
+      }),
+    removeLecturer: (courseId: string, lecturerId: string) =>
+      s<void>(`/school-admin/courses/${courseId}/lecturers/${lecturerId}`, { method: "DELETE" }),
   },
 
   // Faculties & departments

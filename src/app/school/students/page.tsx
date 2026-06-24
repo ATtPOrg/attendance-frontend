@@ -191,13 +191,13 @@ export default function SchoolStudentsPage() {
           <div className="flex gap-2 flex-wrap">
             <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
               <Search size={14} color="#9ca3af" />
-              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Name or matric number..." className="text-[13px] outline-none w-48 bg-transparent" style={{ color: "#111827" }} />
+              <input aria-label="Search students" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Name or matric number..." className="text-[13px] outline-none w-48 bg-transparent" style={{ color: "#111827" }} />
             </div>
-            <select value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by level" value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
               <option value="all">All Levels</option>
               {LEVELS.map((l) => <option key={l}>{l}L</option>)}
             </select>
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
               <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="suspended">Suspended</option>
@@ -259,8 +259,8 @@ export default function SchoolStudentsPage() {
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex gap-2">
-                        <button onClick={() => setEditTarget(s)} className="p-1.5 rounded-lg hover:bg-[#FFF8F6] transition-colors"><Pencil size={13} color="#570000" /></button>
-                        <button onClick={() => setDeleteTarget(s)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors"><Trash2 size={13} color="#ef4444" /></button>
+                        <button aria-label={`Edit ${s.name}`} onClick={() => setEditTarget(s)} className="p-1.5 rounded-lg hover:bg-[#FFF8F6] transition-colors"><Pencil size={13} color="#570000" /></button>
+                        <button aria-label={`Delete ${s.name}`} onClick={() => setDeleteTarget(s)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors"><Trash2 size={13} color="#ef4444" /></button>
                       </div>
                     </td>
                   </tr>

@@ -157,13 +157,13 @@ export default function SchoolAttendancePage() {
           <div className="flex gap-2 flex-wrap">
             <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
               <Search size={14} color="#9ca3af" />
-              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search sessions..." className="text-[13px] outline-none w-52 bg-transparent" style={{ color: "#111827" }} />
+              <input aria-label="Search sessions" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search sessions..." className="text-[13px] outline-none w-52 bg-transparent" style={{ color: "#111827" }} />
             </div>
-            <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by session type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
               <option value="all">All Types</option>
               {sessionTypes.map((t) => <option key={t}>{t}</option>)}
             </select>
-            <select value={verifiedFilter} onChange={(e) => setVerifiedFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by verification status" value={verifiedFilter} onChange={(e) => setVerifiedFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
               <option value="all">All Sessions</option>
               <option value="verified">Verified Only</option>
               <option value="pending">Pending Only</option>

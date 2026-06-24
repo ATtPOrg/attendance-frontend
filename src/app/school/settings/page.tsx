@@ -42,7 +42,7 @@ function Toggle({ label, description, checked, onChange }: { label: string; desc
         <div className="text-[14px] font-medium" style={{ color: "#111827" }}>{label}</div>
         {description && <div className="text-[12px] mt-0.5" style={{ color: "#9ca3af" }}>{description}</div>}
       </div>
-      <button onClick={() => onChange(!checked)} className="relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-8" style={{ background: checked ? "#570000" : "#e5e7eb" }}>
+      <button role="switch" aria-checked={checked} aria-label={label} onClick={() => onChange(!checked)} className="relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-8" style={{ background: checked ? "#570000" : "#e5e7eb" }}>
         <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all" style={{ left: checked ? "22px" : "2px" }} />
       </button>
     </div>
@@ -341,7 +341,7 @@ function SecuritySection() {
                 value={pw[k]}
                 onChange={(e) => setPw((p) => ({ ...p, [k]: e.target.value }))}
               />
-              <button type="button" onClick={() => setShow((p) => ({ ...p, [k]: !p[k] }))} className="absolute right-3 top-1/2 -translate-y-1/2">
+              <button type="button" aria-label={show[k] ? "Hide password" : "Show password"} onClick={() => setShow((p) => ({ ...p, [k]: !p[k] }))} className="absolute right-3 top-1/2 -translate-y-1/2">
                 {show[k] ? <EyeOff size={15} color="#9ca3af" /> : <Eye size={15} color="#9ca3af" />}
               </button>
             </div>

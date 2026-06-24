@@ -233,9 +233,9 @@ export default function SchoolProfessorsPage() {
           <div className="flex gap-2 flex-wrap">
             <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
               <Search size={14} color="#9ca3af" />
-              <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search professors..." className="text-[13px] outline-none w-48 bg-transparent" style={{ color: "#111827" }} />
+              <input aria-label="Search professors" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search professors..." className="text-[13px] outline-none w-48 bg-transparent" style={{ color: "#111827" }} />
             </div>
-            <select value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by department" value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
               <option value="all">All Departments</option>
               {departments.map((d) => <option key={d}>{d}</option>)}
             </select>

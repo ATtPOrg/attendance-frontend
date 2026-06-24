@@ -44,10 +44,10 @@ function FacultyModal({ faculty, open, onClose, onSave, colorIndex }: { faculty:
         </FormField>
         <FormField label="Header Color" id="fcolor">
           <div className="flex items-center gap-3">
-            <input type="color" value={form.color ?? "#9B6060"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" style={{ borderColor: "#e5e7eb" }} />
+            <input id="fcolor" type="color" aria-label="Custom color picker" value={form.color ?? "#9B6060"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" style={{ borderColor: "#e5e7eb" }} />
             <div className="flex gap-2">
               {FACULTY_COLORS.map((c) => (
-                <button key={c} onClick={() => set("color", c)} className="w-6 h-6 rounded-full border-2 transition-all" style={{ background: c, borderColor: form.color === c ? "#111827" : "transparent" }} />
+                <button key={c} aria-label={`Select color ${c}`} onClick={() => set("color", c)} className="w-6 h-6 rounded-full border-2 transition-all" style={{ background: c, borderColor: form.color === c ? "#111827" : "transparent" }} />
               ))}
             </div>
           </div>
@@ -205,7 +205,7 @@ export default function SchoolDepartmentsPage() {
             {activeView === "departments" && (
               <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
                 <Search size={14} color="#9ca3af" />
-                <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search departments..." className="text-[13px] outline-none w-44 bg-transparent" style={{ color: "#111827" }} />
+                <input aria-label="Search departments" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search departments..." className="text-[13px] outline-none w-44 bg-transparent" style={{ color: "#111827" }} />
               </div>
             )}
             <button
@@ -230,8 +230,8 @@ export default function SchoolDepartmentsPage() {
                       <div className="text-[12px] text-white/70">Dean: {f.dean || "Not assigned"}</div>
                     </div>
                     <div className="flex gap-1">
-                      <button onClick={() => setEditFaculty(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Pencil size={13} color="white" /></button>
-                      <button onClick={() => setDeleteFaculty(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Trash2 size={13} color="white" /></button>
+                      <button aria-label={`Edit ${f.name}`} onClick={() => setEditFaculty(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Pencil size={13} color="white" /></button>
+                      <button aria-label={`Delete ${f.name}`} onClick={() => setDeleteFaculty(f)} className="p-1.5 rounded hover:bg-white/20 transition-colors"><Trash2 size={13} color="white" /></button>
                     </div>
                   </div>
                   <div className="px-5 py-4 grid grid-cols-3 text-center gap-2">
@@ -288,8 +288,8 @@ export default function SchoolDepartmentsPage() {
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex gap-1.5">
-                          <button onClick={() => setEditDept(d)} className="p-1.5 rounded-lg hover:bg-[#FFF8F6]"><Pencil size={13} color="#570000" /></button>
-                          <button onClick={() => setDeleteDept(d)} className="p-1.5 rounded-lg hover:bg-red-50"><Trash2 size={13} color="#ef4444" /></button>
+                          <button aria-label={`Edit ${d.name}`} onClick={() => setEditDept(d)} className="p-1.5 rounded-lg hover:bg-[#FFF8F6]"><Pencil size={13} color="#570000" /></button>
+                          <button aria-label={`Delete ${d.name}`} onClick={() => setDeleteDept(d)} className="p-1.5 rounded-lg hover:bg-red-50"><Trash2 size={13} color="#ef4444" /></button>
                         </div>
                       </td>
                     </tr>

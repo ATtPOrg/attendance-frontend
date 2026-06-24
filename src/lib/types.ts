@@ -46,6 +46,12 @@ export interface Professor {
   temporaryPassword?: string | null;
 }
 
+export interface CourseLecturer {
+  id: string;
+  name: string | null;
+  email: string;
+}
+
 export interface Course {
   id: string;
   code: string;
@@ -58,6 +64,7 @@ export interface Course {
   level: string;
   attendanceRate: number;
   status: "active" | "inactive";
+  lecturers?: CourseLecturer[];
 }
 
 export interface Faculty {

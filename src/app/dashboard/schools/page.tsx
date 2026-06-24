@@ -101,7 +101,7 @@ function SchoolMenu({ school, onEdit, onDelete, onToggle }: { school: School; on
   const [open, setOpen] = useState(false);
   return (
     <div className="relative">
-      <button className="p-1 rounded hover:bg-gray-100 transition-colors" onClick={() => setOpen((v) => !v)}>
+      <button aria-label="More options" aria-expanded={open} className="p-1 rounded hover:bg-gray-100 transition-colors" onClick={() => setOpen((v) => !v)}>
         <MoreVertical size={16} color="#9ca3af" />
       </button>
       {open && (
@@ -215,6 +215,7 @@ function SchoolsPageInner() {
             <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
               <Search size={14} color="#9ca3af" />
               <input
+                aria-label="Search schools"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search schools..."
