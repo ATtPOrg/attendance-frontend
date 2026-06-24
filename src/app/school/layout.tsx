@@ -60,7 +60,7 @@ export default function SchoolLayout({ children }: { children: React.ReactNode }
   }
 
   return (
-    <div className="min-h-screen" style={{ background: "#f3f4f6" }}>
+    <div className="min-h-screen bg-gray-100">
       <SchoolSidebar />
       <div className="ml-0 md:ml-64 min-h-screen">
         {children}

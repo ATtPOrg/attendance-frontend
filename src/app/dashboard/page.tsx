@@ -55,10 +55,10 @@ export default function DashboardPage() {
 
   const o = overview.data;
   const statCards = [
-    { label: "Total Schools", value: o.totalSchools.toLocaleString(), change: o.schoolsChange, icon: School, color: "#570000", bg: "#F0D5CE" },
-    { label: "Total Students", value: o.totalStudents.toLocaleString(), change: o.studentsChange, icon: Users, color: "#570000", bg: "#F0D5CE" },
-    { label: "Active Courses", value: o.activeCourses.toLocaleString(), change: o.coursesChange, icon: BookOpen, color: "#0891b2", bg: "#ecfeff" },
-    { label: "Avg Attendance", value: `${o.avgAttendance}%`, change: o.attendanceChange, icon: TrendingUp, color: "#059669", bg: "#ecfdf5" },
+    { label: "Total Schools", value: o.totalSchools.toLocaleString(), change: o.schoolsChange, icon: School, color: "#570000", bgClass: "bg-sp-card" },
+    { label: "Total Students", value: o.totalStudents.toLocaleString(), change: o.studentsChange, icon: Users, color: "#570000", bgClass: "bg-sp-card" },
+    { label: "Active Courses", value: o.activeCourses.toLocaleString(), change: o.coursesChange, icon: BookOpen, color: "#0891b2", bgClass: "bg-cyan-50" },
+    { label: "Avg Attendance", value: `${o.avgAttendance}%`, change: o.attendanceChange, icon: TrendingUp, color: "#059669", bgClass: "bg-emerald-50" },
   ];
 
   const pendingItems = [
@@ -66,24 +66,27 @@ export default function DashboardPage() {
       label: "Pending Onboarding",
       count: o.pending.pendingWaitlist,
       priority: "high",
-      color: "#d97706",
-      bg: "#fffbeb",
+      badgeBgClass: "bg-amber-600",
+      textClass: "text-amber-600",
+      cardBgClass: "bg-amber-50",
       href: "#waitlist",
     },
     {
       label: "Trial Accounts",
       count: o.pending.trialExpirations,
       priority: "medium",
-      color: "#f59e0b",
-      bg: "#fff7ed",
+      badgeBgClass: "bg-amber-500",
+      textClass: "text-amber-500",
+      cardBgClass: "bg-orange-50",
       href: "/dashboard/schools?status=trial",
     },
     {
       label: "Inactive Schools",
       count: o.pending.inactiveAccounts,
       priority: "low",
-      color: "#6b7280",
-      bg: "#f9fafb",
+      badgeBgClass: "bg-gray-500",
+      textClass: "text-gray-500",
+      cardBgClass: "bg-gray-50",
       href: "/dashboard/schools?status=inactive",
     },
   ];
@@ -94,12 +97,9 @@ export default function DashboardPage() {
 
       <div className="p-8 space-y-6">
         {/* Welcome banner */}
-        <div
-          className="rounded-xl px-8 py-6"
-          style={{ background: "linear-gradient(135deg, #570000 0%, #3D0000 100%)" }}
-        >
+        <div className="rounded-xl px-8 py-6 bg-gradient-to-br from-sp-primary to-[#3D0000]">
           <h2 className="text-[20px] font-bold text-white mb-1">Welcome back, {user?.name ?? "Admin"}</h2>
-          <p className="text-[14px] text-[#9B6060]">
+          <p className="text-[14px] text-sp-mid">
             Here&apos;s what&apos;s happening across all your institutions today.
           </p>
         </div>
@@ -107,21 +107,20 @@ export default function DashboardPage() {
         {/* Stat cards */}
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
           {statCards.map((s) => (
-            <div key={s.label} className="bg-white rounded-xl p-5 border" style={{ borderColor: "#e5e7eb" }}>
+            <div key={s.label} className="bg-white rounded-xl p-5 border border-gray-200">
               <div className="flex items-start justify-between mb-4">
                 <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center"
-                  style={{ background: s.bg }}
+                  className={`w-10 h-10 rounded-lg flex items-center justify-center ${s.bgClass}`}
                 >
                   <s.icon size={20} color={s.color} strokeWidth={2} />
                 </div>
                 <ArrowUpRight size={16} color="#10b981" strokeWidth={2} />
               </div>
-              <div className="text-[26px] font-bold mb-1" style={{ color: "#111827", fontFamily: "'Inter',sans-serif" }}>
+              <div className="text-[26px] font-bold mb-1 text-gray-900">
                 {s.value}
               </div>
-              <div className="text-[13px] mb-1" style={{ color: "#6b7280" }}>{s.label}</div>
-              <div className="text-[12px] font-medium" style={{ color: "#10b981" }}>{s.change}</div>
+              <div className="text-[13px] mb-1 text-gray-500">{s.label}</div>
+              <div className="text-[12px] font-medium text-[#10b981]">{s.change}</div>
             </div>
           ))}
         </div>
@@ -129,9 +128,9 @@ export default function DashboardPage() {
         {/* Charts row */}
         <div className="grid xl:grid-cols-2 gap-4">
           {/* Attendance Trend */}
-          <div className="bg-white rounded-xl p-6 border" style={{ borderColor: "#e5e7eb" }}>
-            <h3 className="text-[15px] font-semibold mb-1" style={{ color: "#111827" }}>Attendance Trend</h3>
-            <p className="text-[12px] mb-6" style={{ color: "#9ca3af" }}>Monthly attendance rate across all institutions</p>
+          <div className="bg-white rounded-xl p-6 border border-gray-200">
+            <h3 className="text-[15px] font-semibold mb-1 text-gray-900">Attendance Trend</h3>
+            <p className="text-[12px] mb-6 text-gray-400">Monthly attendance rate across all institutions</p>
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={trend.data ?? []}>
                 <defs>
@@ -152,9 +151,9 @@ export default function DashboardPage() {
           </div>
 
           {/* Department Performance */}
-          <div className="bg-white rounded-xl p-6 border" style={{ borderColor: "#e5e7eb" }}>
-            <h3 className="text-[15px] font-semibold mb-1" style={{ color: "#111827" }}>Department Performance</h3>
-            <p className="text-[12px] mb-6" style={{ color: "#9ca3af" }}>Attendance by department</p>
+          <div className="bg-white rounded-xl p-6 border border-gray-200">
+            <h3 className="text-[15px] font-semibold mb-1 text-gray-900">Department Performance</h3>
+            <p className="text-[12px] mb-6 text-gray-400">Attendance by department</p>
             <ResponsiveContainer width="100%" height={200}>
               <BarChart data={deptPerf.data ?? []} barSize={28}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" vertical={false} />
@@ -170,52 +169,46 @@ export default function DashboardPage() {
         {/* Bottom row */}
         <div className="grid xl:grid-cols-3 gap-4">
           {/* Recent Activity */}
-          <div className="xl:col-span-2 bg-white rounded-xl p-6 border" style={{ borderColor: "#e5e7eb" }}>
-            <h3 className="text-[15px] font-semibold mb-1" style={{ color: "#111827" }}>Recent Activity</h3>
-            <p className="text-[12px] mb-5" style={{ color: "#9ca3af" }}>Latest system events</p>
+          <div className="xl:col-span-2 bg-white rounded-xl p-6 border border-gray-200">
+            <h3 className="text-[15px] font-semibold mb-1 text-gray-900">Recent Activity</h3>
+            <p className="text-[12px] mb-5 text-gray-400">Latest system events</p>
             <div className="space-y-4">
               {(activity.data ?? []).map((item) => (
-                <div key={item.id} className="flex items-start gap-3 pb-4 border-b last:border-0" style={{ borderColor: "#f3f4f6" }}>
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                    style={{ background: "#f3f4f6" }}
-                  >
+                <div key={item.id} className="flex items-start gap-3 pb-4 border-b last:border-0 border-gray-100">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 bg-gray-100">
                     {(() => { const Icon = activityIcons[item.type]; return Icon ? <Icon size={15} color="#6b7280" /> : <span className="w-1.5 h-1.5 rounded-full bg-gray-400" />; })()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] font-medium" style={{ color: "#111827" }}>{item.action}</div>
-                    <div className="text-[12px]" style={{ color: "#6b7280" }}>{item.subject}</div>
+                    <div className="text-[13px] font-medium text-gray-900">{item.action}</div>
+                    <div className="text-[12px] text-gray-500">{item.subject}</div>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <Clock size={11} color="#9ca3af" />
-                    <span className="text-[11px]" style={{ color: "#9ca3af" }}>{item.time}</span>
+                    <span className="text-[11px] text-gray-400">{item.time}</span>
                   </div>
                 </div>
               ))}
               {(activity.data ?? []).length === 0 && (
-                <p className="text-[13px] py-6 text-center" style={{ color: "#9ca3af" }}>No recent activity.</p>
+                <p className="text-[13px] py-6 text-center text-gray-400">No recent activity.</p>
               )}
             </div>
           </div>
 
           {/* Pending Actions */}
-          <div className="bg-white rounded-xl p-6 border" style={{ borderColor: "#e5e7eb" }}>
-            <h3 className="text-[15px] font-semibold mb-1" style={{ color: "#111827" }}>Pending Actions</h3>
-            <p className="text-[12px] mb-5" style={{ color: "#9ca3af" }}>Items requiring review</p>
+          <div className="bg-white rounded-xl p-6 border border-gray-200">
+            <h3 className="text-[15px] font-semibold mb-1 text-gray-900">Pending Actions</h3>
+            <p className="text-[12px] mb-5 text-gray-400">Items requiring review</p>
             <div className="space-y-4">
               {pendingItems.map((p) => (
-                <Link key={p.label} href={p.href} className="block p-4 rounded-lg" style={{ background: p.bg }}>
+                <Link key={p.label} href={p.href} className={`block p-4 rounded-lg ${p.cardBgClass}`}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[13px] font-medium" style={{ color: "#111827" }}>{p.label}</span>
-                    <span
-                      className="text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-medium"
-                      style={{ background: p.color, color: "white" }}
-                    >
+                    <span className="text-[13px] font-medium text-gray-900">{p.label}</span>
+                    <span className={`text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full font-medium text-white ${p.badgeBgClass}`}>
                       {p.priority}
                     </span>
                   </div>
-                  <div className="text-[26px] font-bold" style={{ color: p.color }}>{p.count}</div>
-                  <span className="flex items-center gap-1 text-[12px] font-medium mt-1" style={{ color: p.color }}>
+                  <div className={`text-[26px] font-bold ${p.textClass}`}>{p.count}</div>
+                  <span className={`flex items-center gap-1 text-[12px] font-medium mt-1 ${p.textClass}`}>
                     Review →
                   </span>
                 </Link>
@@ -225,48 +218,47 @@ export default function DashboardPage() {
         </div>
 
         {/* Schools preview */}
-        <div className="bg-white rounded-xl border" style={{ borderColor: "#e5e7eb" }}>
-          <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "#e5e7eb" }}>
+        <div className="bg-white rounded-xl border border-gray-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
             <div>
-              <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Onboarded Schools</h3>
-              <p className="text-[12px]" style={{ color: "#9ca3af" }}>All institutions on the platform</p>
+              <h3 className="text-[15px] font-semibold text-gray-900">Onboarded Schools</h3>
+              <p className="text-[12px] text-gray-400">All institutions on the platform</p>
             </div>
-            <Link href="/dashboard/schools" className="flex items-center gap-1 text-[13px] font-medium" style={{ color: "#570000" }}>
+            <Link href="/dashboard/schools" className="flex items-center gap-1 text-[13px] font-medium text-sp-primary">
               View all <ArrowRight size={13} />
             </Link>
           </div>
-          <div className="divide-y" style={{ borderColor: "#f3f4f6" }}>
+          <div className="divide-y divide-gray-100">
             {(schools.data ?? []).slice(0, 4).map((school) => (
               <div key={school.id} className="flex items-center gap-4 px-6 py-4">
-                <div
-                  className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0"
-                  style={{ background: "#570000" }}
-                >
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0 bg-sp-primary">
                   {school.shortName.charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-[14px] font-semibold truncate" style={{ color: "#111827" }}>{school.name}</div>
-                  <div className="text-[12px]" style={{ color: "#9ca3af" }}>{school.city} · {school.plan}</div>
+                  <div className="text-[14px] font-semibold truncate text-gray-900">{school.name}</div>
+                  <div className="text-[12px] text-gray-400">{school.city} · {school.plan}</div>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <div className="text-[13px] font-semibold" style={{ color: "#111827" }}>
+                  <div className="text-[13px] font-semibold text-gray-900">
                     {school.avgAttendance > 0 ? `${school.avgAttendance}%` : "—"}
                   </div>
-                  <div className="text-[11px]" style={{ color: "#9ca3af" }}>avg attendance</div>
+                  <div className="text-[11px] text-gray-400">avg attendance</div>
                 </div>
                 <span
-                  className="text-[11px] px-2.5 py-1 rounded-full font-medium flex-shrink-0"
-                  style={{
-                    background: school.status === "active" ? "#ecfdf5" : school.status === "trial" ? "#fffbeb" : "#f3f4f6",
-                    color: school.status === "active" ? "#059669" : school.status === "trial" ? "#d97706" : "#6b7280",
-                  }}
+                  className={`text-[11px] px-2.5 py-1 rounded-full font-medium flex-shrink-0 ${
+                    school.status === "active"
+                      ? "bg-emerald-50 text-emerald-600"
+                      : school.status === "trial"
+                      ? "bg-amber-50 text-amber-600"
+                      : "bg-gray-100 text-gray-500"
+                  }`}
                 >
                   {school.status}
                 </span>
               </div>
             ))}
             {(schools.data ?? []).length === 0 && (
-              <p className="text-[13px] py-8 text-center" style={{ color: "#9ca3af" }}>No schools onboarded yet.</p>
+              <p className="text-[13px] py-8 text-center text-gray-400">No schools onboarded yet.</p>
             )}
           </div>
         </div>
@@ -333,106 +325,93 @@ function WaitlistPanel({
   const rejectedCount = entries.filter((e) => e.status === "rejected").length;
 
   return (
-    <div className="bg-white rounded-xl border" style={{ borderColor: "#e5e7eb" }}>
-      <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "#e5e7eb" }}>
+    <div className="bg-white rounded-xl border border-gray-200">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
         <div>
-          <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>
+          <h3 className="text-[15px] font-semibold text-gray-900">
             Waitlist
             {pending.length > 0 && (
-              <span
-                className="ml-2 text-[11px] px-2 py-0.5 rounded-full font-medium"
-                style={{ background: "#fffbeb", color: "#d97706" }}
-              >
+              <span className="ml-2 text-[11px] px-2 py-0.5 rounded-full font-medium bg-amber-50 text-amber-600">
                 {pending.length} pending
               </span>
             )}
           </h3>
-          <p className="text-[12px]" style={{ color: "#9ca3af" }}>Schools waiting to be onboarded</p>
+          <p className="text-[12px] text-gray-400">Schools waiting to be onboarded</p>
         </div>
         <Link
           href="/dashboard/schools/new"
-          className="flex items-center gap-1 text-[13px] font-medium px-3 py-1.5 rounded-lg"
-          style={{ background: "#570000", color: "#ffffff" }}
+          className="flex items-center gap-1 text-[13px] font-medium px-3 py-1.5 rounded-lg bg-sp-primary text-white"
         >
           Onboard new <ArrowRight size={13} />
         </Link>
       </div>
 
       {rejectError && (
-        <div className="mx-6 mt-4 px-4 py-2 rounded-lg text-[12px]" style={{ background: "#fee2e2", color: "#dc2626" }}>
+        <div className="mx-6 mt-4 px-4 py-2 rounded-lg text-[12px] bg-red-100 text-red-600">
           {rejectError}
         </div>
       )}
       {loading ? (
-        <p className="text-[13px] py-8 text-center" style={{ color: "#9ca3af" }}>Loading...</p>
+        <p className="text-[13px] py-8 text-center text-gray-400">Loading...</p>
       ) : pending.length === 0 ? (
-        <p className="text-[13px] py-8 text-center" style={{ color: "#9ca3af" }}>No pending waitlist submissions.</p>
+        <p className="text-[13px] py-8 text-center text-gray-400">No pending waitlist submissions.</p>
       ) : (
-        <div className="divide-y" style={{ borderColor: "#f3f4f6" }}>
+        <div className="divide-y divide-gray-100">
           {pending.slice(0, 8).map((entry) => (
             <div key={entry.id} className="flex items-start gap-4 px-6 py-4">
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5"
-                style={{ background: "#F0D5CE", color: "#570000" }}
-              >
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5 bg-sp-card text-sp-primary">
                 {entry.schoolName.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-[14px] font-semibold truncate" style={{ color: "#111827" }}>{entry.schoolName}</div>
+                <div className="text-[14px] font-semibold truncate text-gray-900">{entry.schoolName}</div>
                 <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-0.5">
-                  <span className="flex items-center gap-1 text-[12px]" style={{ color: "#6b7280" }}>
+                  <span className="flex items-center gap-1 text-[12px] text-gray-500">
                     <Users size={11} /> {entry.contactName}
                   </span>
-                  <span className="flex items-center gap-1 text-[12px]" style={{ color: "#6b7280" }}>
+                  <span className="flex items-center gap-1 text-[12px] text-gray-500">
                     <Mail size={11} /> {entry.email}
                   </span>
                   {entry.country && (
-                    <span className="flex items-center gap-1 text-[12px]" style={{ color: "#6b7280" }}>
+                    <span className="flex items-center gap-1 text-[12px] text-gray-500">
                       <Globe size={11} /> {entry.country}
                     </span>
                   )}
                   {entry.estimatedUsers && (
-                    <span className="flex items-center gap-1 text-[12px]" style={{ color: "#6b7280" }}>
+                    <span className="flex items-center gap-1 text-[12px] text-gray-500">
                       <Hash size={11} /> {entry.estimatedUsers} users
                     </span>
                   )}
                 </div>
                 {entry.message && (
-                  <p className="text-[12px] mt-1 line-clamp-1" style={{ color: "#9ca3af" }}>{entry.message}</p>
+                  <p className="text-[12px] mt-1 line-clamp-1 text-gray-400">{entry.message}</p>
                 )}
               </div>
               <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                <span
-                  className="text-[11px] px-2.5 py-1 rounded-full font-medium"
-                  style={{ background: "#fffbeb", color: "#d97706" }}
-                >
+                <span className="text-[11px] px-2.5 py-1 rounded-full font-medium bg-amber-50 text-amber-600">
                   pending
                 </span>
-                <span className="text-[11px]" style={{ color: "#9ca3af" }}>
+                <span className="text-[11px] text-gray-400">
                   {new Date(entry.createdAt).toLocaleDateString()}
                 </span>
                 <Link
                   href={waitlistOnboardUrl(entry)}
-                  className="flex items-center gap-1 text-[12px] font-semibold"
-                  style={{ color: "#570000" }}
+                  className="flex items-center gap-1 text-[12px] font-semibold text-sp-primary"
                 >
                   Onboard <ArrowRight size={11} />
                 </Link>
                 {confirmingId === entry.id ? (
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[11px]" style={{ color: "#6b7280" }}>Reject?</span>
+                    <span className="text-[11px] text-gray-500">Reject?</span>
                     <button
                       onClick={() => handleReject(entry.id)}
                       disabled={rejectingId === entry.id}
-                      className="text-[11px] font-medium px-2 py-0.5 rounded"
-                      style={{ background: "#fee2e2", color: "#dc2626" }}
+                      className="text-[11px] font-medium px-2 py-0.5 rounded bg-red-100 text-red-600"
                     >
                       {rejectingId === entry.id ? <Loader2 size={10} className="animate-spin" /> : "Yes"}
                     </button>
                     <button
                       onClick={() => setConfirmingId(null)}
-                      className="text-[11px] font-medium px-2 py-0.5 rounded"
-                      style={{ background: "#f3f4f6", color: "#6b7280" }}
+                      className="text-[11px] font-medium px-2 py-0.5 rounded bg-gray-100 text-gray-500"
                     >
                       No
                     </button>
@@ -440,8 +419,7 @@ function WaitlistPanel({
                 ) : (
                   <button
                     onClick={() => setConfirmingId(entry.id)}
-                    className="flex items-center gap-1 text-[11px] font-medium"
-                    style={{ color: "#9ca3af" }}
+                    className="flex items-center gap-1 text-[11px] font-medium text-gray-400"
                   >
                     <X size={11} /> Reject
                   </button>
@@ -453,7 +431,7 @@ function WaitlistPanel({
       )}
 
       {approvedCount + rejectedCount > 0 && (
-        <div className="px-6 py-3 border-t text-[12px]" style={{ borderColor: "#f3f4f6", color: "#9ca3af" }}>
+        <div className="px-6 py-3 border-t border-gray-100 text-[12px] text-gray-400">
           {approvedCount} approved · {rejectedCount} rejected
         </div>
       )}

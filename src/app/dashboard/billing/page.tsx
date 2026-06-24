@@ -9,16 +9,16 @@ import { Search, Download, CreditCard, TrendingUp, AlertCircle, Loader2 } from "
 import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
-const planColors = {
-  Enterprise: { bg: "#F0D5CE", text: "#570000" },
-  Professional: { bg: "#F0D5CE", text: "#570000" },
-  Starter: { bg: "#f0fdf4", text: "#16a34a" },
+const planBadgeClass = {
+  Enterprise: "bg-sp-card text-sp-primary",
+  Professional: "bg-sp-card text-sp-primary",
+  Starter: "bg-[#f0fdf4] text-green-600",
 };
 
-const statusColors = {
-  active: { bg: "#ecfdf5", text: "#059669" },
-  trial: { bg: "#fffbeb", text: "#d97706" },
-  inactive: { bg: "#f3f4f6", text: "#6b7280" },
+const statusBadgeClass = {
+  active: "bg-emerald-50 text-emerald-600",
+  trial: "bg-amber-50 text-amber-600",
+  inactive: "bg-gray-100 text-gray-500",
 };
 
 const formatNaira = (n: number) => `₦${n.toLocaleString()}`;
@@ -53,19 +53,18 @@ function ChangePlanModal({ school, planPrices, open, onClose, onSave }: {
       <div className="space-y-4">
         <div className="grid gap-3">
           {["Starter", "Professional", "Enterprise"].map((p) => {
-            const pc = planColors[p as keyof typeof planColors];
+            const badgeClass = planBadgeClass[p as keyof typeof planBadgeClass];
             return (
               <button
                 key={p}
                 onClick={() => setPlan(p)}
-                className="flex items-center justify-between p-4 rounded-xl border-2 transition-all text-left"
-                style={{ borderColor: plan === p ? "#570000" : "#e5e7eb", background: plan === p ? "#FFF8F6" : "#fff" }}
+                className={`flex items-center justify-between p-4 rounded-xl border-2 transition-all text-left ${plan === p ? "border-sp-primary bg-sp-surface" : "border-gray-200 bg-white"}`}
               >
                 <div>
-                  <div className="text-[14px] font-semibold" style={{ color: "#111827" }}>{p}</div>
-                  <div className="text-[12px]" style={{ color: "#9ca3af" }}>{formatNaira(planPrices[p] ?? 0)} / year</div>
+                  <div className="text-[14px] font-semibold text-gray-900">{p}</div>
+                  <div className="text-[12px] text-gray-400">{formatNaira(planPrices[p] ?? 0)} / year</div>
                 </div>
-                <span className="text-[12px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: pc.bg, color: pc.text }}>{p}</span>
+                <span className={`text-[12px] px-2.5 py-0.5 rounded-full font-medium ${badgeClass}`}>{p}</span>
               </button>
             );
           })}
@@ -151,18 +150,18 @@ export default function BillingPage() {
         {/* Revenue cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Annual Revenue", value: `₦${(sum.annualRevenue / 1_000_000).toFixed(1)}M`, icon: TrendingUp, color: "#059669", bg: "#ecfdf5" },
-            { label: "Active Subscriptions", value: sum.activeSubscriptions, icon: CreditCard, color: "#570000", bg: "#F0D5CE" },
-            { label: "Trial Accounts", value: sum.trialAccounts, icon: AlertCircle, color: "#d97706", bg: "#fffbeb" },
-            { label: "Inactive", value: sum.inactiveAccounts, icon: AlertCircle, color: "#6b7280", bg: "#f3f4f6" },
-          ].map(({ label, value, icon: Icon, color, bg }) => (
-            <div key={label} className="bg-white rounded-xl border p-5 flex items-start gap-4" style={{ borderColor: "#e5e7eb" }}>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: bg }}>
+            { label: "Annual Revenue", value: `₦${(sum.annualRevenue / 1_000_000).toFixed(1)}M`, icon: TrendingUp, color: "#059669", bgClass: "bg-emerald-50" },
+            { label: "Active Subscriptions", value: sum.activeSubscriptions, icon: CreditCard, color: "#570000", bgClass: "bg-sp-card" },
+            { label: "Trial Accounts", value: sum.trialAccounts, icon: AlertCircle, color: "#d97706", bgClass: "bg-amber-50" },
+            { label: "Inactive", value: sum.inactiveAccounts, icon: AlertCircle, color: "#6b7280", bgClass: "bg-gray-100" },
+          ].map(({ label, value, icon: Icon, color, bgClass }) => (
+            <div key={label} className="bg-white rounded-xl border border-gray-200 p-5 flex items-start gap-4">
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${bgClass}`}>
                 <Icon size={18} color={color} />
               </div>
               <div>
-                <div className="text-[22px] font-bold" style={{ color: "#111827" }}>{value}</div>
-                <div className="text-[12px]" style={{ color: "#9ca3af" }}>{label}</div>
+                <div className="text-[22px] font-bold text-gray-900">{value}</div>
+                <div className="text-[12px] text-gray-400">{label}</div>
               </div>
             </div>
           ))}
@@ -171,17 +170,17 @@ export default function BillingPage() {
         {/* Plan breakdown */}
         <div className="grid md:grid-cols-3 gap-4">
           {["Enterprise", "Professional", "Starter"].map((plan) => {
-            const pc = planColors[plan as keyof typeof planColors];
+            const badgeClass = planBadgeClass[plan as keyof typeof planBadgeClass];
             const count = list.filter((s) => s.plan === plan).length;
             const price = planPrices[plan] ?? 0;
             return (
-              <div key={plan} className="bg-white rounded-xl border p-5" style={{ borderColor: "#e5e7eb" }}>
+              <div key={plan} className="bg-white rounded-xl border border-gray-200 p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-[12px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: pc.bg, color: pc.text }}>{plan}</span>
-                  <span className="text-[20px] font-bold" style={{ color: "#111827" }}>{count}</span>
+                  <span className={`text-[12px] px-2.5 py-0.5 rounded-full font-medium ${badgeClass}`}>{plan}</span>
+                  <span className="text-[20px] font-bold text-gray-900">{count}</span>
                 </div>
-                <div className="text-[12px]" style={{ color: "#9ca3af" }}>{formatNaira(price)} / school / year</div>
-                <div className="text-[13px] font-semibold mt-1" style={{ color: "#111827" }}>
+                <div className="text-[12px] text-gray-400">{formatNaira(price)} / school / year</div>
+                <div className="text-[13px] font-semibold mt-1 text-gray-900">
                   ₦{((count * price) / 1_000_000).toFixed(1)}M total
                 </div>
               </div>
@@ -190,73 +189,70 @@ export default function BillingPage() {
         </div>
 
         {/* Schools billing table */}
-        <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
-          <div className="px-6 py-4 border-b flex items-center justify-between" style={{ borderColor: "#f3f4f6" }}>
-            <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>School Subscriptions</h3>
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 className="text-[15px] font-semibold text-gray-900">School Subscriptions</h3>
             <div className="flex gap-2">
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg border" style={{ borderColor: "#e5e7eb" }}>
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200">
                 <Search size={14} color="#9ca3af" />
-                <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search schools..." className="text-[13px] outline-none w-40 bg-transparent" style={{ color: "#111827" }} />
+                <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search schools..." className="text-[13px] outline-none w-40 bg-transparent text-gray-900" />
               </div>
               <button
                 onClick={handleExport}
                 disabled={exporting}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg border text-[13px] font-medium transition-colors hover:bg-gray-50 disabled:opacity-50"
-                style={{ borderColor: "#e5e7eb", color: "#374151" }}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 text-[13px] font-medium transition-colors hover:bg-gray-50 disabled:opacity-50 text-gray-700"
               >
                 {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />} Export
               </button>
             </div>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-[13px]" style={{ fontFamily: "'Inter',sans-serif" }}>
+            <table className="w-full text-[13px]">
               <thead>
-                <tr style={{ background: "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
+                <tr className="bg-gray-50 border-b border-gray-100">
                   {["School", "Plan", "Annual Value", "Status", "Onboarded", "Actions"].map((h) => (
-                    <th key={h} className="text-left px-6 py-3 text-[11px] uppercase tracking-wider font-semibold" style={{ color: "#6b7280" }}>{h}</th>
+                    <th key={h} className="text-left px-6 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((school, i) => {
-                  const pc = planColors[school.plan as keyof typeof planColors] ?? planColors.Starter;
-                  const sc = statusColors[school.status];
+                  const planBadge = planBadgeClass[school.plan as keyof typeof planBadgeClass] ?? planBadgeClass.Starter;
+                  const statusBadge = statusBadgeClass[school.status];
                   return (
-                    <tr key={school.id} className="border-b hover:bg-gray-50 transition-colors" style={{ borderColor: i === filtered.length - 1 ? "transparent" : "#f3f4f6" }}>
+                    <tr key={school.id} className={`border-b hover:bg-gray-50 transition-colors ${i === filtered.length - 1 ? "border-transparent" : "border-gray-100"}`}>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold" style={{ background: "#570000" }}>
+                          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-[11px] font-bold bg-sp-primary">
                             {school.shortName.slice(0, 2)}
                           </div>
                           <div>
-                            <div className="font-medium" style={{ color: "#111827" }}>{school.name}</div>
-                            <div className="text-[11px]" style={{ color: "#9ca3af" }}>{school.email}</div>
+                            <div className="font-medium text-gray-900">{school.name}</div>
+                            <div className="text-[11px] text-gray-400">{school.email}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-[12px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: pc.bg, color: pc.text }}>{school.plan}</span>
+                        <span className={`text-[12px] px-2.5 py-0.5 rounded-full font-medium ${planBadge}`}>{school.plan}</span>
                       </td>
-                      <td className="px-6 py-4 font-semibold" style={{ color: "#111827" }}>{formatNaira(planPrices[school.plan as string] ?? 0)}</td>
+                      <td className="px-6 py-4 font-semibold text-gray-900">{formatNaira(planPrices[school.plan as string] ?? 0)}</td>
                       <td className="px-6 py-4">
-                        <span className="text-[12px] px-2.5 py-0.5 rounded-full font-medium capitalize" style={{ background: sc.bg, color: sc.text }}>{school.status}</span>
+                        <span className={`text-[12px] px-2.5 py-0.5 rounded-full font-medium capitalize ${statusBadge}`}>{school.status}</span>
                       </td>
-                      <td className="px-6 py-4" style={{ color: "#6b7280" }}>
+                      <td className="px-6 py-4 text-gray-500">
                         {new Date(school.onboardedAt).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
                           <button
                             onClick={() => setPlanTarget(school)}
-                            className="text-[12px] font-medium px-3 py-1.5 rounded-lg border transition-colors hover:bg-gray-50"
-                            style={{ borderColor: "#e5e7eb", color: "#570000" }}
+                            className="text-[12px] font-medium px-3 py-1.5 rounded-lg border border-gray-200 transition-colors hover:bg-gray-50 text-sp-primary"
                           >
                             Change Plan
                           </button>
                           <button
                             onClick={() => setSuspendTarget(school)}
-                            className="text-[12px] font-medium px-3 py-1.5 rounded-lg border transition-colors hover:bg-red-50"
-                            style={{ borderColor: "#e5e7eb", color: school.status === "active" ? "#dc2626" : "#059669" }}
+                            className={`text-[12px] font-medium px-3 py-1.5 rounded-lg border border-gray-200 transition-colors hover:bg-red-50 ${school.status === "active" ? "text-red-600" : "text-emerald-600"}`}
                           >
                             {school.status === "active" ? "Suspend" : "Activate"}
                           </button>
@@ -268,7 +264,7 @@ export default function BillingPage() {
               </tbody>
             </table>
           </div>
-          {filtered.length === 0 && <div className="py-12 text-center text-[14px]" style={{ color: "#9ca3af" }}>No schools found.</div>}
+          {filtered.length === 0 && <div className="py-12 text-center text-[14px] text-gray-400">No schools found.</div>}
         </div>
       </div>
 

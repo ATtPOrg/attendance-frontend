@@ -41,41 +41,29 @@ export default function Features() {
   return (
     <section
       id="features"
-      className="px-6 md:px-12 py-16 md:py-28 border-b"
-      style={{ borderColor: "var(--line)" }}
+      className="px-6 md:px-12 py-16 md:py-28 border-b border-line-color"
     >
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8 md:mb-16">
         <div>
           <div className="section-label mb-4">Core Features</div>
           <h2
-            className="leading-tight tracking-tight"
+            className="leading-tight tracking-tight font-display text-charcoal font-extrabold"
             style={{
-              fontFamily: "var(--font-syne)",
               fontSize: "clamp(36px,5vw,72px)",
-              fontWeight: 800,
-              color: "var(--charcoal)",
               letterSpacing: "-0.03em",
             }}
           >
             Built for the<br />
             <em
-              style={{
-                fontFamily: "var(--font-fraunces)",
-                fontWeight: 300,
-                fontStyle: "italic",
-                color: "var(--accent)",
-              }}
+              className="font-serif text-[var(--accent)] font-light italic"
             >
               hardest problem
             </em>
             <br />in attendance.
           </h2>
         </div>
-        <p
-          className="text-[13px] leading-[1.9] max-w-xs"
-          style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}
-        >
+        <p className="text-[13px] leading-[1.9] max-w-xs font-mono text-muted">
           Every feature is designed around a single constraint: a student must be in the room, alive, and present — provably.
         </p>
       </div>
@@ -85,35 +73,22 @@ export default function Features() {
         {features.map((f) => (
           <div
             key={f.num}
-            className="group grid md:grid-cols-[80px_1fr_200px] gap-4 md:gap-8 py-8 border-b transition-all duration-200 hover:pl-4 cursor-default"
-            style={{
-              borderColor: "var(--line)",
-              paddingLeft: 0,
-            }}
+            className="group grid md:grid-cols-[80px_1fr_200px] gap-4 md:gap-8 py-8 border-b border-line-color transition-all duration-200 hover:pl-4 cursor-default pl-0"
           >
-            <div
-              className="text-[12px] tracking-[0.1em] pt-1"
-              style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}
-            >
+            <div className="text-[12px] tracking-[0.1em] pt-1 font-mono text-muted">
               {f.num}
             </div>
             <div>
               <h3
-                className="mb-3 tracking-tight"
+                className="mb-3 tracking-tight font-display text-charcoal font-bold"
                 style={{
-                  fontFamily: "var(--font-syne)",
                   fontSize: "clamp(20px,2.2vw,28px)",
-                  fontWeight: 700,
-                  color: "var(--charcoal)",
                   letterSpacing: "-0.02em",
                 }}
               >
                 {f.title}
               </h3>
-              <p
-                className="text-[13px] leading-[1.8] max-w-xl"
-                style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}
-              >
+              <p className="text-[13px] leading-[1.8] max-w-xl font-mono text-muted">
                 {f.desc}
               </p>
             </div>
@@ -121,12 +96,7 @@ export default function Features() {
               {f.tags.map((t) => (
                 <span
                   key={t}
-                  className="text-[10px] uppercase tracking-[0.1em] px-3 py-1 border"
-                  style={{
-                    fontFamily: "var(--font-dm-mono)",
-                    borderColor: "var(--line)",
-                    color: "var(--muted)",
-                  }}
+                  className="text-[10px] uppercase tracking-[0.1em] px-3 py-1 border font-mono border-line-color text-muted"
                 >
                   {t}
                 </span>

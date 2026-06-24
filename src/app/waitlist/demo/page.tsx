@@ -11,7 +11,7 @@ export default function WaitlistDemoPage() {
   return (
     <>
       <Navbar />
-      <main style={{ paddingTop: "72px" }}>
+      <main className="pt-[72px]">
         <Waitlist />
       </main>
       <Footer />

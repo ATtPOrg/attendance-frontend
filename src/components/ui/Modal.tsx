@@ -66,7 +66,6 @@ export default function Modal({ open, onClose, title, subtitle, children, width 
       <div
         className={`absolute right-0 top-0 h-full w-full ${width} bg-white shadow-2xl flex flex-col`}
         style={{
-          fontFamily: "'Inter',sans-serif",
           transform: shown ? "translateX(0)" : "translateX(100%)",
           transition: `transform ${ANIMATION_MS}ms cubic-bezier(0.32, 0.72, 0, 1)`,
         }}
@@ -75,10 +74,10 @@ export default function Modal({ open, onClose, title, subtitle, children, width 
         aria-label={title}
       >
         {/* Header */}
-        <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b flex-shrink-0" style={{ borderColor: "#f3f4f6" }}>
+        <div className="flex items-start justify-between px-6 pt-6 pb-4 border-b border-gray-100 flex-shrink-0">
           <div>
-            <h2 className="text-[17px] font-bold tracking-tight" style={{ color: "#111827" }}>{title}</h2>
-            {subtitle && <p className="text-[13px] mt-0.5" style={{ color: "#9ca3af" }}>{subtitle}</p>}
+            <h2 className="text-[17px] font-bold tracking-tight text-gray-900">{title}</h2>
+            {subtitle && <p className="text-[13px] mt-0.5 text-gray-400">{subtitle}</p>}
           </div>
           <button
             onClick={onClose}
@@ -148,34 +147,30 @@ export function ConfirmModal({ open, onClose, onConfirm, title, message, confirm
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)" }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/[0.45] backdrop-blur-sm"
       onClick={(e) => { if (e.target === overlayRef.current && !busy) handleClose(); }}
     >
       <div
         className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl p-6"
-        style={{ fontFamily: "'Inter',sans-serif" }}
         role="alertdialog"
         aria-modal="true"
         aria-label={title}
       >
-        <h2 className="text-[16px] font-bold tracking-tight mb-2" style={{ color: "#111827" }}>{title}</h2>
-        <p className="text-[14px] leading-relaxed mb-2" style={{ color: "#6b7280" }}>{message}</p>
-        {error && <p className="text-[12px] mb-2" style={{ color: "#dc2626" }}>{error}</p>}
+        <h2 className="text-[16px] font-bold tracking-tight mb-2 text-gray-900">{title}</h2>
+        <p className="text-[14px] leading-relaxed mb-2 text-gray-500">{message}</p>
+        {error && <p className="text-[12px] mb-2 text-red-600">{error}</p>}
         <div className="flex gap-3 justify-end mt-4">
           <button
             onClick={handleClose}
             disabled={busy}
-            className="px-4 py-2 rounded-lg text-[13px] font-medium border transition-colors hover:bg-gray-50 disabled:opacity-50"
-            style={{ borderColor: "#e5e7eb", color: "#374151" }}
+            className="px-4 py-2 rounded-lg text-[13px] font-medium border transition-colors hover:bg-gray-50 disabled:opacity-50 border-gray-200 text-gray-700"
           >
             Cancel
           </button>
           <button
             onClick={handleConfirm}
             disabled={busy}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-opacity hover:opacity-90 disabled:opacity-60 ${danger ? "text-white" : "text-[#570000]"}`}
-            style={{ background: danger ? "#ef4444" : "#FED65B" }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium transition-opacity hover:opacity-90 disabled:opacity-60 ${danger ? "bg-red-500 text-white" : "bg-sp-accent text-sp-primary"}`}
           >
             {busy && <Loader2 size={13} className="animate-spin" />}
             {confirmLabel}

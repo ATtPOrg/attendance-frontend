@@ -56,10 +56,10 @@ function FacultyModal({ faculty, open, onClose, onSave }: { faculty: Faculty | n
         </FormField>
         <FormField label="Header Color" id="fcolor">
           <div className="flex items-center gap-3">
-            <input id="fcolor" type="color" aria-label="Custom color picker" value={form.color ?? "#9B6060"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" style={{ borderColor: "#e5e7eb" }} />
+            <input id="fcolor" type="color" aria-label="Custom color picker" value={form.color ?? "#9B6060"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer" />
             <div className="flex gap-2">
               {FACULTY_COLORS.map((c) => (
-                <button key={c} aria-label={`Select color ${c}`} onClick={() => set("color", c)} className="w-6 h-6 rounded-full border-2 transition-all" style={{ background: c, borderColor: form.color === c ? "#111827" : "transparent" }} />
+                <button key={c} aria-label={`Select color ${c}`} onClick={() => set("color", c)} className={`w-6 h-6 rounded-full border-2 transition-all ${form.color === c ? "border-gray-900" : "border-transparent"}`} style={{ background: c }} />
               ))}
             </div>
           </div>
@@ -295,27 +295,27 @@ export default function SchoolDetailPage() {
     <>
       <DashboardHeader title={school.name} subtitle={`${school.city} · ${school.plan} Plan`} />
       <div className="p-8 space-y-6">
-        <Link href="/dashboard/schools" className="inline-flex items-center gap-1.5 text-[13px] font-medium" style={{ color: "#6b7280" }}>
+        <Link href="/dashboard/schools" className="inline-flex items-center gap-1.5 text-[13px] font-medium text-gray-500">
           <ChevronLeft size={16} /> All Schools
         </Link>
 
         {/* Header card */}
-        <div className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-[18px] font-bold" style={{ background: "#570000" }}>
+              <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-[18px] font-bold bg-sp-primary">
                 {school.shortName.slice(0, 2)}
               </div>
               <div>
-                <h2 className="text-[20px] font-bold" style={{ color: "#111827" }}>{school.name}</h2>
-                <p className="text-[13px]" style={{ color: "#6b7280" }}>{school.email} · {school.phone}</p>
+                <h2 className="text-[20px] font-bold text-gray-900">{school.name}</h2>
+                <p className="text-[13px] text-gray-500">{school.email} · {school.phone}</p>
               </div>
             </div>
             <div className="flex gap-2">
-              <span className="px-3 py-1 rounded-full text-[12px] font-medium" style={{ background: school.status === "active" ? "#ecfdf5" : school.status === "trial" ? "#fffbeb" : "#f3f4f6", color: school.status === "active" ? "#059669" : school.status === "trial" ? "#d97706" : "#6b7280" }}>
+              <span className={`px-3 py-1 rounded-full text-[12px] font-medium ${school.status === "active" ? "bg-emerald-50 text-emerald-600" : school.status === "trial" ? "bg-amber-50 text-amber-600" : "bg-gray-100 text-gray-500"}`}>
                 {school.status}
               </span>
-              <span className="px-3 py-1 rounded-full text-[12px] font-medium" style={{ background: "#F0D5CE", color: "#570000" }}>{school.plan}</span>
+              <span className="px-3 py-1 rounded-full text-[12px] font-medium bg-sp-card text-sp-primary">{school.plan}</span>
             </div>
           </div>
           <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -325,22 +325,21 @@ export default function SchoolDetailPage() {
               { label: "Courses", value: school.totalCourses.toLocaleString() },
               { label: "Avg Attendance", value: school.avgAttendance > 0 ? `${school.avgAttendance}%` : "—" },
             ].map((s) => (
-              <div key={s.label} className="p-4 rounded-lg" style={{ background: "#f9fafb" }}>
-                <div className="text-[22px] font-bold" style={{ color: "#111827" }}>{s.value}</div>
-                <div className="text-[12px]" style={{ color: "#9ca3af" }}>{s.label}</div>
+              <div key={s.label} className="p-4 rounded-lg bg-gray-50">
+                <div className="text-[22px] font-bold text-gray-900">{s.value}</div>
+                <div className="text-[12px] text-gray-400">{s.label}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="border-b flex gap-0 overflow-x-auto" style={{ borderColor: "#e5e7eb" }}>
+        <div className="border-b border-gray-200 flex gap-0 overflow-x-auto">
           {tabs.map((t) => (
             <button
               key={t}
               onClick={() => setActiveTab(t)}
-              className="px-5 py-3 text-[13px] font-medium whitespace-nowrap border-b-2 transition-all"
-              style={{ borderColor: activeTab === t ? "#570000" : "transparent", color: activeTab === t ? "#570000" : "#6b7280" }}
+              className={`px-5 py-3 text-[13px] font-medium whitespace-nowrap border-b-2 transition-all ${activeTab === t ? "border-sp-primary text-sp-primary" : "border-transparent text-gray-500"}`}
             >
               {t}
             </button>
@@ -363,8 +362,8 @@ export default function SchoolDetailPage() {
 function OverviewTab({ school }: { school: School }) {
   return (
     <div className="grid md:grid-cols-2 gap-4">
-      <div className="bg-white rounded-xl border p-6 space-y-4" style={{ borderColor: "#e5e7eb" }}>
-        <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>School Details</h3>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+        <h3 className="text-[15px] font-semibold text-gray-900">School Details</h3>
         {[
           { label: "Full Name", value: school.name },
           { label: "Short Name", value: school.shortName },
@@ -374,26 +373,26 @@ function OverviewTab({ school }: { school: School }) {
           { label: "Country", value: school.country },
           { label: "Onboarded", value: new Date(school.onboardedAt).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }) },
         ].map((r) => (
-          <div key={r.label} className="flex justify-between py-2 border-b last:border-0" style={{ borderColor: "#f3f4f6" }}>
-            <span className="text-[13px]" style={{ color: "#9ca3af" }}>{r.label}</span>
-            <span className="text-[13px] font-medium" style={{ color: "#111827" }}>{r.value}</span>
+          <div key={r.label} className="flex justify-between py-2 border-b last:border-0 border-gray-100">
+            <span className="text-[13px] text-gray-400">{r.label}</span>
+            <span className="text-[13px] font-medium text-gray-900">{r.value}</span>
           </div>
         ))}
       </div>
       <div className="space-y-4">
-        <div className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
-          <h3 className="text-[15px] font-semibold mb-4" style={{ color: "#111827" }}>Subscription</h3>
-          <div className="rounded-lg p-5" style={{ background: "linear-gradient(135deg, #570000, #3D0000)" }}>
-            <div className="text-[11px] mb-1 uppercase tracking-wider" style={{ color: "rgba(255,255,255,0.6)" }}>{school.plan} Plan</div>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 className="text-[15px] font-semibold mb-4 text-gray-900">Subscription</h3>
+          <div className="rounded-lg p-5 bg-gradient-to-br from-sp-primary to-[#3D0000]">
+            <div className="text-[11px] mb-1 uppercase tracking-wider text-white/60">{school.plan} Plan</div>
             <div className="text-[22px] font-bold text-white capitalize">{school.status}</div>
-            <div className="text-[12px] mt-2" style={{ color: "rgba(255,255,255,0.6)" }}>Renews annually</div>
+            <div className="text-[12px] mt-2 text-white/60">Renews annually</div>
           </div>
         </div>
-        <div className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
-          <h3 className="text-[15px] font-semibold mb-3" style={{ color: "#111827" }}>Quick Actions</h3>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 className="text-[15px] font-semibold mb-3 text-gray-900">Quick Actions</h3>
           <div className="space-y-2">
             {["Suspend School", "Change Plan", "Reset Admin Password", "Export Data", "View Audit Log"].map((action) => (
-              <button key={action} className="w-full text-left px-4 py-2.5 rounded-lg border text-[13px] font-medium transition-colors hover:bg-gray-50" style={{ borderColor: "#e5e7eb", color: action === "Suspend School" ? "#dc2626" : "#374151" }}>
+              <button key={action} className={`w-full text-left px-4 py-2.5 rounded-lg border border-gray-200 text-[13px] font-medium transition-colors hover:bg-gray-50 ${action === "Suspend School" ? "text-red-600" : "text-gray-700"}`}>
                 {action}
               </button>
             ))}
@@ -431,14 +430,14 @@ function FacultiesTab({ schoolId }: { schoolId: string }) {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Faculties ({faculties.length})</h3>
-        <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium" style={{ background: "#FED65B", color: "#570000" }}>
+        <h3 className="text-[15px] font-semibold text-gray-900">Faculties ({faculties.length})</h3>
+        <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium bg-sp-accent text-sp-primary">
           <Plus size={15} /> Add Faculty
         </button>
       </div>
       <div className="grid md:grid-cols-2 gap-4">
         {faculties.map((f) => (
-          <div key={f.id} className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
+          <div key={f.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
             <div className="px-5 py-4 flex items-center justify-between" style={{ background: f.color }}>
               <div>
                 <div className="text-[15px] font-bold text-white">{f.name}</div>
@@ -456,8 +455,8 @@ function FacultiesTab({ schoolId }: { schoolId: string }) {
                 { value: f.students.toLocaleString(), label: "Students" },
               ].map((s) => (
                 <div key={s.label}>
-                  <div className="text-[20px] font-bold" style={{ color: "#111827" }}>{s.value}</div>
-                  <div className="text-[11px]" style={{ color: "#9ca3af" }}>{s.label}</div>
+                  <div className="text-[20px] font-bold text-gray-900">{s.value}</div>
+                  <div className="text-[11px] text-gray-400">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -465,8 +464,8 @@ function FacultiesTab({ schoolId }: { schoolId: string }) {
         ))}
       </div>
       {faculties.length === 0 && (
-        <div className="bg-white rounded-xl border py-12 text-center" style={{ borderColor: "#e5e7eb" }}>
-          <p className="text-[14px]" style={{ color: "#9ca3af" }}>No faculties yet.</p>
+        <div className="bg-white rounded-xl border border-gray-200 py-12 text-center">
+          <p className="text-[14px] text-gray-400">No faculties yet.</p>
         </div>
       )}
 
@@ -520,41 +519,39 @@ function DepartmentsTab({ schoolId }: { schoolId: string }) {
   return (
     <div>
       <div className="flex justify-between items-center mb-4 gap-3 flex-wrap">
-        <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Departments ({departments.length})</h3>
+        <h3 className="text-[15px] font-semibold text-gray-900">Departments ({departments.length})</h3>
         <div className="flex gap-2">
-          <div className="flex items-center gap-2 px-3 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
+          <div className="flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 bg-white">
             <Search size={14} color="#9ca3af" />
-            <input aria-label="Search departments" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search departments..." className="text-[13px] outline-none bg-transparent w-40" style={{ color: "#111827" }} />
+            <input aria-label="Search departments" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search departments..." className="text-[13px] outline-none bg-transparent w-40 text-gray-900" />
           </div>
-          <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium" style={{ background: "#FED65B", color: "#570000" }}>
+          <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium bg-sp-accent text-sp-primary">
             <Plus size={14} /> Add Department
           </button>
         </div>
       </div>
-      <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
-        <table className="w-full text-[13px]" style={{ fontFamily: "'Inter',sans-serif" }}>
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <table className="w-full text-[13px]">
           <thead>
-            <tr style={{ background: "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
+            <tr className="bg-gray-50 border-b border-gray-100">
               {["Department", "Faculty", "HOD", "Professors", "Students", "Courses", "Attendance", ""].map((h) => (
-                <th key={h} className="px-5 py-3 text-left text-[11px] uppercase tracking-wider font-semibold" style={{ color: "#6b7280" }}>{h}</th>
+                <th key={h} className="px-5 py-3 text-left text-[11px] uppercase tracking-wider font-semibold text-gray-500">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {filtered.map((d, i) => {
               const rate = d.attendanceRate;
-              const rateColor = rate >= 85 ? "#059669" : rate >= 70 ? "#d97706" : "#dc2626";
-              const rateBg = rate >= 85 ? "#ecfdf5" : rate >= 70 ? "#fffbeb" : "#fef2f2";
               return (
-                <tr key={d.id} className="border-b hover:bg-gray-50 transition-colors" style={{ borderColor: i === filtered.length - 1 ? "transparent" : "#f3f4f6" }}>
-                  <td className="px-5 py-4 font-medium" style={{ color: "#111827" }}>{d.name}</td>
-                  <td className="px-5 py-4" style={{ color: "#6b7280" }}>{d.faculty}</td>
-                  <td className="px-5 py-4" style={{ color: "#6b7280" }}>{d.hod}</td>
-                  <td className="px-5 py-4" style={{ color: "#6b7280" }}>{d.professors}</td>
-                  <td className="px-5 py-4" style={{ color: "#6b7280" }}>{d.students}</td>
-                  <td className="px-5 py-4" style={{ color: "#6b7280" }}>{d.courses}</td>
+                <tr key={d.id} className={`border-b hover:bg-gray-50 transition-colors ${i === filtered.length - 1 ? "border-transparent" : "border-gray-100"}`}>
+                  <td className="px-5 py-4 font-medium text-gray-900">{d.name}</td>
+                  <td className="px-5 py-4 text-gray-500">{d.faculty}</td>
+                  <td className="px-5 py-4 text-gray-500">{d.hod}</td>
+                  <td className="px-5 py-4 text-gray-500">{d.professors}</td>
+                  <td className="px-5 py-4 text-gray-500">{d.students}</td>
+                  <td className="px-5 py-4 text-gray-500">{d.courses}</td>
                   <td className="px-5 py-4">
-                    <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: rateBg, color: rateColor }}>
+                    <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${rate >= 85 ? "text-emerald-600 bg-emerald-50" : rate >= 70 ? "text-amber-600 bg-amber-50" : "text-red-600 bg-red-50"}`}>
                       {rate.toFixed(1)}%
                     </span>
                   </td>
@@ -569,7 +566,7 @@ function DepartmentsTab({ schoolId }: { schoolId: string }) {
             })}
           </tbody>
         </table>
-        {filtered.length === 0 && <div className="py-12 text-center text-[14px]" style={{ color: "#9ca3af" }}>No departments found.</div>}
+        {filtered.length === 0 && <div className="py-12 text-center text-[14px] text-gray-400">No departments found.</div>}
       </div>
 
       {addOpen && <DepartmentModal open department={null} faculties={facultiesQuery.data ?? []} onClose={() => setAddOpen(false)} onSave={handleCreate} />}
@@ -608,36 +605,36 @@ function ProfessorsTab({ schoolId, departments }: { schoolId: string; department
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Professors ({professors.length})</h3>
-        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium" style={{ background: "#FED65B", color: "#570000" }}>
+        <h3 className="text-[15px] font-semibold text-gray-900">Professors ({professors.length})</h3>
+        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium bg-sp-accent text-sp-primary">
           <Plus size={14} /> Add Professor
         </button>
       </div>
-      <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
-        <table className="w-full text-[13px]" style={{ fontFamily: "'Inter',sans-serif" }}>
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <table className="w-full text-[13px]">
           <thead>
-            <tr style={{ background: "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
+            <tr className="bg-gray-50 border-b border-gray-100">
               {["Professor", "Department", "Courses", "Students", "Status"].map((h) => (
-                <th key={h} className="px-5 py-3 text-left text-[11px] uppercase tracking-wider font-semibold" style={{ color: "#6b7280" }}>{h}</th>
+                <th key={h} className="px-5 py-3 text-left text-[11px] uppercase tracking-wider font-semibold text-gray-500">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {professors.length > 0 ? professors.map((p: Professor, i: number) => (
-              <tr key={p.id} className="border-b hover:bg-gray-50" style={{ borderColor: i === professors.length - 1 ? "transparent" : "#f3f4f6" }}>
+              <tr key={p.id} className={`border-b hover:bg-gray-50 ${i === professors.length - 1 ? "border-transparent" : "border-gray-100"}`}>
                 <td className="px-5 py-3.5">
-                  <div className="font-medium" style={{ color: "#111827" }}>{p.name}</div>
-                  <div className="text-[11px]" style={{ color: "#9ca3af" }}>{p.email}</div>
+                  <div className="font-medium text-gray-900">{p.name}</div>
+                  <div className="text-[11px] text-gray-400">{p.email}</div>
                 </td>
-                <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{p.department}</td>
-                <td className="px-5 py-3.5 font-medium" style={{ color: "#570000" }}>{p.courses}</td>
-                <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{p.students}</td>
+                <td className="px-5 py-3.5 text-gray-500">{p.department}</td>
+                <td className="px-5 py-3.5 font-medium text-sp-primary">{p.courses}</td>
+                <td className="px-5 py-3.5 text-gray-500">{p.students}</td>
                 <td className="px-5 py-3.5">
-                  <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: p.status === "active" ? "#ecfdf5" : "#f3f4f6", color: p.status === "active" ? "#059669" : "#6b7280" }}>{p.status}</span>
+                  <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${p.status === "active" ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-500"}`}>{p.status}</span>
                 </td>
               </tr>
             )) : (
-              <tr><td colSpan={5} className="py-12 text-center text-[14px]" style={{ color: "#9ca3af" }}>No professors for this school yet.</td></tr>
+              <tr><td colSpan={5} className="py-12 text-center text-[14px] text-gray-400">No professors for this school yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -664,46 +661,44 @@ function StudentsTab({ schoolId, departments }: { schoolId: string; departments:
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Students ({students.length})</h3>
-        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium" style={{ background: "#FED65B", color: "#570000" }}>
+        <h3 className="text-[15px] font-semibold text-gray-900">Students ({students.length})</h3>
+        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium bg-sp-accent text-sp-primary">
           <Plus size={14} /> Add Student
         </button>
       </div>
-      <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
-        <table className="w-full text-[13px]" style={{ fontFamily: "'Inter',sans-serif" }}>
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <table className="w-full text-[13px]">
           <thead>
-            <tr style={{ background: "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
+            <tr className="bg-gray-50 border-b border-gray-100">
               {["Student", "Matric No.", "Department", "Level", "Attendance", "Status"].map((h) => (
-                <th key={h} className="px-5 py-3 text-left text-[11px] uppercase tracking-wider font-semibold" style={{ color: "#6b7280" }}>{h}</th>
+                <th key={h} className="px-5 py-3 text-left text-[11px] uppercase tracking-wider font-semibold text-gray-500">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {students.length > 0 ? students.map((s: Student, i: number) => {
               const rate = s.attendanceRate;
-              const rateColor = rate >= 85 ? "#059669" : rate >= 70 ? "#d97706" : "#dc2626";
-              const rateBg = rate >= 85 ? "#ecfdf5" : rate >= 70 ? "#fffbeb" : "#fef2f2";
               return (
-                <tr key={s.id} className="border-b hover:bg-gray-50" style={{ borderColor: i === students.length - 1 ? "transparent" : "#f3f4f6" }}>
+                <tr key={s.id} className={`border-b hover:bg-gray-50 ${i === students.length - 1 ? "border-transparent" : "border-gray-100"}`}>
                   <td className="px-5 py-3.5">
-                    <div className="font-medium" style={{ color: "#111827" }}>{s.name}</div>
-                    <div className="text-[11px]" style={{ color: "#9ca3af" }}>{s.email}</div>
+                    <div className="font-medium text-gray-900">{s.name}</div>
+                    <div className="text-[11px] text-gray-400">{s.email}</div>
                   </td>
-                  <td className="px-5 py-3.5 font-mono text-[12px]" style={{ color: "#6b7280" }}>{s.matricNo}</td>
-                  <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{s.department}</td>
+                  <td className="px-5 py-3.5 font-mono text-[12px] text-gray-500">{s.matricNo}</td>
+                  <td className="px-5 py-3.5 text-gray-500">{s.department}</td>
                   <td className="px-5 py-3.5">
-                    <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: "#F0D5CE", color: "#570000" }}>{s.level}L</span>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full" style={{ background: rateBg, color: rateColor }}>{rate.toFixed(1)}%</span>
+                    <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-sp-card text-sp-primary">{s.level}L</span>
                   </td>
                   <td className="px-5 py-3.5">
-                    <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: s.status === "active" ? "#ecfdf5" : "#fef2f2", color: s.status === "active" ? "#059669" : "#dc2626" }}>{s.status}</span>
+                    <span className={`text-[12px] font-semibold px-2.5 py-0.5 rounded-full ${rate >= 85 ? "text-emerald-600 bg-emerald-50" : rate >= 70 ? "text-amber-600 bg-amber-50" : "text-red-600 bg-red-50"}`}>{rate.toFixed(1)}%</span>
+                  </td>
+                  <td className="px-5 py-3.5">
+                    <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${s.status === "active" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"}`}>{s.status}</span>
                   </td>
                 </tr>
               );
             }) : (
-              <tr><td colSpan={6} className="py-12 text-center text-[14px]" style={{ color: "#9ca3af" }}>No students for this school yet.</td></tr>
+              <tr><td colSpan={6} className="py-12 text-center text-[14px] text-gray-400">No students for this school yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -730,46 +725,44 @@ function CoursesTab({ schoolId, departments }: { schoolId: string; departments: 
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Courses ({courses.length})</h3>
-        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium" style={{ background: "#FED65B", color: "#570000" }}>
+        <h3 className="text-[15px] font-semibold text-gray-900">Courses ({courses.length})</h3>
+        <button onClick={() => setAddOpen(true)} className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-[13px] font-medium bg-sp-accent text-sp-primary">
           <Plus size={14} /> Add Course
         </button>
       </div>
-      <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
-        <table className="w-full text-[13px]" style={{ fontFamily: "'Inter',sans-serif" }}>
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <table className="w-full text-[13px]">
           <thead>
-            <tr style={{ background: "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
+            <tr className="bg-gray-50 border-b border-gray-100">
               {["Code", "Course Title", "Professor", "Students", "Attendance", "Status"].map((h) => (
-                <th key={h} className="px-5 py-3 text-left text-[11px] uppercase tracking-wider font-semibold" style={{ color: "#6b7280" }}>{h}</th>
+                <th key={h} className="px-5 py-3 text-left text-[11px] uppercase tracking-wider font-semibold text-gray-500">{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
             {courses.length > 0 ? courses.map((c: Course, i: number) => {
               const rate = c.attendanceRate;
-              const rateColor = rate >= 85 ? "#059669" : rate >= 70 ? "#d97706" : "#dc2626";
-              const rateBg = rate >= 85 ? "#ecfdf5" : rate >= 70 ? "#fffbeb" : "#fef2f2";
               return (
-                <tr key={c.id} className="border-b hover:bg-gray-50" style={{ borderColor: i === courses.length - 1 ? "transparent" : "#f3f4f6" }}>
+                <tr key={c.id} className={`border-b hover:bg-gray-50 ${i === courses.length - 1 ? "border-transparent" : "border-gray-100"}`}>
                   <td className="px-5 py-3.5">
-                    <span className="font-mono text-[12px] font-semibold px-2 py-1 rounded" style={{ background: "#F0D5CE", color: "#570000" }}>{c.code}</span>
+                    <span className="font-mono text-[12px] font-semibold px-2 py-1 rounded bg-sp-card text-sp-primary">{c.code}</span>
                   </td>
                   <td className="px-5 py-3.5">
-                    <div className="font-medium" style={{ color: "#111827" }}>{c.title}</div>
-                    <div className="text-[11px]" style={{ color: "#9ca3af" }}>{c.department} · {c.level}L · {c.semester} Sem.</div>
+                    <div className="font-medium text-gray-900">{c.title}</div>
+                    <div className="text-[11px] text-gray-400">{c.department} · {c.level}L · {c.semester} Sem.</div>
                   </td>
-                  <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{c.professor || "Unassigned"}</td>
-                  <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{c.students}</td>
+                  <td className="px-5 py-3.5 text-gray-500">{c.professor || "Unassigned"}</td>
+                  <td className="px-5 py-3.5 text-gray-500">{c.students}</td>
                   <td className="px-5 py-3.5">
-                    <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full" style={{ background: rateBg, color: rateColor }}>{rate.toFixed(1)}%</span>
+                    <span className={`text-[12px] font-semibold px-2.5 py-0.5 rounded-full ${rate >= 85 ? "text-emerald-600 bg-emerald-50" : rate >= 70 ? "text-amber-600 bg-amber-50" : "text-red-600 bg-red-50"}`}>{rate.toFixed(1)}%</span>
                   </td>
                   <td className="px-5 py-3.5">
-                    <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: c.status === "active" ? "#ecfdf5" : "#f3f4f6", color: c.status === "active" ? "#059669" : "#6b7280" }}>{c.status}</span>
+                    <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${c.status === "active" ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-500"}`}>{c.status}</span>
                   </td>
                 </tr>
               );
             }) : (
-              <tr><td colSpan={6} className="py-12 text-center text-[14px]" style={{ color: "#9ca3af" }}>No courses for this school yet.</td></tr>
+              <tr><td colSpan={6} className="py-12 text-center text-[14px] text-gray-400">No courses for this school yet.</td></tr>
             )}
           </tbody>
         </table>

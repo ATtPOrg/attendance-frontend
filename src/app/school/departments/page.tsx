@@ -44,10 +44,16 @@ function FacultyModal({ faculty, open, onClose, onSave, colorIndex }: { faculty:
         </FormField>
         <FormField label="Header Color" id="fcolor">
           <div className="flex items-center gap-3">
-            <input id="fcolor" type="color" aria-label="Custom color picker" value={form.color ?? "#9B6060"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border cursor-pointer" style={{ borderColor: "#e5e7eb" }} />
+            <input id="fcolor" type="color" aria-label="Custom color picker" value={form.color ?? "#9B6060"} onChange={(e) => set("color", e.target.value)} className="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer" />
             <div className="flex gap-2">
               {FACULTY_COLORS.map((c) => (
-                <button key={c} aria-label={`Select color ${c}`} onClick={() => set("color", c)} className="w-6 h-6 rounded-full border-2 transition-all" style={{ background: c, borderColor: form.color === c ? "#111827" : "transparent" }} />
+                <button
+                  key={c}
+                  aria-label={`Select color ${c}`}
+                  onClick={() => set("color", c)}
+                  className="w-6 h-6 rounded-full border-2 transition-all"
+                  style={{ background: c, borderColor: form.color === c ? "#111827" : "transparent" }}
+                />
               ))}
             </div>
           </div>
@@ -183,19 +189,15 @@ export default function SchoolDepartmentsPage() {
       <div className="p-8 space-y-5">
         {/* Toggle */}
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <div className="flex rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
+          <div className="flex rounded-xl border border-gray-200 overflow-hidden">
             {(["faculties", "departments"] as const).map((v) => (
               <button
                 key={v}
                 onClick={() => setActiveView(v)}
-                className="px-5 py-2 text-[13px] font-medium capitalize transition-colors"
-                style={{
-                  background: activeView === v ? "#570000" : "#fff",
-                  color: activeView === v ? "#fff" : "#6b7280",
-                  fontFamily: "'Inter',sans-serif",
-                }}
+                className={`px-5 py-2 text-[13px] font-medium capitalize transition-colors ${activeView === v ? "bg-sp-primary text-white" : "bg-white text-gray-500"}`}
               >
-                {v} <span className="ml-1.5 text-[11px] px-1.5 py-0.5 rounded-full" style={{ background: activeView === v ? "rgba(255,255,255,0.2)" : "#f3f4f6" }}>
+                {v}{" "}
+                <span className={`ml-1.5 text-[11px] px-1.5 py-0.5 rounded-full ${activeView === v ? "bg-white/20" : "bg-gray-100"}`}>
                   {v === "faculties" ? faculties.length : departments.length}
                 </span>
               </button>
@@ -203,15 +205,14 @@ export default function SchoolDepartmentsPage() {
           </div>
           <div className="flex gap-2">
             {activeView === "departments" && (
-              <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white">
                 <Search size={14} color="#9ca3af" />
-                <input aria-label="Search departments" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search departments..." className="text-[13px] outline-none w-44 bg-transparent" style={{ color: "#111827" }} />
+                <input aria-label="Search departments" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search departments..." className="text-[13px] outline-none w-44 bg-transparent text-gray-900" />
               </div>
             )}
             <button
               onClick={() => activeView === "faculties" ? setAddFacultyOpen(true) : setAddDeptOpen(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium"
-              style={{ background: "#570000", fontFamily: "'Inter',sans-serif" }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium bg-sp-primary"
             >
               <Plus size={15} /> Add {activeView === "faculties" ? "Faculty" : "Department"}
             </button>
@@ -223,8 +224,11 @@ export default function SchoolDepartmentsPage() {
           <>
             <div className="grid md:grid-cols-2 gap-4">
               {faculties.map((f) => (
-                <div key={f.id} className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
-                  <div className="px-5 py-4 flex items-center justify-between" style={{ background: f.color }}>
+                <div key={f.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+                  <div
+                    className="px-5 py-4 flex items-center justify-between"
+                    style={{ background: f.color }}
+                  >
                     <div>
                       <div className="text-[15px] font-bold text-white">{f.name}</div>
                       <div className="text-[12px] text-white/70">Dean: {f.dean || "Not assigned"}</div>
@@ -241,8 +245,8 @@ export default function SchoolDepartmentsPage() {
                       { value: f.students.toLocaleString(), label: "Students" },
                     ].map((s) => (
                       <div key={s.label}>
-                        <div className="text-[20px] font-bold" style={{ color: "#111827" }}>{s.value}</div>
-                        <div className="text-[11px]" style={{ color: "#9ca3af" }}>{s.label}</div>
+                        <div className="text-[20px] font-bold text-gray-900">{s.value}</div>
+                        <div className="text-[11px] text-gray-400">{s.label}</div>
                       </div>
                     ))}
                   </div>
@@ -250,10 +254,10 @@ export default function SchoolDepartmentsPage() {
               ))}
             </div>
             {faculties.length === 0 && (
-              <div className="bg-white rounded-xl border py-16 text-center" style={{ borderColor: "#e5e7eb" }}>
+              <div className="bg-white rounded-xl border border-gray-200 py-16 text-center">
                 <Building2 size={32} color="#d1d5db" className="mx-auto mb-3" />
-                <p className="text-[14px]" style={{ color: "#9ca3af" }}>No faculties yet.</p>
-                <button onClick={() => setAddFacultyOpen(true)} className="mt-3 text-[13px] font-medium" style={{ color: "#570000" }}>+ Add first faculty</button>
+                <p className="text-[14px] text-gray-400">No faculties yet.</p>
+                <button onClick={() => setAddFacultyOpen(true)} className="mt-3 text-[13px] font-medium text-sp-primary">+ Add first faculty</button>
               </div>
             )}
           </>
@@ -261,30 +265,28 @@ export default function SchoolDepartmentsPage() {
 
         {/* Departments view */}
         {activeView === "departments" && (
-          <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
-            <table className="w-full text-[13px]" style={{ fontFamily: "'Inter',sans-serif" }}>
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <table className="w-full text-[13px]">
               <thead>
-                <tr style={{ background: "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
+                <tr className="bg-gray-50 border-b border-gray-100">
                   {["Department", "Faculty", "HOD", "Professors", "Students", "Courses", "Attendance", ""].map((h) => (
-                    <th key={h} className="text-left px-5 py-3 text-[11px] uppercase tracking-wider font-semibold" style={{ color: "#6b7280" }}>{h}</th>
+                    <th key={h} className="text-left px-5 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {filteredDepts.map((d, i) => {
                   const rate = d.attendanceRate;
-                  const rateColor = rate >= 85 ? "#059669" : rate >= 70 ? "#d97706" : "#dc2626";
-                  const rateBg = rate >= 85 ? "#ecfdf5" : rate >= 70 ? "#fffbeb" : "#fef2f2";
                   return (
-                    <tr key={d.id} className="border-b hover:bg-gray-50 transition-colors" style={{ borderColor: i === filteredDepts.length - 1 ? "transparent" : "#f3f4f6" }}>
-                      <td className="px-5 py-3.5 font-medium" style={{ color: "#111827" }}>{d.name}</td>
-                      <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{d.faculty}</td>
-                      <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{d.hod}</td>
-                      <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{d.professors}</td>
-                      <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{d.students}</td>
-                      <td className="px-5 py-3.5" style={{ color: "#6b7280" }}>{d.courses}</td>
+                    <tr key={d.id} className={`hover:bg-gray-50 transition-colors ${i === filteredDepts.length - 1 ? "" : "border-b border-gray-100"}`}>
+                      <td className="px-5 py-3.5 font-medium text-gray-900">{d.name}</td>
+                      <td className="px-5 py-3.5 text-gray-500">{d.faculty}</td>
+                      <td className="px-5 py-3.5 text-gray-500">{d.hod}</td>
+                      <td className="px-5 py-3.5 text-gray-500">{d.professors}</td>
+                      <td className="px-5 py-3.5 text-gray-500">{d.students}</td>
+                      <td className="px-5 py-3.5 text-gray-500">{d.courses}</td>
                       <td className="px-5 py-3.5">
-                        <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: rateBg, color: rateColor }}>{rate.toFixed(1)}%</span>
+                        <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${rate >= 85 ? "text-emerald-600 bg-emerald-50" : rate >= 70 ? "text-amber-600 bg-amber-50" : "text-red-600 bg-red-50"}`}>{rate.toFixed(1)}%</span>
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex gap-1.5">
@@ -300,7 +302,7 @@ export default function SchoolDepartmentsPage() {
             {filteredDepts.length === 0 && (
               <div className="py-16 text-center">
                 <Building2 size={32} color="#d1d5db" className="mx-auto mb-3" />
-                <p className="text-[14px]" style={{ color: "#9ca3af" }}>No departments found.</p>
+                <p className="text-[14px] text-gray-400">No departments found.</p>
               </div>
             )}
           </div>

@@ -62,23 +62,19 @@ function NewSchoolForm() {
         <DashboardHeader title="School Onboarded" subtitle="Setup complete" />
         <div className="p-8 flex items-center justify-center min-h-[60vh]">
           <div className="text-center max-w-sm">
-            <div
-              className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
-              style={{ background: "#ecfdf5" }}
-            >
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 bg-emerald-50">
               <Check size={32} color="#059669" strokeWidth={2.5} />
             </div>
-            <h2 className="text-[22px] font-bold mb-2" style={{ color: "#111827" }}>
+            <h2 className="text-[22px] font-bold mb-2 text-gray-900">
               {form.name || "School"} onboarded!
             </h2>
-            <p className="text-[14px] mb-8" style={{ color: "#6b7280" }}>
+            <p className="text-[14px] mb-8 text-gray-500">
               An invitation email has been sent to {form.adminEmail || "the admin"}. They can now set up faculties, departments, and courses.
             </p>
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => router.push(waitlistId ? "/dashboard" : "/dashboard/schools")}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-medium"
-                style={{ background: "#FED65B", color: "#570000" }}
+                className="px-5 py-2.5 rounded-lg text-[13px] font-medium bg-sp-accent text-sp-primary"
               >
                 {waitlistId ? "Back to Dashboard" : "View All Schools"}
               </button>
@@ -88,8 +84,7 @@ function NewSchoolForm() {
                   setDone(false);
                   setForm({ name: "", shortName: "", email: "", phone: "", country: "Nigeria", city: "", address: "", plan: "Starter", adminName: "", adminEmail: "" });
                 }}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-medium border"
-                style={{ borderColor: "#e5e7eb", color: "#374151" }}
+                className="px-5 py-2.5 rounded-lg text-[13px] font-medium border border-gray-200 text-gray-700"
               >
                 Add Another
               </button>
@@ -109,17 +104,13 @@ function NewSchoolForm() {
       <div className="p-8">
         <Link
           href={waitlistId ? "/dashboard" : "/dashboard/schools"}
-          className="inline-flex items-center gap-1.5 text-[13px] font-medium mb-8"
-          style={{ color: "#6b7280" }}
+          className="inline-flex items-center gap-1.5 text-[13px] font-medium mb-8 text-gray-500"
         >
           <ChevronLeft size={16} /> {waitlistId ? "Back to Dashboard" : "Back to Schools"}
         </Link>
 
         {waitlistId && (
-          <div
-            className="mb-6 flex items-center gap-2 px-4 py-3 rounded-lg text-[13px]"
-            style={{ background: "#fffbeb", color: "#92400e", border: "1px solid #fde68a" }}
-          >
+          <div className="mb-6 flex items-center gap-2 px-4 py-3 rounded-lg text-[13px] bg-amber-50 text-[#92400e] border border-[#fde68a]">
             <Check size={14} />
             Form pre-filled from waitlist submission. Review and complete the remaining fields below.
           </div>
@@ -131,35 +122,25 @@ function NewSchoolForm() {
             <div key={s} className="flex items-center">
               <div className="flex items-center gap-2">
                 <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold transition-all"
-                  style={{
-                    background: i <= step ? "#570000" : "#e5e7eb",
-                    color: i <= step ? "white" : "#9ca3af",
-                  }}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-[13px] font-bold transition-all ${i <= step ? "bg-sp-primary text-white" : "bg-gray-200 text-gray-400"}`}
                 >
                   {i < step ? <Check size={14} /> : i + 1}
                 </div>
-                <span
-                  className="text-[13px] font-medium hidden sm:block"
-                  style={{ color: i === step ? "#570000" : "#9ca3af" }}
-                >
+                <span className={`text-[13px] font-medium hidden sm:block ${i === step ? "text-sp-primary" : "text-gray-400"}`}>
                   {s}
                 </span>
               </div>
               {i < steps.length - 1 && (
-                <div
-                  className="flex-1 h-px mx-4 w-12"
-                  style={{ background: i < step ? "#570000" : "#e5e7eb" }}
-                />
+                <div className={`flex-1 h-px mx-4 w-12 ${i < step ? "bg-sp-primary" : "bg-gray-200"}`} />
               )}
             </div>
           ))}
         </div>
 
         {/* Form card */}
-        <div className="bg-white rounded-xl border max-w-2xl" style={{ borderColor: "#e5e7eb" }}>
-          <div className="px-8 py-6 border-b" style={{ borderColor: "#f3f4f6" }}>
-            <h3 className="text-[16px] font-semibold" style={{ color: "#111827" }}>{steps[step]}</h3>
+        <div className="bg-white rounded-xl border border-gray-200 max-w-2xl">
+          <div className="px-8 py-6 border-b border-gray-100">
+            <h3 className="text-[16px] font-semibold text-gray-900">{steps[step]}</h3>
           </div>
           <div className="px-8 py-6 space-y-5">
             {step === 0 && (
@@ -183,18 +164,13 @@ function NewSchoolForm() {
             {step === 2 && (
               <>
                 <div>
-                  <label className="block text-[12px] font-medium mb-2" style={{ color: "#374151" }}>Plan</label>
+                  <label className="block text-[12px] font-medium mb-2 text-gray-700">Plan</label>
                   <div className="grid grid-cols-3 gap-3">
                     {["Starter", "Professional", "Enterprise"].map((p) => (
                       <button
                         key={p}
                         onClick={() => update("plan", p)}
-                        className="py-3 rounded-lg border text-[13px] font-medium transition-all"
-                        style={{
-                          borderColor: form.plan === p ? "#570000" : "#e5e7eb",
-                          background: form.plan === p ? "#F0D5CE" : "white",
-                          color: form.plan === p ? "#570000" : "#374151",
-                        }}
+                        className={`py-3 rounded-lg border text-[13px] font-medium transition-all ${form.plan === p ? "border-sp-primary bg-sp-card text-sp-primary" : "border-gray-200 bg-white text-gray-700"}`}
                       >
                         {p}
                       </button>
@@ -210,24 +186,22 @@ function NewSchoolForm() {
           </div>
 
           {/* Footer */}
-          <div className="px-8 py-5 border-t" style={{ borderColor: "#f3f4f6" }}>
+          <div className="px-8 py-5 border-t border-gray-100">
             {error && (
-              <p className="text-[13px] mb-3" style={{ color: "#dc2626" }}>{error}</p>
+              <p className="text-[13px] mb-3 text-red-600">{error}</p>
             )}
             <div className="flex justify-between">
               <button
                 onClick={() => setStep((s) => Math.max(0, s - 1))}
                 disabled={step === 0 || submitting}
-                className="px-5 py-2.5 rounded-lg text-[13px] font-medium border disabled:opacity-40"
-                style={{ borderColor: "#e5e7eb", color: "#374151" }}
+                className="px-5 py-2.5 rounded-lg text-[13px] font-medium border border-gray-200 text-gray-700 disabled:opacity-40"
               >
                 Back
               </button>
               <button
                 onClick={handleNext}
                 disabled={submitting}
-                className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-[13px] font-medium disabled:opacity-60"
-                style={{ background: "#FED65B", color: "#570000" }}
+                className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-[13px] font-medium disabled:opacity-60 bg-sp-accent text-sp-primary"
               >
                 {submitting && <Loader2 size={14} className="animate-spin" />}
                 {step === steps.length - 1
@@ -244,7 +218,7 @@ function NewSchoolForm() {
 
 export default function NewSchoolPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-[14px]" style={{ color: "#9ca3af" }}>Loading...</div>}>
+    <Suspense fallback={<div className="p-8 text-[14px] text-gray-400">Loading...</div>}>
       <NewSchoolForm />
     </Suspense>
   );
@@ -256,14 +230,13 @@ function Field({ label, placeholder, value, onChange, type = "text" }: {
 }) {
   return (
     <div>
-      <label className="block text-[12px] font-medium mb-1.5" style={{ color: "#374151" }}>{label}</label>
+      <label className="block text-[12px] font-medium mb-1.5 text-gray-700">{label}</label>
       <input
         type={type}
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-4 py-2.5 rounded-lg border text-[14px] outline-none transition-colors focus:border-[#570000]"
-        style={{ borderColor: "#e5e7eb", color: "#111827", fontFamily: "'Inter',sans-serif" }}
+        className="w-full px-4 py-2.5 rounded-lg border border-gray-200 text-[14px] outline-none transition-colors focus:border-sp-primary text-gray-900"
       />
     </div>
   );

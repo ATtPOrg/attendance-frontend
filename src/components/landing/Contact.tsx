@@ -4,33 +4,26 @@ export default function Contact() {
   return (
     <section
       id="contact"
-      className="px-6 md:px-12 py-16 md:py-28 border-b"
-      style={{ borderColor: "var(--line)" }}
+      className="px-6 md:px-12 py-16 md:py-28 border-b border-line-color"
     >
       <div className="grid md:grid-cols-2 gap-10 md:gap-20">
         {/* Left */}
         <div>
           <div className="section-label mb-6">Get In Touch</div>
           <h2
-            className="mb-6 leading-[0.95] tracking-tight"
+            className="mb-6 leading-[0.95] tracking-tight font-display text-charcoal font-extrabold"
             style={{
-              fontFamily: "var(--font-syne)",
               fontSize: "clamp(48px,7vw,96px)",
-              fontWeight: 800,
               letterSpacing: "-0.04em",
-              color: "var(--charcoal)",
             }}
           >
             Let&apos;s<br />
-            <em style={{ fontFamily: "var(--font-fraunces)", fontWeight: 300, fontStyle: "italic", color: "var(--accent)" }}>
+            <em className="font-serif text-[var(--accent)] font-light italic">
               build
             </em>
             <br />together.
           </h2>
-          <p
-            className="text-[13px] leading-[1.9] max-w-xs mt-6"
-            style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}
-          >
+          <p className="text-[13px] leading-[1.9] max-w-xs mt-6 font-mono text-muted">
             Ready to eliminate proxy attendance at your institution? We&apos;ll onboard you and your team in under a week.
           </p>
         </div>
@@ -45,20 +38,13 @@ export default function Contact() {
             <a
               key={c.label}
               href={`mailto:${c.handle}`}
-              className="flex items-center justify-between py-5 border-b group"
-              style={{ borderColor: "var(--line)" }}
+              className="flex items-center justify-between py-5 border-b border-line-color group"
             >
               <div>
-                <div
-                  className="text-[16px] font-bold tracking-tight"
-                  style={{ fontFamily: "var(--font-syne)", color: "var(--charcoal)" }}
-                >
+                <div className="text-[16px] font-bold tracking-tight font-display text-charcoal">
                   {c.label}
                 </div>
-                <div
-                  className="text-[12px] tracking-[0.06em] mt-0.5"
-                  style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}
-                >
+                <div className="text-[12px] tracking-[0.06em] mt-0.5 font-mono text-muted">
                   {c.handle}
                 </div>
               </div>

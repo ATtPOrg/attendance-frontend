@@ -35,9 +35,9 @@ export default function SchoolLoginPage() {
   };
 
   return (
-    <div className="min-h-screen grid md:grid-cols-2" style={{ background: "#FFF8F6" }}>
+    <div className="min-h-screen grid md:grid-cols-2 bg-sp-surface">
       {/* Left panel — crimson brand */}
-      <div className="hidden md:flex flex-col justify-between p-12 relative overflow-hidden" style={{ background: "#570000" }}>
+      <div className="hidden md:flex flex-col justify-between p-12 relative overflow-hidden bg-sp-primary">
         {/* Subtle grid overlay */}
         <div
           className="absolute inset-0 opacity-[0.06]"
@@ -64,28 +64,27 @@ export default function SchoolLoginPage() {
 
         <Link href="/" className="relative z-10 flex items-center gap-2.5">
           <Image src="/logo.png" alt="ATP-Go" width={32} height={32} className="rounded-lg" />
-          <span className="font-bold text-[14px]" style={{ fontFamily: "var(--font-syne)", color: "rgba(255,255,255,0.9)" }}>
-            ATP<span style={{ color: "#FED65B" }}>-Go</span>
+          <span className="font-bold text-[14px] text-white/90" style={{ fontFamily: "var(--font-syne)" }}>
+            ATP<span className="text-sp-accent">-Go</span>
           </span>
         </Link>
 
         <div className="relative z-10">
           <h2
-            className="mb-4 leading-tight tracking-tight"
+            className="mb-4 leading-tight tracking-tight text-white"
             style={{
               fontFamily: "var(--font-syne)",
               fontSize: "clamp(28px,3vw,46px)",
               fontWeight: 800,
               letterSpacing: "-0.03em",
-              color: "#ffffff",
             }}
           >
             School Admin<br />
-            <em style={{ fontFamily: "var(--font-fraunces)", fontWeight: 300, fontStyle: "italic", color: "#FED65B" }}>
+            <em className="text-sp-accent" style={{ fontFamily: "var(--font-fraunces)", fontWeight: 300, fontStyle: "italic" }}>
               Portal.
             </em>
           </h2>
-          <p className="text-[13px] leading-[1.8] max-w-xs" style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(255,255,255,0.45)" }}>
+          <p className="text-[13px] leading-[1.8] max-w-xs text-white/45" style={{ fontFamily: "var(--font-dm-mono)" }}>
             Manage your institution&apos;s professors, students, courses, and attendance records from one secure place.
           </p>
 
@@ -96,53 +95,47 @@ export default function SchoolLoginPage() {
               { label: "Full roster control", desc: "Enroll students, assign professors to courses." },
             ].map((item) => (
               <div key={item.label} className="flex items-start gap-3">
-                <span className="mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#FED65B" }} />
+                <span className="mt-1 w-1.5 h-1.5 rounded-full flex-shrink-0 bg-sp-accent" />
                 <div>
-                  <div className="text-[13px] font-semibold" style={{ color: "rgba(255,255,255,0.9)" }}>{item.label}</div>
-                  <div className="text-[11px]" style={{ color: "rgba(255,255,255,0.4)" }}>{item.desc}</div>
+                  <div className="text-[13px] font-semibold text-white/90">{item.label}</div>
+                  <div className="text-[11px] text-white/40">{item.desc}</div>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="relative z-10 text-[11px] tracking-[0.1em]" style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(255,255,255,0.2)" }}>
+        <div className="relative z-10 text-[11px] tracking-[0.1em] text-white/20" style={{ fontFamily: "var(--font-dm-mono)" }}>
           © 2025 ATP-Go — Secure attendance infrastructure
         </div>
       </div>
 
       {/* Right — form */}
-      <div className="flex items-center justify-center px-6 py-16" style={{ background: "#FFF8F6" }}>
+      <div className="flex items-center justify-center px-6 py-16 bg-sp-surface">
         <div className="w-full max-w-sm">
           <Link href="/" className="md:hidden flex items-center gap-2 mb-10">
             <Image src="/logo.png" alt="ATP-Go" width={30} height={30} className="rounded-lg" />
-            <span style={{ fontFamily: "var(--font-syne)", fontWeight: 700, color: "#3D0000", fontSize: 15 }}>
-              ATP<span style={{ color: "#570000" }}>-Go</span>
+            <span className="font-bold text-[15px] text-sp-dark" style={{ fontFamily: "var(--font-syne)" }}>
+              ATP<span className="text-sp-primary">-Go</span>
             </span>
           </Link>
 
-          <div className="text-[10px] uppercase tracking-[0.16em] mb-2 font-bold" style={{ fontFamily: "var(--font-dm-mono)", color: "#9B6060" }}>
+          <div className="text-[10px] uppercase tracking-[0.16em] mb-2 font-bold text-sp-mid" style={{ fontFamily: "var(--font-dm-mono)" }}>
             School Portal
           </div>
           <h1
-            className="mb-1 tracking-tight"
-            style={{
-              fontFamily: "var(--font-syne)",
-              fontSize: "28px",
-              fontWeight: 800,
-              color: "#3D0000",
-              letterSpacing: "-0.02em",
-            }}
+            className="mb-1 text-sp-dark text-[28px] font-extrabold tracking-[-0.02em]"
+            style={{ fontFamily: "var(--font-syne)" }}
           >
             Sign in
           </h1>
-          <p className="text-[13px] mb-8" style={{ fontFamily: "var(--font-dm-mono)", color: "#9B6060" }}>
+          <p className="text-[13px] mb-8 text-sp-mid" style={{ fontFamily: "var(--font-dm-mono)" }}>
             Use your institution admin email to access your school.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label htmlFor="email" className="block text-[11px] uppercase tracking-[0.12em] mb-2 font-bold" style={{ fontFamily: "var(--font-dm-mono)", color: "#9B6060" }}>
+              <label htmlFor="email" className="block text-[11px] uppercase tracking-[0.12em] mb-2 font-bold text-sp-mid" style={{ fontFamily: "var(--font-dm-mono)" }}>
                 Admin Email
               </label>
               <input
@@ -153,19 +146,15 @@ export default function SchoolLoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={loading}
-                className="w-full bg-transparent border-b pb-2 text-[14px] outline-none transition-colors disabled:opacity-50"
-                style={{
-                  fontFamily: "var(--font-dm-mono)",
-                  color: "#3D0000",
-                  borderColor: "#E8C5BE",
-                }}
+                className="w-full bg-transparent border-b pb-2 text-[14px] outline-none transition-colors disabled:opacity-50 text-sp-dark border-[#E8C5BE] focus:border-sp-primary"
+                style={{ fontFamily: "var(--font-dm-mono)" }}
                 onFocus={(e) => (e.target.style.borderColor = "#570000")}
                 onBlur={(e) => (e.target.style.borderColor = "#E8C5BE")}
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-[11px] uppercase tracking-[0.12em] mb-2 font-bold" style={{ fontFamily: "var(--font-dm-mono)", color: "#9B6060" }}>
+              <label htmlFor="password" className="block text-[11px] uppercase tracking-[0.12em] mb-2 font-bold text-sp-mid" style={{ fontFamily: "var(--font-dm-mono)" }}>
                 Password
               </label>
               <div className="relative">
@@ -177,12 +166,8 @@ export default function SchoolLoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   disabled={loading}
-                  className="w-full bg-transparent border-b pb-2 text-[14px] outline-none transition-colors pr-8 disabled:opacity-50"
-                  style={{
-                    fontFamily: "var(--font-dm-mono)",
-                    color: "#3D0000",
-                    borderColor: "#E8C5BE",
-                  }}
+                  className="w-full bg-transparent border-b pb-2 text-[14px] outline-none transition-colors pr-8 disabled:opacity-50 text-sp-dark border-[#E8C5BE]"
+                  style={{ fontFamily: "var(--font-dm-mono)" }}
                   onFocus={(e) => (e.target.style.borderColor = "#570000")}
                   onBlur={(e) => (e.target.style.borderColor = "#E8C5BE")}
                 />
@@ -199,7 +184,7 @@ export default function SchoolLoginPage() {
             </div>
 
             {error && (
-              <p className="text-[12px]" style={{ fontFamily: "var(--font-dm-mono)", color: "#B91C1C" }}>
+              <p className="text-xs text-red-700" style={{ fontFamily: "var(--font-dm-mono)" }}>
                 {error}
               </p>
             )}
@@ -207,17 +192,17 @@ export default function SchoolLoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 text-[12px] uppercase tracking-[0.12em] font-bold transition-opacity duration-200 disabled:opacity-60"
-              style={{ fontFamily: "var(--font-dm-mono)", background: "#570000", color: "#ffffff" }}
+              className="w-full py-3.5 text-[12px] uppercase tracking-[0.12em] font-bold transition-opacity duration-200 disabled:opacity-60 bg-sp-primary text-white"
+              style={{ fontFamily: "var(--font-dm-mono)" }}
             >
               {loading ? "Signing in..." : "Sign In →"}
             </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t" style={{ borderColor: "#E8C5BE" }}>
-            <p className="text-[11px] text-center" style={{ fontFamily: "var(--font-dm-mono)", color: "#9B6060" }}>
+          <div className="mt-8 pt-6 border-t border-[#E8C5BE]">
+            <p className="text-[11px] text-center text-sp-mid" style={{ fontFamily: "var(--font-dm-mono)" }}>
               Not onboarded yet?{" "}
-              <Link href="/waitlist/demo" style={{ color: "#570000", fontWeight: 700 }}>
+              <Link href="/waitlist/demo" className="text-sp-primary font-bold">
                 Join the waitlist →
               </Link>
             </p>

@@ -27,24 +27,27 @@ function RecordDetailModal({ record, open, onClose }: { record: AttendanceSessio
             { label: "Attendance Rate", value: `${record.percentage.toFixed(1)}%` },
           ].map(({ label, value }) => (
             <div key={label} className="bg-gray-50 rounded-lg p-3">
-              <div className="text-[10px] uppercase tracking-wider mb-1" style={{ color: "#9ca3af" }}>{label}</div>
-              <div className="text-[14px] font-semibold" style={{ color: "#111827" }}>{value}</div>
+              <div className="text-[10px] uppercase tracking-wider mb-1 text-gray-400">{label}</div>
+              <div className="text-[14px] font-semibold text-gray-900">{value}</div>
             </div>
           ))}
         </div>
-        <div className="flex items-center gap-2 px-3 py-2.5 rounded-lg" style={{ background: record.verified ? "#ecfdf5" : "#fffbeb" }}>
+        <div className={`flex items-center gap-2 px-3 py-2.5 rounded-lg ${record.verified ? "bg-emerald-50" : "bg-amber-50"}`}>
           {record.verified
-            ? <><CheckCircle2 size={15} color="#059669" /><span className="text-[13px] font-medium" style={{ color: "#059669" }}>Face verification completed</span></>
-            : <><XCircle size={15} color="#d97706" /><span className="text-[13px] font-medium" style={{ color: "#d97706" }}>Verification pending</span></>
+            ? <><CheckCircle2 size={15} color="#059669" /><span className="text-[13px] font-medium text-emerald-600">Face verification completed</span></>
+            : <><XCircle size={15} color="#d97706" /><span className="text-[13px] font-medium text-amber-600">Verification pending</span></>
           }
         </div>
         <div>
-          <div className="flex justify-between text-[12px] mb-1.5" style={{ color: "#6b7280" }}>
+          <div className="flex justify-between text-[12px] mb-1.5 text-gray-500">
             <span>Present ({record.present})</span>
             <span>Absent ({absent})</span>
           </div>
-          <div className="h-3 rounded-full overflow-hidden" style={{ background: "#fee2e2" }}>
-            <div className="h-full rounded-full" style={{ width: `${record.percentage}%`, background: record.percentage >= 85 ? "#22c55e" : record.percentage >= 70 ? "#f59e0b" : "#ef4444" }} />
+          <div className="h-3 rounded-full overflow-hidden bg-[#fee2e2]">
+            <div
+              className="h-full rounded-full"
+              style={{ width: `${record.percentage}%`, background: record.percentage >= 85 ? "#22c55e" : record.percentage >= 70 ? "#f59e0b" : "#ef4444" }}
+            />
           </div>
         </div>
       </div>
@@ -110,28 +113,28 @@ export default function SchoolAttendancePage() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total Sessions", value: records.length, color: "#570000" },
-            { label: "Students Present", value: records.reduce((a, r) => a + r.present, 0).toLocaleString(), color: "#059669" },
-            { label: "Verified Sessions", value: records.filter((r) => r.verified).length, color: "#570000" },
-            { label: "Overall Rate", value: records.length ? `${(records.reduce((a, r) => a + r.percentage, 0) / records.length).toFixed(1)}%` : "—", color: "#d97706" },
+            { label: "Total Sessions", value: records.length, color: "text-sp-primary" },
+            { label: "Students Present", value: records.reduce((a, r) => a + r.present, 0).toLocaleString(), color: "text-emerald-600" },
+            { label: "Verified Sessions", value: records.filter((r) => r.verified).length, color: "text-sp-primary" },
+            { label: "Overall Rate", value: records.length ? `${(records.reduce((a, r) => a + r.percentage, 0) / records.length).toFixed(1)}%` : "—", color: "text-amber-600" },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-xl border p-4" style={{ borderColor: "#e5e7eb" }}>
-              <div className="text-[26px] font-bold" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-[12px] mt-0.5" style={{ color: "#9ca3af" }}>{s.label}</div>
+            <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-4">
+              <div className={`text-[26px] font-bold ${s.color}`}>{s.value}</div>
+              <div className="text-xs mt-0.5 text-gray-400">{s.label}</div>
             </div>
           ))}
         </div>
 
         {/* Chart */}
-        <div className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Attendance Trend</h3>
-              <p className="text-[12px]" style={{ color: "#9ca3af" }}>6-month average for {shortName}</p>
+              <h3 className="text-[15px] font-semibold text-gray-900">Attendance Trend</h3>
+              <p className="text-xs text-gray-400">6-month average for {shortName}</p>
             </div>
-            <div className="flex gap-4 text-[12px]" style={{ color: "#9ca3af" }}>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block" style={{ background: "#570000" }} />Actual</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block" style={{ background: "#e5e7eb" }} />Target</span>
+            <div className="flex gap-4 text-[12px] text-gray-400">
+              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block bg-sp-primary" />Actual</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded-full inline-block bg-gray-200" />Target</span>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={180}>
@@ -155,15 +158,15 @@ export default function SchoolAttendancePage() {
         {/* Filters */}
         <div className="flex gap-3 items-center justify-between flex-wrap">
           <div className="flex gap-2 flex-wrap">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white">
               <Search size={14} color="#9ca3af" />
-              <input aria-label="Search sessions" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search sessions..." className="text-[13px] outline-none w-52 bg-transparent" style={{ color: "#111827" }} />
+              <input aria-label="Search sessions" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search sessions..." className="text-[13px] outline-none w-52 bg-transparent text-gray-900" />
             </div>
-            <select aria-label="Filter by session type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by session type" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 text-[13px] outline-none bg-white text-gray-700">
               <option value="all">All Types</option>
               {sessionTypes.map((t) => <option key={t}>{t}</option>)}
             </select>
-            <select aria-label="Filter by verification status" value={verifiedFilter} onChange={(e) => setVerifiedFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by verification status" value={verifiedFilter} onChange={(e) => setVerifiedFilter(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 text-[13px] outline-none bg-white text-gray-700">
               <option value="all">All Sessions</option>
               <option value="verified">Verified Only</option>
               <option value="pending">Pending Only</option>
@@ -172,68 +175,65 @@ export default function SchoolAttendancePage() {
           <button
             onClick={handleExport}
             disabled={exporting || records.length === 0}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium border transition-colors hover:bg-gray-50 disabled:opacity-50"
-            style={{ borderColor: "#e5e7eb", color: "#374151" }}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium border border-gray-200 transition-colors hover:bg-gray-50 disabled:opacity-50 text-gray-700"
           >
             {exporting ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />} Export CSV
           </button>
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           {records.length === 0 ? (
             <div className="py-16 text-center">
               <Filter size={32} color="#d1d5db" className="mx-auto mb-3" />
-              <p className="text-[14px]" style={{ color: "#9ca3af" }}>No attendance sessions recorded for {shortName} yet.</p>
+              <p className="text-[14px] text-gray-400">No attendance sessions recorded for {shortName} yet.</p>
             </div>
           ) : (
             <>
               <div className="overflow-x-auto">
-                <table className="w-full text-[13px]" style={{ fontFamily: "'Inter',sans-serif" }}>
+                <table className="w-full text-[13px]">
                   <thead>
-                    <tr style={{ background: "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
+                    <tr className="bg-gray-50 border-b border-gray-100">
                       {["Date", "Course", "Professor", "Type", "Present / Total", "Rate", "Verified", ""].map((h) => (
-                        <th key={h} className="text-left px-5 py-3 text-[11px] uppercase tracking-wider font-semibold" style={{ color: "#6b7280" }}>{h}</th>
+                        <th key={h} className="text-left px-5 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500">{h}</th>
                       ))}
                     </tr>
                   </thead>
                   <tbody>
                     {filtered.map((record, i) => {
                       const rate = record.percentage;
-                      const rateColor = rate >= 85 ? "#059669" : rate >= 70 ? "#d97706" : "#dc2626";
-                      const rateBg = rate >= 85 ? "#ecfdf5" : rate >= 70 ? "#fffbeb" : "#fef2f2";
                       return (
-                        <tr key={record.id} className="border-b hover:bg-gray-50 transition-colors cursor-pointer" style={{ borderColor: i === filtered.length - 1 ? "transparent" : "#f3f4f6" }} onClick={() => setDetailRecord(record)}>
+                        <tr key={record.id} className={`hover:bg-gray-50 transition-colors cursor-pointer ${i === filtered.length - 1 ? "" : "border-b border-gray-100"}`} onClick={() => setDetailRecord(record)}>
                           <td className="px-5 py-3.5">
                             <div className="flex items-center gap-1.5">
                               <Calendar size={13} color="#9ca3af" />
-                              <span style={{ color: "#374151" }}>{record.date}</span>
+                              <span className="text-gray-700">{record.date}</span>
                             </div>
                           </td>
-                          <td className="px-5 py-3.5 max-w-[200px] truncate font-medium" style={{ color: "#111827" }}>{record.course}</td>
-                          <td className="px-5 py-3.5 max-w-[150px] truncate" style={{ color: "#374151" }}>{record.professor}</td>
+                          <td className="px-5 py-3.5 max-w-[200px] truncate font-medium text-gray-900">{record.course}</td>
+                          <td className="px-5 py-3.5 max-w-[150px] truncate text-gray-700">{record.professor}</td>
                           <td className="px-5 py-3.5">
-                            <span className="text-[11px] px-2 py-0.5 rounded font-medium" style={{ background: "#f3f4f6", color: "#6b7280" }}>{record.sessionType}</span>
+                            <span className="text-[11px] px-2 py-0.5 rounded font-medium bg-gray-100 text-gray-500">{record.sessionType}</span>
                           </td>
                           <td className="px-5 py-3.5">
-                            <span className="font-semibold" style={{ color: "#111827" }}>{record.present}</span>
-                            <span style={{ color: "#9ca3af" }}> / {record.enrolled}</span>
+                            <span className="font-semibold text-gray-900">{record.present}</span>
+                            <span className="text-gray-400"> / {record.enrolled}</span>
                           </td>
                           <td className="px-5 py-3.5">
-                            <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full" style={{ color: rateColor, background: rateBg }}>{rate.toFixed(1)}%</span>
+                            <span className={`text-[12px] font-semibold px-2.5 py-0.5 rounded-full ${rate >= 85 ? "text-emerald-600 bg-emerald-50" : rate >= 70 ? "text-amber-600 bg-amber-50" : "text-red-600 bg-red-50"}`}>{rate.toFixed(1)}%</span>
                           </td>
                           <td className="px-5 py-3.5">
                             {record.verified ? <CheckCircle2 size={16} color="#059669" /> : <XCircle size={16} color="#d97706" />}
                           </td>
-                          <td className="px-5 py-3.5 text-[12px]" style={{ color: "#570000" }}>Details</td>
+                          <td className="px-5 py-3.5 text-[12px] text-sp-primary">Details</td>
                         </tr>
                       );
                     })}
                   </tbody>
                 </table>
               </div>
-              <div className="px-5 py-3 border-t" style={{ borderColor: "#f3f4f6", background: "#f9fafb" }}>
-                <span className="text-[12px]" style={{ color: "#9ca3af" }}>Showing {filtered.length} of {records.length} sessions</span>
+              <div className="px-5 py-3 border-t border-gray-100 bg-gray-50">
+                <span className="text-[12px] text-gray-400">Showing {filtered.length} of {records.length} sessions</span>
               </div>
             </>
           )}

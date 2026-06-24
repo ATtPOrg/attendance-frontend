@@ -11,16 +11,16 @@ import { Search, Plus, MoreVertical, Users, BookOpen, GraduationCap, Pencil, Tra
 import Modal, { ConfirmModal } from "@/components/ui/Modal";
 import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from "@/components/ui/FormField";
 
-const statusColors = {
-  active: { bg: "#ecfdf5", text: "#059669" },
-  trial: { bg: "#fffbeb", text: "#d97706" },
-  inactive: { bg: "#f3f4f6", text: "#6b7280" },
+const statusBadgeClass = {
+  active: "bg-emerald-50 text-emerald-600",
+  trial: "bg-amber-50 text-amber-600",
+  inactive: "bg-gray-100 text-gray-500",
 };
 
-const planColors = {
-  Enterprise: { bg: "#F0D5CE", text: "#570000" },
-  Professional: { bg: "#F0D5CE", text: "#570000" },
-  Starter: { bg: "#f0fdf4", text: "#16a34a" },
+const planBadgeClass = {
+  Enterprise: "bg-sp-card text-sp-primary",
+  Professional: "bg-sp-card text-sp-primary",
+  Starter: "bg-[#f0fdf4] text-green-600",
 };
 
 function EditSchoolModal({ school, open, onClose, onSave }: { school: School | null; open: boolean; onClose: () => void; onSave: (s: School) => Promise<void> }) {
@@ -107,18 +107,18 @@ function SchoolMenu({ school, onEdit, onDelete, onToggle }: { school: School; on
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-7 z-20 bg-white border rounded-xl shadow-lg py-1.5 w-44" style={{ borderColor: "#e5e7eb" }}>
-            <Link href={`/dashboard/schools/${school.id}`} className="flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-gray-50 transition-colors" style={{ color: "#374151" }} onClick={() => setOpen(false)}>
+          <div className="absolute right-0 top-7 z-20 bg-white border border-gray-200 rounded-xl shadow-lg py-1.5 w-44">
+            <Link href={`/dashboard/schools/${school.id}`} className="flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-gray-50 transition-colors text-gray-700" onClick={() => setOpen(false)}>
               <Eye size={14} /> View Details
             </Link>
-            <button className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-gray-50 transition-colors" style={{ color: "#374151" }} onClick={() => { onEdit(); setOpen(false); }}>
+            <button className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-gray-50 transition-colors text-gray-700" onClick={() => { onEdit(); setOpen(false); }}>
               <Pencil size={14} /> Edit School
             </button>
-            <button className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-gray-50 transition-colors" style={{ color: "#374151" }} onClick={() => { onToggle(); setOpen(false); }}>
+            <button className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-gray-50 transition-colors text-gray-700" onClick={() => { onToggle(); setOpen(false); }}>
               <Power size={14} /> {school.status === "active" ? "Suspend" : "Activate"}
             </button>
-            <div className="my-1 border-t" style={{ borderColor: "#f3f4f6" }} />
-            <button className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-red-50 transition-colors" style={{ color: "#ef4444" }} onClick={() => { onDelete(); setOpen(false); }}>
+            <div className="my-1 border-t border-gray-100" />
+            <button className="w-full flex items-center gap-2.5 px-4 py-2 text-[13px] hover:bg-red-50 transition-colors text-red-500" onClick={() => { onDelete(); setOpen(false); }}>
               <Trash2 size={14} /> Remove School
             </button>
           </div>
@@ -200,33 +200,26 @@ function SchoolsPageInner() {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className="px-4 py-1.5 rounded-full text-[12px] font-medium capitalize transition-all"
-                style={{
-                  background: filter === f ? "#FED65B" : "#f3f4f6",
-                  color: filter === f ? "#570000" : "#6b7280",
-                  fontFamily: "'Inter',sans-serif",
-                }}
+                className={`px-4 py-1.5 rounded-full text-[12px] font-medium capitalize transition-all ${filter === f ? "bg-sp-accent text-sp-primary" : "bg-gray-100 text-gray-500"}`}
               >
                 {f} {f === "all" ? `(${list.length})` : `(${list.filter((s) => s.status === f).length})`}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white">
               <Search size={14} color="#9ca3af" />
               <input
                 aria-label="Search schools"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search schools..."
-                className="text-[13px] outline-none w-44 bg-transparent"
-                style={{ color: "#111827" }}
+                className="text-[13px] outline-none w-44 bg-transparent text-gray-900"
               />
             </div>
             <Link
               href="/dashboard/schools/new"
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium"
-              style={{ background: "#FED65B", color: "#570000", fontFamily: "'Inter',sans-serif" }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-medium bg-sp-accent text-sp-primary"
             >
               <Plus size={15} />
               Add School
@@ -237,18 +230,18 @@ function SchoolsPageInner() {
         {/* Schools grid */}
         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
           {filtered.map((school) => {
-            const sc = statusColors[school.status];
-            const pc = planColors[school.plan as keyof typeof planColors] ?? planColors.Starter;
+            const sc = statusBadgeClass[school.status];
+            const pc = planBadgeClass[school.plan as keyof typeof planBadgeClass] ?? planBadgeClass.Starter;
             return (
-              <div key={school.id} className="bg-white rounded-xl border overflow-hidden hover:shadow-md transition-shadow" style={{ borderColor: "#e5e7eb" }}>
-                <div className="px-5 py-4 border-b flex items-center justify-between" style={{ borderColor: "#f3f4f6" }}>
+              <div key={school.id} className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+                <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-[14px] font-bold" style={{ background: "#570000" }}>
+                    <div className="w-10 h-10 rounded-lg flex items-center justify-center text-white text-[14px] font-bold bg-sp-primary">
                       {school.shortName.slice(0, 2)}
                     </div>
                     <div>
-                      <div className="text-[14px] font-semibold leading-tight" style={{ color: "#111827" }}>{school.shortName}</div>
-                      <div className="text-[11px]" style={{ color: "#9ca3af" }}>{school.city}</div>
+                      <div className="text-[14px] font-semibold leading-tight text-gray-900">{school.shortName}</div>
+                      <div className="text-[11px] text-gray-400">{school.city}</div>
                     </div>
                   </div>
                   <SchoolMenu
@@ -260,7 +253,7 @@ function SchoolsPageInner() {
                 </div>
 
                 <div className="px-5 pt-3">
-                  <p className="text-[13px] font-medium leading-snug" style={{ color: "#374151" }}>{school.name}</p>
+                  <p className="text-[13px] font-medium leading-snug text-gray-700">{school.name}</p>
                 </div>
 
                 <div className="px-5 py-4 grid grid-cols-3 gap-2">
@@ -271,32 +264,30 @@ function SchoolsPageInner() {
                   ].map(({ icon: Icon, value, label }) => (
                     <div key={label} className="text-center">
                       <Icon size={16} color="#9ca3af" className="mx-auto mb-1" />
-                      <div className="text-[15px] font-bold" style={{ color: "#111827" }}>{value}</div>
-                      <div className="text-[10px]" style={{ color: "#9ca3af" }}>{label}</div>
+                      <div className="text-[15px] font-bold text-gray-900">{value}</div>
+                      <div className="text-[10px] text-gray-400">{label}</div>
                     </div>
                   ))}
                 </div>
 
-                <div className="px-5 py-3 flex items-center justify-between border-t" style={{ borderColor: "#f3f4f6", background: "#fafafa" }}>
+                <div className="px-5 py-3 flex items-center justify-between border-t border-gray-100 bg-[#fafafa]">
                   <div className="flex gap-2">
-                    <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: sc.bg, color: sc.text }}>
+                    <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${sc}`}>
                       {school.status}
                     </span>
-                    <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: pc.bg, color: pc.text }}>
+                    <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${pc}`}>
                       {school.plan}
                     </span>
                   </div>
                   <div className="flex gap-2">
                     <Link
                       href={`/dashboard/schools/${school.id}`}
-                      className="text-[12px] font-medium px-3 py-1.5 rounded-lg border transition-colors hover:bg-gray-50"
-                      style={{ borderColor: "#e5e7eb", color: "#374151" }}
+                      className="text-[12px] font-medium px-3 py-1.5 rounded-lg border border-gray-200 transition-colors hover:bg-gray-50 text-gray-700"
                     >
                       View
                     </Link>
                     <button
-                      className="text-[12px] font-medium px-3 py-1.5 rounded-lg border transition-colors hover:bg-gray-50"
-                      style={{ borderColor: "#e5e7eb", color: "#374151" }}
+                      className="text-[12px] font-medium px-3 py-1.5 rounded-lg border border-gray-200 transition-colors hover:bg-gray-50 text-gray-700"
                       onClick={() => setEditTarget(school)}
                     >
                       Edit
@@ -310,8 +301,8 @@ function SchoolsPageInner() {
 
         {filtered.length === 0 && (
           <div className="text-center py-16">
-            <p className="text-[15px]" style={{ color: "#9ca3af" }}>No schools found matching your search.</p>
-            <Link href="/dashboard/schools/new" className="text-[14px] font-medium mt-2 block" style={{ color: "#570000" }}>
+            <p className="text-[15px] text-gray-400">No schools found matching your search.</p>
+            <Link href="/dashboard/schools/new" className="text-[14px] font-medium mt-2 block text-sp-primary">
               + Onboard a new school
             </Link>
           </div>
@@ -354,7 +345,7 @@ function SchoolsPageInner() {
 
 export default function SchoolsPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-[14px]" style={{ color: "#9ca3af" }}>Loading...</div>}>
+    <Suspense fallback={<div className="p-8 text-[14px] text-gray-400">Loading...</div>}>
       <SchoolsPageInner />
     </Suspense>
   );

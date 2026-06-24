@@ -96,11 +96,11 @@ function CourseModal({ course, departments, professors, open, onClose, onSave }:
 
         {/* Co-lecturers */}
         <div className="space-y-2">
-          <p className="text-[12px] font-semibold uppercase tracking-wider" style={{ color: "#9ca3af" }}>Co-Lecturers</p>
+          <p className="text-[12px] font-semibold uppercase tracking-wider text-gray-400">Co-Lecturers</p>
           {coLecturers.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {coLecturers.map((cl) => (
-                <span key={cl.id} className="flex items-center gap-1.5 pl-3 pr-1.5 py-1 rounded-full text-[12px] font-medium" style={{ background: "#FFF8F6", border: "1px solid #F0D5CE", color: "#570000" }}>
+                <span key={cl.id} className="flex items-center gap-1.5 pl-3 pr-1.5 py-1 rounded-full text-[12px] font-medium bg-sp-surface border border-sp-card text-sp-primary">
                   {cl.name ?? cl.email}
                   <button type="button" aria-label={`Remove ${cl.name ?? cl.email} as co-lecturer`} onClick={() => removeCoLecturer(cl.id)} className="rounded-full p-0.5 hover:bg-[#F0D5CE]">
                     <X size={11} />
@@ -115,8 +115,7 @@ function CourseModal({ course, departments, professors, open, onClose, onSave }:
                 aria-label="Select a co-lecturer to add"
                 value={addingLecturer}
                 onChange={(e) => setAddingLecturer(e.target.value)}
-                className="flex-1 px-3 py-2 rounded-lg border text-[13px] outline-none bg-white"
-                style={{ borderColor: "#e5e7eb", color: "#374151" }}
+                className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-[13px] outline-none bg-white text-gray-700"
               >
                 <option value="">Add co-lecturer...</option>
                 {availableToAdd.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -126,15 +125,14 @@ function CourseModal({ course, departments, professors, open, onClose, onSave }:
                 aria-label="Add selected co-lecturer"
                 onClick={addCoLecturer}
                 disabled={!addingLecturer}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-medium disabled:opacity-40"
-                style={{ background: "#570000", color: "#ffffff" }}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-[13px] font-medium disabled:opacity-40 bg-sp-primary text-white"
               >
                 <UserPlus size={14} /> Add
               </button>
             </div>
           )}
           {availableToAdd.length === 0 && coLecturers.length === 0 && (
-            <p className="text-[12px]" style={{ color: "#9ca3af" }}>No other professors available to add.</p>
+            <p className="text-[12px] text-gray-400">No other professors available to add.</p>
           )}
         </div>
 
@@ -222,14 +220,14 @@ export default function SchoolCoursesPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total Courses", value: courses.length, color: "#570000" },
-            { label: "Active", value: activeCourses.length, color: "#059669" },
-            { label: "Inactive", value: courses.filter((c) => c.status === "inactive").length, color: "#6b7280" },
-            { label: "Avg Attendance", value: `${avgAttendance}%`, color: "#d97706" },
+            { label: "Total Courses", value: courses.length, color: "text-sp-primary" },
+            { label: "Active", value: activeCourses.length, color: "text-emerald-600" },
+            { label: "Inactive", value: courses.filter((c) => c.status === "inactive").length, color: "text-gray-500" },
+            { label: "Avg Attendance", value: `${avgAttendance}%`, color: "text-amber-600" },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-xl border p-4" style={{ borderColor: "#e5e7eb" }}>
-              <div className="text-[24px] font-bold" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-[12px] mt-0.5" style={{ color: "#9ca3af" }}>{s.label}</div>
+            <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-4">
+              <div className={`text-[24px] font-bold ${s.color}`}>{s.value}</div>
+              <div className="text-xs mt-0.5 text-gray-400">{s.label}</div>
             </div>
           ))}
         </div>
@@ -237,63 +235,61 @@ export default function SchoolCoursesPage() {
         {/* Filters */}
         <div className="flex gap-3 items-center justify-between flex-wrap">
           <div className="flex gap-2 flex-wrap">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white">
               <Search size={14} color="#9ca3af" />
-              <input aria-label="Search courses" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search courses..." className="text-[13px] outline-none w-48 bg-transparent" style={{ color: "#111827" }} />
+              <input aria-label="Search courses" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search courses..." className="text-[13px] outline-none w-48 bg-transparent text-gray-900" />
             </div>
-            <select aria-label="Filter by semester" value={semFilter} onChange={(e) => setSemFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by semester" value={semFilter} onChange={(e) => setSemFilter(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 text-[13px] outline-none bg-white text-gray-700">
               <option value="all">All Semesters</option>
               <option>First</option><option>Second</option>
             </select>
-            <select aria-label="Filter by status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 text-[13px] outline-none bg-white text-gray-700">
               <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
             </select>
           </div>
-          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#570000", fontFamily: "'Inter',sans-serif" }}>
+          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium bg-sp-primary">
             <Plus size={15} /> Add Course
           </button>
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-[13px]" style={{ fontFamily: "'Inter',sans-serif" }}>
+            <table className="w-full text-[13px]">
               <thead>
-                <tr style={{ background: "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
+                <tr className="bg-gray-50 border-b border-gray-100">
                   {["Code", "Course Title", "Department", "Lecturers", "Level", "Students", "Attendance", "Status", ""].map((h) => (
-                    <th key={h} className="text-left px-5 py-3 text-[11px] uppercase tracking-wider font-semibold" style={{ color: "#6b7280" }}>{h}</th>
+                    <th key={h} className="text-left px-5 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((c, i) => {
                   const rate = c.attendanceRate;
-                  const rateColor = rate >= 85 ? "#059669" : rate >= 70 ? "#d97706" : "#dc2626";
-                  const rateBg = rate >= 85 ? "#ecfdf5" : rate >= 70 ? "#fffbeb" : "#fef2f2";
                   const lecturerNames = [
                     c.professor || null,
                     ...(c.lecturers ?? []).map((l) => l.name ?? l.email),
                   ].filter(Boolean);
                   return (
-                    <tr key={c.id} className="border-b hover:bg-gray-50 transition-colors" style={{ borderColor: i === filtered.length - 1 ? "transparent" : "#f3f4f6" }}>
+                    <tr key={c.id} className={`hover:bg-gray-50 transition-colors ${i === filtered.length - 1 ? "" : "border-b border-gray-100"}`}>
                       <td className="px-5 py-3.5">
-                        <span className="font-mono text-[12px] font-semibold px-2.5 py-1 rounded-lg" style={{ background: "#F0D5CE", color: "#570000" }}>{c.code}</span>
+                        <span className="font-mono text-[12px] font-semibold px-2.5 py-1 rounded-lg bg-sp-card text-sp-primary">{c.code}</span>
                       </td>
                       <td className="px-5 py-3.5">
-                        <div className="font-medium" style={{ color: "#111827" }}>{c.title}</div>
-                        <div className="text-[11px]" style={{ color: "#9ca3af" }}>{c.semester} Sem.</div>
+                        <div className="font-medium text-gray-900">{c.title}</div>
+                        <div className="text-[11px] text-gray-400">{c.semester} Sem.</div>
                       </td>
-                      <td className="px-5 py-3.5" style={{ color: "#374151" }}>{c.department}</td>
+                      <td className="px-5 py-3.5 text-gray-700">{c.department}</td>
                       <td className="px-5 py-3.5">
                         {lecturerNames.length === 0
-                          ? <span style={{ color: "#9ca3af" }}>Unassigned</span>
+                          ? <span className="text-gray-400">Unassigned</span>
                           : (
                             <div className="space-y-0.5">
                               {lecturerNames.map((name, idx) => (
-                                <div key={idx} className="text-[12px]" style={{ color: idx === 0 ? "#374151" : "#9ca3af" }}>
-                                  {name}{idx === 0 && lecturerNames.length > 1 ? <span className="ml-1 text-[10px] font-semibold" style={{ color: "#9ca3af" }}>(primary)</span> : ""}
+                                <div key={idx} className={`text-[12px] ${idx === 0 ? "text-gray-700" : "text-gray-400"}`}>
+                                  {name}{idx === 0 && lecturerNames.length > 1 ? <span className="ml-1 text-[10px] font-semibold text-gray-400">(primary)</span> : ""}
                                 </div>
                               ))}
                             </div>
@@ -301,17 +297,14 @@ export default function SchoolCoursesPage() {
                         }
                       </td>
                       <td className="px-5 py-3.5">
-                        <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: "#f3f4f6", color: "#6b7280" }}>{c.level}L</span>
+                        <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-gray-100 text-gray-500">{c.level}L</span>
                       </td>
-                      <td className="px-5 py-3.5 font-medium" style={{ color: "#374151" }}>{c.students}</td>
+                      <td className="px-5 py-3.5 font-medium text-gray-700">{c.students}</td>
                       <td className="px-5 py-3.5">
-                        <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full" style={{ color: rateColor, background: rateBg }}>{rate.toFixed(1)}%</span>
+                        <span className={`text-[12px] font-semibold px-2.5 py-0.5 rounded-full ${rate >= 85 ? "text-emerald-600 bg-emerald-50" : rate >= 70 ? "text-amber-600 bg-amber-50" : "text-red-600 bg-red-50"}`}>{rate.toFixed(1)}%</span>
                       </td>
                       <td className="px-5 py-3.5">
-                        <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{
-                          background: c.status === "active" ? "#ecfdf5" : "#f3f4f6",
-                          color: c.status === "active" ? "#059669" : "#6b7280",
-                        }}>{c.status}</span>
+                        <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${c.status === "active" ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-500"}`}>{c.status}</span>
                       </td>
                       <td className="px-5 py-3.5">
                         <div className="flex gap-2">
@@ -328,11 +321,11 @@ export default function SchoolCoursesPage() {
           {filtered.length === 0 && (
             <div className="py-16 text-center">
               <BookOpen size={32} color="#d1d5db" className="mx-auto mb-3" />
-              <p className="text-[14px]" style={{ color: "#9ca3af" }}>No courses found.</p>
+              <p className="text-[14px] text-gray-400">No courses found.</p>
             </div>
           )}
-          <div className="px-5 py-3 border-t" style={{ borderColor: "#f3f4f6", background: "#f9fafb" }}>
-            <span className="text-[12px]" style={{ color: "#9ca3af" }}>Showing {filtered.length} of {courses.length} courses</span>
+          <div className="px-5 py-3 border-t border-gray-100 bg-gray-50">
+            <span className="text-[12px] text-gray-400">Showing {filtered.length} of {courses.length} courses</span>
           </div>
         </div>
       </div>

@@ -82,25 +82,25 @@ function CredentialsModal({ professor, onClose }: { professor: Professor; onClos
   return (
     <Modal open onClose={onClose} title="Professor Added" subtitle={professor.name ?? undefined} width="max-w-md">
       <div className="space-y-4">
-        <p className="text-[13px]" style={{ color: "#6b7280" }}>
+        <p className="text-[13px] text-gray-500">
           Share these login credentials with the professor. The password is only shown once.
         </p>
-        <div className="rounded-xl border p-4 space-y-3" style={{ borderColor: "#e5e7eb", background: "#f9fafb" }}>
+        <div className="rounded-xl border border-gray-200 p-4 space-y-3 bg-gray-50">
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-wider mb-1" style={{ color: "#9ca3af" }}>Email</div>
-            <div className="text-[14px] font-medium" style={{ color: "#111827" }}>{professor.email}</div>
+            <div className="text-[11px] font-semibold uppercase tracking-wider mb-1 text-gray-400">Email</div>
+            <div className="text-[14px] font-medium text-gray-900">{professor.email}</div>
           </div>
           <div>
-            <div className="text-[11px] font-semibold uppercase tracking-wider mb-1" style={{ color: "#9ca3af" }}>Temporary Password</div>
+            <div className="text-[11px] font-semibold uppercase tracking-wider mb-1 text-gray-400">Temporary Password</div>
             <div className="flex items-center justify-between gap-3">
-              <div className="text-[14px] font-mono font-semibold" style={{ color: "#570000" }}>{professor.temporaryPassword ?? "—"}</div>
-              <button onClick={copy} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[12px] font-medium transition-colors hover:bg-white" style={{ borderColor: "#e5e7eb", color: copied ? "#059669" : "#374151" }}>
+              <div className="text-[14px] font-mono font-semibold text-sp-primary">{professor.temporaryPassword ?? "—"}</div>
+              <button onClick={copy} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-[12px] font-medium transition-colors hover:bg-white ${copied ? "text-green-600" : "text-gray-700"}`}>
                 {copied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy</>}
               </button>
             </div>
           </div>
         </div>
-        <p className="text-[11px]" style={{ color: "#9ca3af" }}>
+        <p className="text-[11px] text-gray-400">
           The professor will be prompted to change this password on first login.
         </p>
       </div>
@@ -113,25 +113,22 @@ function CredentialsModal({ professor, onClose }: { professor: Professor; onClos
 
 function ProfessorCard({ professor, onEdit, onDelete }: { professor: Professor; onEdit: () => void; onDelete: () => void }) {
   return (
-    <div className="bg-white rounded-xl border overflow-hidden hover:shadow-md transition-shadow" style={{ borderColor: "#e5e7eb" }}>
-      <div className="px-5 py-4 flex items-center gap-3 border-b" style={{ borderColor: "#f3f4f6" }}>
-        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0" style={{ background: "#570000" }}>
+    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+      <div className="px-5 py-4 flex items-center gap-3 border-b border-gray-100">
+        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white text-[14px] font-bold flex-shrink-0 bg-sp-primary">
           {professor.name.split(" ").find((n) => n.length > 1)?.[0] ?? "P"}
         </div>
         <div className="min-w-0 flex-1">
-          <div className="text-[14px] font-semibold truncate" style={{ color: "#111827" }}>{professor.name}</div>
-          <div className="text-[11px] truncate" style={{ color: "#9ca3af" }}>{professor.department}</div>
+          <div className="text-[14px] font-semibold truncate text-gray-900">{professor.name}</div>
+          <div className="text-[11px] truncate text-gray-400">{professor.department}</div>
         </div>
-        <span className="text-[10px] px-2 py-0.5 rounded-full font-medium flex-shrink-0" style={{
-          background: professor.status === "active" ? "#ecfdf5" : "#f3f4f6",
-          color: professor.status === "active" ? "#059669" : "#6b7280",
-        }}>
+        <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium flex-shrink-0 ${professor.status === "active" ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-500"}`}>
           {professor.status}
         </span>
       </div>
-      <div className="px-5 py-3 flex items-center gap-1.5 border-b" style={{ borderColor: "#f3f4f6" }}>
+      <div className="px-5 py-3 flex items-center gap-1.5 border-b border-gray-100">
         <Mail size={12} color="#9ca3af" />
-        <span className="text-[11px] truncate" style={{ color: "#6b7280" }}>{professor.email}</span>
+        <span className="text-[11px] truncate text-gray-500">{professor.email}</span>
       </div>
       <div className="px-5 py-3 grid grid-cols-2 gap-2">
         {[
@@ -140,16 +137,16 @@ function ProfessorCard({ professor, onEdit, onDelete }: { professor: Professor; 
         ].map(({ icon: Icon, value, label }) => (
           <div key={label} className="flex items-center gap-2">
             <Icon size={13} color="#9ca3af" />
-            <span className="text-[13px] font-semibold" style={{ color: "#111827" }}>{value}</span>
-            <span className="text-[11px]" style={{ color: "#9ca3af" }}>{label}</span>
+            <span className="text-[13px] font-semibold text-gray-900">{value}</span>
+            <span className="text-[11px] text-gray-400">{label}</span>
           </div>
         ))}
       </div>
-      <div className="px-5 py-3 border-t flex gap-2" style={{ borderColor: "#f3f4f6", background: "#fafafa" }}>
-        <button onClick={onEdit} className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border text-[12px] font-medium transition-colors hover:bg-[#FFF8F6]" style={{ borderColor: "#e5e7eb", color: "#570000" }}>
+      <div className="px-5 py-3 border-t border-gray-100 flex gap-2 bg-[#fafafa]">
+        <button onClick={onEdit} className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-gray-200 text-[12px] font-medium transition-colors hover:bg-[#FFF8F6] text-sp-primary">
           <Pencil size={13} /> Edit
         </button>
-        <button onClick={onDelete} className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border text-[12px] font-medium transition-colors hover:bg-red-50" style={{ borderColor: "#e5e7eb", color: "#ef4444" }}>
+        <button onClick={onDelete} className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg border border-gray-200 text-[12px] font-medium transition-colors hover:bg-red-50 text-[#ef4444]">
           <Trash2 size={13} /> Remove
         </button>
       </div>
@@ -217,13 +214,13 @@ export default function SchoolProfessorsPage() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4">
           {[
-            { label: "Total Professors", value: professors.length, color: "#570000" },
-            { label: "Active", value: professors.filter((p) => p.status === "active").length, color: "#059669" },
-            { label: "Total Students Taught", value: professors.reduce((a, p) => a + p.students, 0).toLocaleString(), color: "#570000" },
+            { label: "Total Professors", value: professors.length, color: "text-sp-primary" },
+            { label: "Active", value: professors.filter((p) => p.status === "active").length, color: "text-emerald-600" },
+            { label: "Total Students Taught", value: professors.reduce((a, p) => a + p.students, 0).toLocaleString(), color: "text-sp-primary" },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-xl border p-4" style={{ borderColor: "#e5e7eb" }}>
-              <div className="text-[26px] font-bold" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-[12px] mt-0.5" style={{ color: "#9ca3af" }}>{s.label}</div>
+            <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-4">
+              <div className={`text-[26px] font-bold ${s.color}`}>{s.value}</div>
+              <div className="text-xs mt-0.5 text-gray-400">{s.label}</div>
             </div>
           ))}
         </div>
@@ -231,16 +228,16 @@ export default function SchoolProfessorsPage() {
         {/* Filters */}
         <div className="flex gap-3 items-center justify-between flex-wrap">
           <div className="flex gap-2 flex-wrap">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white">
               <Search size={14} color="#9ca3af" />
-              <input aria-label="Search professors" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search professors..." className="text-[13px] outline-none w-48 bg-transparent" style={{ color: "#111827" }} />
+              <input aria-label="Search professors" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search professors..." className="text-[13px] outline-none w-48 bg-transparent text-gray-900" />
             </div>
-            <select aria-label="Filter by department" value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by department" value={deptFilter} onChange={(e) => setDeptFilter(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 text-[13px] outline-none bg-white text-gray-700">
               <option value="all">All Departments</option>
               {departments.map((d) => <option key={d}>{d}</option>)}
             </select>
           </div>
-          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#570000", fontFamily: "'Inter',sans-serif" }}>
+          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium bg-sp-primary">
             <Plus size={15} /> Add Professor
           </button>
         </div>
@@ -253,10 +250,10 @@ export default function SchoolProfessorsPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-xl border py-16 text-center" style={{ borderColor: "#e5e7eb" }}>
+          <div className="bg-white rounded-xl border border-gray-200 py-16 text-center">
             <Users size={32} color="#d1d5db" className="mx-auto mb-3" />
-            <p className="text-[14px]" style={{ color: "#9ca3af" }}>No professors found.</p>
-            <button onClick={() => setAddOpen(true)} className="mt-3 text-[13px] font-medium" style={{ color: "#570000" }}>+ Add first professor</button>
+            <p className="text-[14px] text-gray-400">No professors found.</p>
+            <button onClick={() => setAddOpen(true)} className="mt-3 text-[13px] font-medium text-sp-primary">+ Add first professor</button>
           </div>
         )}
       </div>

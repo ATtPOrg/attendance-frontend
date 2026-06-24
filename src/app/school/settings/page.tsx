@@ -21,7 +21,7 @@ const TABS = [
 function SavedBadge({ show }: { show: boolean }) {
   if (!show) return null;
   return (
-    <span className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: "#059669" }}>
+    <span className="flex items-center gap-1.5 text-[13px] font-medium text-emerald-600">
       <Check size={14} /> Saved
     </span>
   );
@@ -37,12 +37,18 @@ function SaveBtn({ saving, disabled, onClick, children = "Save Changes" }: { sav
 
 function Toggle({ label, description, checked, onChange }: { label: string; description?: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div className="flex items-start justify-between py-4 border-b last:border-0" style={{ borderColor: "#f3f4f6" }}>
+    <div className="flex items-start justify-between py-4 border-b border-gray-100 last:border-0">
       <div>
-        <div className="text-[14px] font-medium" style={{ color: "#111827" }}>{label}</div>
-        {description && <div className="text-[12px] mt-0.5" style={{ color: "#9ca3af" }}>{description}</div>}
+        <div className="text-[14px] font-medium text-gray-900">{label}</div>
+        {description && <div className="text-[12px] mt-0.5 text-gray-400">{description}</div>}
       </div>
-      <button role="switch" aria-checked={checked} aria-label={label} onClick={() => onChange(!checked)} className="relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-8" style={{ background: checked ? "#570000" : "#e5e7eb" }}>
+      <button
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
+        onClick={() => onChange(!checked)}
+        className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-8 ${checked ? "bg-sp-primary" : "bg-gray-200"}`}
+      >
         <span className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all" style={{ left: checked ? "22px" : "2px" }} />
       </button>
     </div>
@@ -85,17 +91,17 @@ function SchoolProfileSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-[17px] font-bold mb-1" style={{ color: "#111827" }}>School Profile</h2>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Update your institution&apos;s information shown to students and professors.</p>
+        <h2 className="text-[17px] font-bold mb-1 text-gray-900">School Profile</h2>
+        <p className="text-[13px] text-gray-400">Update your institution&apos;s information shown to students and professors.</p>
       </div>
 
-      <div className="flex items-center gap-4 pb-5 border-b" style={{ borderColor: "#f3f4f6" }}>
-        <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-[18px] font-bold" style={{ background: "#570000" }}>
+      <div className="flex items-center gap-4 pb-5 border-b border-gray-100">
+        <div className="w-14 h-14 rounded-xl flex items-center justify-center text-white text-[18px] font-bold bg-sp-primary">
           {school.shortName.slice(0, 2)}
         </div>
         <div>
-          <div className="text-[15px] font-bold" style={{ color: "#111827" }}>{school.shortName}</div>
-          <div className="text-[12px]" style={{ color: "#9ca3af" }}>{school.plan} Plan · {school.status}</div>
+          <div className="text-[15px] font-bold text-gray-900">{school.shortName}</div>
+          <div className="text-[12px] text-gray-400">{school.plan} Plan · {school.status}</div>
         </div>
       </div>
 
@@ -127,14 +133,14 @@ function SchoolProfileSection() {
       </div>
 
       {/* Plan info (read-only) */}
-      <div className="rounded-xl border p-5 mt-4" style={{ borderColor: "#e5e7eb" }}>
-        <div className="text-[12px] uppercase tracking-wider font-semibold mb-3" style={{ color: "#6b7280" }}>Subscription</div>
+      <div className="rounded-xl border border-gray-200 p-5 mt-4">
+        <div className="text-[12px] uppercase tracking-wider font-semibold mb-3 text-gray-500">Subscription</div>
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-[16px] font-bold" style={{ color: "#111827" }}>{school.plan} Plan</div>
-            <div className="text-[12px]" style={{ color: "#9ca3af" }}>Managed by ATP-Go. Contact your platform admin to change plans.</div>
+            <div className="text-[16px] font-bold text-gray-900">{school.plan} Plan</div>
+            <div className="text-[12px] text-gray-400">Managed by ATP-Go. Contact your platform admin to change plans.</div>
           </div>
-          <span className="text-[12px] px-3 py-1 rounded-full font-medium capitalize" style={{ background: "#ecfdf5", color: "#059669" }}>{school.status}</span>
+          <span className="text-[12px] px-3 py-1 rounded-full font-medium capitalize bg-emerald-50 text-emerald-600">{school.status}</span>
         </div>
       </div>
     </div>
@@ -175,17 +181,17 @@ function AdminAccountSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-[17px] font-bold mb-1" style={{ color: "#111827" }}>Admin Account</h2>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Your personal admin account details.</p>
+        <h2 className="text-[17px] font-bold mb-1 text-gray-900">Admin Account</h2>
+        <p className="text-[13px] text-gray-400">Your personal admin account details.</p>
       </div>
 
-      <div className="flex items-center gap-4 pb-5 border-b" style={{ borderColor: "#f3f4f6" }}>
-        <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-[20px] font-bold" style={{ background: "#570000" }}>
+      <div className="flex items-center gap-4 pb-5 border-b border-gray-100">
+        <div className="w-14 h-14 rounded-full flex items-center justify-center text-white text-[20px] font-bold bg-sp-primary">
           {form.name?.charAt(0) ?? "A"}
         </div>
         <div>
-          <div className="text-[15px] font-bold" style={{ color: "#111827" }}>{form.name}</div>
-          <div className="text-[12px]" style={{ color: "#9ca3af" }}>School Administrator · {admin?.schoolShortName}</div>
+          <div className="text-[15px] font-bold text-gray-900">{form.name}</div>
+          <div className="text-[12px] text-gray-400">School Administrator · {admin?.schoolShortName}</div>
         </div>
       </div>
 
@@ -269,12 +275,12 @@ function NotificationsSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-[17px] font-bold mb-1" style={{ color: "#111827" }}>Notification Preferences</h2>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Choose what events trigger notifications for your school.</p>
+        <h2 className="text-[17px] font-bold mb-1 text-gray-900">Notification Preferences</h2>
+        <p className="text-[13px] text-gray-400">Choose what events trigger notifications for your school.</p>
       </div>
       {NOTIFICATION_GROUPS.map((group) => (
-        <div key={group.title} className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
-          <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-4" style={{ color: "#6b7280" }}>{group.title}</h3>
+        <div key={group.title} className="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 className="text-[12px] font-semibold uppercase tracking-wider mb-4 text-gray-500">{group.title}</h3>
           {group.items.map((item) => (
             <Toggle
               key={item.key}
@@ -325,12 +331,12 @@ function SecuritySection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-[17px] font-bold mb-1" style={{ color: "#111827" }}>Security</h2>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Manage your password and account security settings.</p>
+        <h2 className="text-[17px] font-bold mb-1 text-gray-900">Security</h2>
+        <p className="text-[13px] text-gray-400">Manage your password and account security settings.</p>
       </div>
 
-      <div className="bg-white rounded-xl border p-6 space-y-4" style={{ borderColor: "#e5e7eb" }}>
-        <h3 className="text-[14px] font-semibold" style={{ color: "#111827" }}>Change Password</h3>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+        <h3 className="text-[14px] font-semibold text-gray-900">Change Password</h3>
         {(["curr", "next", "confirm"] as const).map((k) => (
           <FormField key={k} label={k === "curr" ? "Current Password" : k === "next" ? "New Password" : "Confirm New Password"} id={`pw-${k}`}>
             <div className="relative">
@@ -354,10 +360,10 @@ function SecuritySection() {
         </div>
       </div>
 
-      <div className="rounded-xl border p-6 space-y-3" style={{ borderColor: "#fecaca", background: "#fff5f5" }}>
-        <h3 className="text-[14px] font-semibold" style={{ color: "#dc2626" }}>Danger Zone</h3>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Deactivating removes your admin access to {admin?.schoolShortName}. Contact ATP-Go support to restore access.</p>
-        <button onClick={() => setDeactivateOpen(true)} className="px-4 py-2 rounded-lg text-[13px] font-medium border transition-colors hover:bg-red-100" style={{ borderColor: "#fca5a5", color: "#dc2626" }}>
+      <div className="rounded-xl border border-[#fecaca] p-6 space-y-3 bg-[#fff5f5]">
+        <h3 className="text-[14px] font-semibold text-red-600">Danger Zone</h3>
+        <p className="text-[13px] text-gray-400">Deactivating removes your admin access to {admin?.schoolShortName}. Contact ATP-Go support to restore access.</p>
+        <button onClick={() => setDeactivateOpen(true)} className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#fca5a5] transition-colors hover:bg-red-100 text-red-600">
           Deactivate Admin Account
         </button>
       </div>
@@ -400,12 +406,7 @@ export default function SchoolSettingsPage() {
                 <button
                   key={id}
                   onClick={() => setActiveTab(id)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all text-left"
-                  style={{
-                    color: activeTab === id ? "#570000" : "#6b7280",
-                    background: activeTab === id ? "#FFF8F6" : "transparent",
-                    fontFamily: "'Inter',sans-serif",
-                  }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all text-left ${activeTab === id ? "text-sp-primary bg-sp-surface" : "text-gray-500 bg-transparent"}`}
                 >
                   <Icon size={16} strokeWidth={activeTab === id ? 2.5 : 1.8} />
                   {label}

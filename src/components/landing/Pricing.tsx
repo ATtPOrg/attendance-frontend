@@ -55,27 +55,20 @@ export default function Pricing() {
   return (
     <section
       id="pricing"
-      className="px-6 md:px-12 py-16 md:py-28 border-b"
-      style={{ background: "var(--charcoal)", borderColor: "rgba(255,255,255,0.06)" }}
+      className="px-6 md:px-12 py-16 md:py-28 border-b bg-charcoal border-[rgba(255,255,255,0.06)]"
     >
-      <div
-        className="section-label mb-4"
-        style={{ color: "rgba(245,240,232,0.4)" }}
-      >
+      <div className="section-label mb-4 text-[rgba(245,240,232,0.4)]">
         Pricing
       </div>
       <h2
-        className="mb-8 md:mb-16 tracking-tight"
+        className="mb-8 md:mb-16 tracking-tight font-display text-ivory font-extrabold"
         style={{
-          fontFamily: "var(--font-syne)",
           fontSize: "clamp(36px,5vw,64px)",
-          fontWeight: 800,
-          color: "var(--ivory)",
           letterSpacing: "-0.03em",
         }}
       >
         Simple pricing.<br />
-        <em style={{ fontFamily: "var(--font-fraunces)", fontWeight: 300, fontStyle: "italic", color: "var(--accent-on-dark)" }}>
+        <em className="font-serif text-[var(--accent-on-dark)] font-light italic">
           No surprises.
         </em>
       </h2>
@@ -84,35 +77,34 @@ export default function Pricing() {
         {plans.map((plan) => (
           <div
             key={plan.name}
-            className="p-5 md:p-8 flex flex-col"
-            style={{
-              background: plan.highlight ? "var(--accent-on-dark)" : "rgba(255,255,255,0.04)",
-              border: `1px solid ${plan.highlight ? "transparent" : "rgba(255,255,255,0.08)"}`,
-            }}
+            className={`p-5 md:p-8 flex flex-col ${
+              plan.highlight
+                ? "bg-[var(--accent-on-dark)] border border-transparent"
+                : "bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)]"
+            }`}
           >
             <div
-              className="text-[11px] uppercase tracking-[0.2em] mb-4"
-              style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "rgba(26,24,20,0.7)" : "rgba(245,240,232,0.4)" }}
+              className={`text-[11px] uppercase tracking-[0.2em] mb-4 font-mono ${
+                plan.highlight ? "text-[rgba(26,24,20,0.7)]" : "text-[rgba(245,240,232,0.4)]"
+              }`}
             >
               {plan.name}
             </div>
 
             <div className="mb-2 flex items-baseline gap-1">
               <span
-                style={{
-                  fontFamily: "var(--font-fraunces)",
-                  fontSize: "clamp(32px,4vw,48px)",
-                  fontWeight: 300,
-                  color: plan.highlight ? "#1A1814" : "var(--ivory)",
-                  lineHeight: 1,
-                }}
+                className={`font-serif font-light leading-none ${
+                  plan.highlight ? "text-charcoal" : "text-ivory"
+                }`}
+                style={{ fontSize: "clamp(32px,4vw,48px)" }}
               >
                 {plan.price}
               </span>
               {plan.period && (
                 <span
-                  className="text-[13px]"
-                  style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "rgba(26,24,20,0.6)" : "rgba(245,240,232,0.4)" }}
+                  className={`text-[13px] font-mono ${
+                    plan.highlight ? "text-[rgba(26,24,20,0.6)]" : "text-[rgba(245,240,232,0.4)]"
+                  }`}
                 >
                   {plan.period}
                 </span>
@@ -120,8 +112,9 @@ export default function Pricing() {
             </div>
 
             <p
-              className="text-[12px] leading-[1.7] mb-8"
-              style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "rgba(26,24,20,0.65)" : "rgba(245,240,232,0.5)" }}
+              className={`text-[12px] leading-[1.7] mb-8 font-mono ${
+                plan.highlight ? "text-[rgba(26,24,20,0.65)]" : "text-[rgba(245,240,232,0.5)]"
+              }`}
             >
               {plan.desc}
             </p>
@@ -130,10 +123,16 @@ export default function Pricing() {
               {plan.features.map((f) => (
                 <li
                   key={f}
-                  className="flex items-start gap-2.5 text-[12px] leading-[1.6]"
-                  style={{ fontFamily: "var(--font-dm-mono)", color: plan.highlight ? "#1A1814" : "var(--ivory)" }}
+                  className={`flex items-start gap-2.5 text-[12px] leading-[1.6] font-mono ${
+                    plan.highlight ? "text-charcoal" : "text-ivory"
+                  }`}
                 >
-                  <Check size={12} className="mt-0.5 flex-shrink-0" style={{ color: plan.highlight ? "#570000" : "var(--accent-on-dark)" }} />
+                  <Check
+                    size={12}
+                    className={`mt-0.5 flex-shrink-0 ${
+                      plan.highlight ? "text-[#570000]" : "text-[var(--accent-on-dark)]"
+                    }`}
+                  />
                   {f}
                 </li>
               ))}
@@ -141,13 +140,11 @@ export default function Pricing() {
 
             <Link
               href="/school/login"
-              className="block text-center py-3 text-[12px] uppercase tracking-[0.1em] transition-all duration-200"
-              style={{
-                fontFamily: "var(--font-dm-mono)",
-                background: plan.highlight ? "white" : "transparent",
-                color: plan.highlight ? "#570000" : "var(--ivory)",
-                border: plan.highlight ? "none" : "1px solid rgba(255,255,255,0.2)",
-              }}
+              className={`block text-center py-3 text-[12px] uppercase tracking-[0.1em] transition-all duration-200 font-mono ${
+                plan.highlight
+                  ? "bg-white text-[#570000] border-0"
+                  : "bg-transparent text-ivory border border-[rgba(255,255,255,0.2)]"
+              }`}
             >
               <span className="flex items-center justify-center gap-2">{plan.cta} <ArrowRight size={13} /></span>
             </Link>

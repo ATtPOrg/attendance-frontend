@@ -15,22 +15,18 @@ export default function HowItWorks() {
   return (
     <section
       id="how-it-works"
-      className="px-6 md:px-12 py-16 md:py-28 border-b"
-      style={{ background: "var(--ivory)", borderColor: "var(--line)" }}
+      className="px-6 md:px-12 py-16 md:py-28 border-b bg-ivory border-line-color"
     >
       <div className="section-label mb-4">How It Works</div>
       <h2
-        className="mb-8 md:mb-16 tracking-tight"
+        className="mb-8 md:mb-16 tracking-tight font-display text-charcoal font-extrabold"
         style={{
-          fontFamily: "var(--font-syne)",
           fontSize: "clamp(36px,5vw,64px)",
-          fontWeight: 800,
-          color: "var(--charcoal)",
           letterSpacing: "-0.03em",
         }}
       >
         Two apps.<br />
-        <em style={{ fontFamily: "var(--font-fraunces)", fontWeight: 300, fontStyle: "italic", color: "var(--accent)" }}>
+        <em className="font-serif text-[var(--accent)] font-light italic">
           One seamless flow.
         </em>
       </h2>
@@ -38,42 +34,22 @@ export default function HowItWorks() {
       <div className="grid md:grid-cols-2 gap-10 md:gap-16">
         {/* Professor */}
         <div>
-          <div
-            className="inline-block px-3 py-1 mb-8 text-[11px] uppercase tracking-[0.15em]"
-            style={{
-              fontFamily: "var(--font-dm-mono)",
-              background: "var(--accent)",
-              color: "white",
-            }}
-          >
+          <div className="inline-block px-3 py-1 mb-8 text-[11px] uppercase tracking-[0.15em] font-mono bg-[var(--accent)] text-white">
             Professor App
           </div>
           {professorSteps.map((s, i) => (
             <div
               key={s.step}
-              className="relative pl-8 pb-10 border-l"
-              style={{ borderColor: i === professorSteps.length - 1 ? "transparent" : "var(--line)" }}
+              className={`relative pl-8 pb-10 border-l ${i === professorSteps.length - 1 ? "border-transparent" : "border-line-color"}`}
             >
-              <div
-                className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full border-2"
-                style={{ borderColor: "var(--accent)", background: "var(--ivory)" }}
-              />
-              <div
-                className="text-[11px] tracking-[0.15em] mb-1"
-                style={{ fontFamily: "var(--font-dm-mono)", color: "var(--accent)" }}
-              >
+              <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full border-2 border-[var(--accent)] bg-ivory" />
+              <div className="text-[11px] tracking-[0.15em] mb-1 font-mono text-[var(--accent)]">
                 {s.step}
               </div>
-              <h4
-                className="mb-2 text-[18px] font-bold tracking-tight"
-                style={{ fontFamily: "var(--font-syne)", color: "var(--charcoal)" }}
-              >
+              <h4 className="mb-2 text-[18px] font-bold tracking-tight font-display text-charcoal">
                 {s.title}
               </h4>
-              <p
-                className="text-[13px] leading-[1.8]"
-                style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}
-              >
+              <p className="text-[13px] leading-[1.8] font-mono text-muted">
                 {s.desc}
               </p>
             </div>
@@ -82,42 +58,22 @@ export default function HowItWorks() {
 
         {/* Student */}
         <div>
-          <div
-            className="inline-block px-3 py-1 mb-8 text-[11px] uppercase tracking-[0.15em]"
-            style={{
-              fontFamily: "var(--font-dm-mono)",
-              background: "var(--charcoal)",
-              color: "var(--ivory)",
-            }}
-          >
+          <div className="inline-block px-3 py-1 mb-8 text-[11px] uppercase tracking-[0.15em] font-mono bg-charcoal text-ivory">
             Student App
           </div>
           {studentSteps.map((s, i) => (
             <div
               key={s.step}
-              className="relative pl-8 pb-10 border-l"
-              style={{ borderColor: i === studentSteps.length - 1 ? "transparent" : "var(--line)" }}
+              className={`relative pl-8 pb-10 border-l ${i === studentSteps.length - 1 ? "border-transparent" : "border-line-color"}`}
             >
-              <div
-                className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full border-2"
-                style={{ borderColor: "var(--charcoal)", background: "var(--ivory)" }}
-              />
-              <div
-                className="text-[11px] tracking-[0.15em] mb-1"
-                style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}
-              >
+              <div className="absolute -left-[5px] top-0 w-2.5 h-2.5 rounded-full border-2 border-charcoal bg-ivory" />
+              <div className="text-[11px] tracking-[0.15em] mb-1 font-mono text-muted">
                 {s.step}
               </div>
-              <h4
-                className="mb-2 text-[18px] font-bold tracking-tight"
-                style={{ fontFamily: "var(--font-syne)", color: "var(--charcoal)" }}
-              >
+              <h4 className="mb-2 text-[18px] font-bold tracking-tight font-display text-charcoal">
                 {s.title}
               </h4>
-              <p
-                className="text-[13px] leading-[1.8]"
-                style={{ fontFamily: "var(--font-dm-mono)", color: "var(--muted)" }}
-              >
+              <p className="text-[13px] leading-[1.8] font-mono text-muted">
                 {s.desc}
               </p>
             </div>

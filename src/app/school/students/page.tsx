@@ -13,10 +13,8 @@ import { FormField, Input, Select, ModalActions, BtnPrimary, BtnSecondary } from
 const LEVELS = ["100", "200", "300", "400", "500", "600"];
 
 function AttendanceBadge({ rate }: { rate: number }) {
-  const color = rate >= 85 ? "#059669" : rate >= 70 ? "#d97706" : "#dc2626";
-  const bg = rate >= 85 ? "#ecfdf5" : rate >= 70 ? "#fffbeb" : "#fef2f2";
   return (
-    <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full" style={{ color, background: bg }}>
+    <span className={`text-[12px] font-semibold px-2.5 py-0.5 rounded-full ${rate >= 85 ? "text-emerald-600 bg-emerald-50" : rate >= 70 ? "text-amber-600 bg-amber-50" : "text-red-600 bg-red-50"}`}>
       {rate > 0 ? `${rate.toFixed(1)}%` : "—"}
     </span>
   );
@@ -174,14 +172,14 @@ export default function SchoolStudentsPage() {
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { label: "Total Students", value: students.length.toLocaleString(), color: "#570000" },
-            { label: "Active", value: students.filter((s) => s.status === "active").length, color: "#059669" },
-            { label: "Suspended", value: students.filter((s) => s.status === "suspended").length, color: "#dc2626" },
-            { label: "Avg Attendance", value: `${avgAttendance}%`, color: "#d97706" },
+            { label: "Total Students", value: students.length.toLocaleString(), color: "text-sp-primary" },
+            { label: "Active", value: students.filter((s) => s.status === "active").length, color: "text-emerald-600" },
+            { label: "Suspended", value: students.filter((s) => s.status === "suspended").length, color: "text-red-600" },
+            { label: "Avg Attendance", value: `${avgAttendance}%`, color: "text-amber-600" },
           ].map((s) => (
-            <div key={s.label} className="bg-white rounded-xl border p-4" style={{ borderColor: "#e5e7eb" }}>
-              <div className="text-[24px] font-bold" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-[12px] mt-0.5" style={{ color: "#9ca3af" }}>{s.label}</div>
+            <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-4">
+              <div className={`text-[24px] font-bold ${s.color}`}>{s.value}</div>
+              <div className="text-xs mt-0.5 text-gray-400">{s.label}</div>
             </div>
           ))}
         </div>
@@ -189,31 +187,31 @@ export default function SchoolStudentsPage() {
         {/* Filters + Add */}
         <div className="flex gap-3 items-center justify-between flex-wrap">
           <div className="flex gap-2 flex-wrap">
-            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border bg-white" style={{ borderColor: "#e5e7eb" }}>
+            <div className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 bg-white">
               <Search size={14} color="#9ca3af" />
-              <input aria-label="Search students" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Name or matric number..." className="text-[13px] outline-none w-48 bg-transparent" style={{ color: "#111827" }} />
+              <input aria-label="Search students" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Name or matric number..." className="text-[13px] outline-none w-48 bg-transparent text-gray-900" />
             </div>
-            <select aria-label="Filter by level" value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by level" value={levelFilter} onChange={(e) => setLevelFilter(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 text-[13px] outline-none bg-white text-gray-700">
               <option value="all">All Levels</option>
               {LEVELS.map((l) => <option key={l}>{l}L</option>)}
             </select>
-            <select aria-label="Filter by status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 rounded-lg border text-[13px] outline-none bg-white" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+            <select aria-label="Filter by status" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="px-3 py-2 rounded-lg border border-gray-200 text-[13px] outline-none bg-white text-gray-700">
               <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="suspended">Suspended</option>
             </select>
           </div>
-          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium" style={{ background: "#570000", fontFamily: "'Inter',sans-serif" }}>
+          <button onClick={() => setAddOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white text-[13px] font-medium bg-sp-primary">
             <Plus size={15} /> Enroll Student
           </button>
         </div>
 
         {/* Table */}
-        <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-[13px]" style={{ fontFamily: "'Inter',sans-serif" }}>
+            <table className="w-full text-[13px]">
               <thead>
-                <tr style={{ background: "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
+                <tr className="bg-gray-50 border-b border-gray-100">
                   {[
                     { label: "Student", key: "name" as SortKey },
                     { label: "Matric No.", key: null },
@@ -225,8 +223,7 @@ export default function SchoolStudentsPage() {
                   ].map(({ label, key }) => (
                     <th
                       key={label}
-                      className={`text-left px-5 py-3 text-[11px] uppercase tracking-wider font-semibold ${key ? "cursor-pointer hover:bg-gray-100" : ""}`}
-                      style={{ color: "#6b7280" }}
+                      className={`text-left px-5 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500 ${key ? "cursor-pointer hover:bg-gray-100" : ""}`}
                       onClick={() => key && toggleSort(key)}
                     >
                       <span className="flex items-center gap-1">{label}{key && <SortIcon k={key} />}</span>
@@ -236,26 +233,23 @@ export default function SchoolStudentsPage() {
               </thead>
               <tbody>
                 {filtered.map((s, i) => (
-                  <tr key={s.id} className="border-b hover:bg-gray-50 transition-colors" style={{ borderColor: i === filtered.length - 1 ? "transparent" : "#f3f4f6" }}>
+                  <tr key={s.id} className={`hover:bg-gray-50 transition-colors ${i === filtered.length - 1 ? "" : "border-b border-gray-100"}`}>
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-3">
-                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0" style={{ background: "#570000" }}>
+                        <div className="w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 bg-sp-primary">
                           {s.name.split(" ").map((n) => n[0]).slice(0, 2).join("")}
                         </div>
-                        <span className="font-medium" style={{ color: "#111827" }}>{s.name}</span>
+                        <span className="font-medium text-gray-900">{s.name}</span>
                       </div>
                     </td>
-                    <td className="px-5 py-3.5 font-mono text-[12px]" style={{ color: "#6b7280" }}>{s.matricNo}</td>
-                    <td className="px-5 py-3.5" style={{ color: "#374151" }}>{s.department}</td>
+                    <td className="px-5 py-3.5 font-mono text-[12px] text-gray-500">{s.matricNo}</td>
+                    <td className="px-5 py-3.5 text-gray-700">{s.department}</td>
                     <td className="px-5 py-3.5">
-                      <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: "#F0D5CE", color: "#570000" }}>{s.level}L</span>
+                      <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-sp-card text-sp-primary">{s.level}L</span>
                     </td>
                     <td className="px-5 py-3.5"><AttendanceBadge rate={s.attendanceRate} /></td>
                     <td className="px-5 py-3.5">
-                      <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{
-                        background: s.status === "active" ? "#ecfdf5" : "#fef2f2",
-                        color: s.status === "active" ? "#059669" : "#dc2626",
-                      }}>{s.status}</span>
+                      <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${s.status === "active" ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"}`}>{s.status}</span>
                     </td>
                     <td className="px-5 py-3.5">
                       <div className="flex gap-2">
@@ -271,12 +265,12 @@ export default function SchoolStudentsPage() {
           {filtered.length === 0 && (
             <div className="py-16 text-center">
               <GraduationCap size={32} color="#d1d5db" className="mx-auto mb-3" />
-              <p className="text-[14px]" style={{ color: "#9ca3af" }}>No students found.</p>
-              {students.length === 0 && <button onClick={() => setAddOpen(true)} className="mt-2 text-[13px] font-medium" style={{ color: "#570000" }}>Enroll first student</button>}
+              <p className="text-[14px] text-gray-400">No students found.</p>
+              {students.length === 0 && <button onClick={() => setAddOpen(true)} className="mt-2 text-[13px] font-medium text-sp-primary">Enroll first student</button>}
             </div>
           )}
-          <div className="px-5 py-3 border-t flex items-center justify-between" style={{ borderColor: "#f3f4f6", background: "#f9fafb" }}>
-            <span className="text-[12px]" style={{ color: "#9ca3af" }}>Showing {filtered.length} of {students.length} students</span>
+          <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50">
+            <span className="text-[12px] text-gray-400">Showing {filtered.length} of {students.length} students</span>
           </div>
         </div>
       </div>

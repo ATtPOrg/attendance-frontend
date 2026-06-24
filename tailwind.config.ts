@@ -28,6 +28,16 @@ const config: Config = {
         muted: "#6B6560",
         "line-color": "rgba(26,24,20,0.12)",
         "accent-blue": "#0047FF",
+        // School admin portal palette
+        sp: {
+          primary:  "#570000",  // deep crimson
+          surface:  "#FFF8F6",  // warm off-white background
+          card:     "#F0D5CE",  // rose blush border / card
+          mid:      "#9B6060",  // muted rose secondary text
+          light:    "#C4A89E",  // lightest muted rose
+          accent:   "#FED65B",  // warm yellow CTA
+          dark:     "#3D0000",  // near-black crimson headings
+        },
       },
       fontFamily: {
         display: ["var(--font-syne)", "sans-serif"],

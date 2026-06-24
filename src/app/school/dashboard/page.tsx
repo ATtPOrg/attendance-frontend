@@ -40,38 +40,40 @@ export default function SchoolDashboardPage() {
       />
       <div className="p-8 space-y-6">
         {/* Welcome banner */}
-        <div className="rounded-2xl p-6 text-white relative overflow-hidden" style={{ background: "linear-gradient(135deg, #570000 0%, #3D0000 100%)" }}>
-          <div className="absolute right-8 top-0 bottom-0 flex items-center select-none pointer-events-none" style={{
-            fontFamily: "var(--font-fraunces)",
-            fontSize: "120px",
-            fontWeight: 100,
-            color: "transparent",
-            WebkitTextStroke: "1px rgba(255,255,255,0.08)",
-          }}>
+        <div className="rounded-2xl p-6 text-white relative overflow-hidden bg-gradient-to-br from-sp-primary to-sp-dark">
+          <div
+            className="absolute right-8 top-0 bottom-0 flex items-center select-none pointer-events-none leading-none text-transparent"
+            style={{
+              fontFamily: "var(--font-fraunces)",
+              fontSize: "120px",
+              fontWeight: 100,
+              WebkitTextStroke: "1px rgba(255,255,255,0.08)",
+            }}
+          >
             {shortName}
           </div>
           <div className="relative z-10">
-            <p className="text-[12px] uppercase tracking-widest mb-1" style={{ color: "rgba(255,255,255,0.45)" }}>Welcome back,</p>
-            <h2 className="text-[22px] font-bold mb-1" style={{ fontFamily: "'Inter',sans-serif" }}>{admin?.name}</h2>
-            <p className="text-[13px]" style={{ color: "rgba(255,255,255,0.5)" }}>{school.name} · {school.plan} Plan</p>
+            <p className="text-[12px] uppercase tracking-widest mb-1 text-white/45">Welcome back,</p>
+            <h2 className="text-[22px] font-bold mb-1">{admin?.name}</h2>
+            <p className="text-[13px] text-white/50">{school.name} · {school.plan} Plan</p>
           </div>
         </div>
 
         {/* Stat cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Total Students", value: stats.totalStudents.toLocaleString(), icon: GraduationCap, color: "#570000", bg: "#F0D5CE" },
-            { label: "Professors", value: stats.totalProfessors.toLocaleString(), icon: Users, color: "#570000", bg: "#F0D5CE" },
-            { label: "Active Courses", value: stats.activeCourses.toLocaleString(), icon: BookOpen, color: "#059669", bg: "#ecfdf5" },
-            { label: "Avg Attendance", value: `${stats.avgAttendance.toFixed(1)}%`, icon: TrendingUp, color: stats.avgAttendance >= 85 ? "#059669" : "#d97706", bg: "#fffbeb" },
-          ].map(({ label, value, icon: Icon, color, bg }) => (
-            <div key={label} className="bg-white rounded-xl border p-5 flex items-start gap-4" style={{ borderColor: "#e5e7eb" }}>
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: bg }}>
-                <Icon size={19} color={color} />
+            { label: "Total Students", value: stats.totalStudents.toLocaleString(), icon: GraduationCap, iconColor: "#570000", iconBg: "bg-sp-card" },
+            { label: "Professors", value: stats.totalProfessors.toLocaleString(), icon: Users, iconColor: "#570000", iconBg: "bg-sp-card" },
+            { label: "Active Courses", value: stats.activeCourses.toLocaleString(), icon: BookOpen, iconColor: "#059669", iconBg: "bg-emerald-50" },
+            { label: "Avg Attendance", value: `${stats.avgAttendance.toFixed(1)}%`, icon: TrendingUp, iconColor: stats.avgAttendance >= 85 ? "#059669" : "#d97706", iconBg: "bg-amber-50" },
+          ].map(({ label, value, icon: Icon, iconColor, iconBg }) => (
+            <div key={label} className="bg-white rounded-xl border border-gray-200 p-5 flex items-start gap-4">
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${iconBg}`}>
+                <Icon size={19} color={iconColor} />
               </div>
               <div>
-                <div className="text-[24px] font-bold leading-none mb-1" style={{ color: "#111827" }}>{value}</div>
-                <div className="text-[12px]" style={{ color: "#9ca3af" }}>{label}</div>
+                <div className="text-[24px] font-bold leading-none mb-1 text-gray-900">{value}</div>
+                <div className="text-xs text-gray-400">{label}</div>
               </div>
             </div>
           ))}
@@ -79,15 +81,15 @@ export default function SchoolDashboardPage() {
 
         <div className="grid lg:grid-cols-3 gap-5">
           {/* Attendance trend */}
-          <div className="lg:col-span-2 bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
+          <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Attendance Trend</h3>
-                <p className="text-[12px]" style={{ color: "#9ca3af" }}>6-month average for {shortName}</p>
+                <h3 className="text-[15px] font-semibold text-gray-900">Attendance Trend</h3>
+                <p className="text-xs text-gray-400">6-month average for {shortName}</p>
               </div>
-              <div className="flex items-center gap-4 text-[11px]" style={{ color: "#9ca3af" }}>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: "#570000" }} />Actual</span>
-                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: "#e5e7eb" }} />Target</span>
+              <div className="flex items-center gap-4 text-[11px] text-gray-400">
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block bg-sp-primary" />Actual</span>
+                <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full inline-block bg-gray-200" />Target</span>
               </div>
             </div>
             <ResponsiveContainer width="100%" height={200}>
@@ -109,11 +111,11 @@ export default function SchoolDashboardPage() {
           </div>
 
           {/* Alerts */}
-          <div className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
-            <h3 className="text-[15px] font-semibold mb-4" style={{ color: "#111827" }}>
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 className="text-[15px] font-semibold mb-4 text-gray-900">
               Alerts
               {alerts.length > 0 && (
-                <span className="ml-2 text-[11px] px-2 py-0.5 rounded-full font-medium" style={{ background: "#fef2f2", color: "#dc2626" }}>
+                <span className="ml-2 text-[11px] px-2 py-0.5 rounded-full font-medium bg-red-50 text-red-600">
                   {alerts.length}
                 </span>
               )}
@@ -121,17 +123,17 @@ export default function SchoolDashboardPage() {
             {alerts.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-8 text-center">
                 <CheckCircle2 size={28} color="#34d399" className="mb-2" />
-                <p className="text-[13px] font-medium" style={{ color: "#6b7280" }}>All courses above threshold</p>
-                <p className="text-[11px] mt-1" style={{ color: "#9ca3af" }}>No attendance alerts</p>
+                <p className="text-[13px] font-medium text-gray-500">All courses above threshold</p>
+                <p className="text-[11px] mt-1 text-gray-400">No attendance alerts</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {alerts.map((alert) => (
-                  <div key={alert.courseId} className="flex items-start gap-2.5 p-3 rounded-lg" style={{ background: "#fef2f2" }}>
+                  <div key={alert.courseId} className="flex items-start gap-2.5 p-3 rounded-lg bg-red-50">
                     <AlertTriangle size={14} color="#dc2626" className="flex-shrink-0 mt-0.5" />
                     <div>
-                      <div className="text-[12px] font-semibold" style={{ color: "#111827" }}>{alert.courseCode}</div>
-                      <div className="text-[11px]" style={{ color: "#9ca3af" }}>{alert.attendanceRate.toFixed(0)}% avg — {alert.message}</div>
+                      <div className="text-[12px] font-semibold text-gray-900">{alert.courseCode}</div>
+                      <div className="text-[11px] text-gray-400">{alert.attendanceRate.toFixed(0)}% avg — {alert.message}</div>
                     </div>
                   </div>
                 ))}
@@ -141,35 +143,33 @@ export default function SchoolDashboardPage() {
         </div>
 
         {/* Recent sessions */}
-        <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: "#e5e7eb" }}>
-          <div className="px-6 py-4 border-b flex items-center justify-between" style={{ borderColor: "#f3f4f6" }}>
-            <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>Recent Sessions</h3>
-            <a href="/school/attendance" className="flex items-center gap-1 text-[12px] font-medium" style={{ color: "#570000" }}>View all <ArrowRight size={13} /></a>
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h3 className="text-[15px] font-semibold text-gray-900">Recent Sessions</h3>
+            <a href="/school/attendance" className="flex items-center gap-1 text-[12px] font-medium text-sp-primary">View all <ArrowRight size={13} /></a>
           </div>
           {recentSessions.length > 0 ? (
-            <table className="w-full text-[13px]" style={{ fontFamily: "'Inter',sans-serif" }}>
+            <table className="w-full text-[13px]">
               <thead>
-                <tr style={{ background: "#f9fafb", borderBottom: "1px solid #f3f4f6" }}>
+                <tr className="bg-gray-50 border-b border-gray-100">
                   {["Course", "Date", "Present / Enrolled", "Rate", "Verified"].map((h) => (
-                    <th key={h} className="text-left px-6 py-3 text-[11px] uppercase tracking-wider font-semibold" style={{ color: "#6b7280" }}>{h}</th>
+                    <th key={h} className="text-left px-6 py-3 text-[11px] uppercase tracking-wider font-semibold text-gray-500">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {recentSessions.map((s, i) => {
                   const rate = s.percentage;
-                  const rateColor = rate >= 85 ? "#059669" : rate >= 70 ? "#d97706" : "#dc2626";
-                  const rateBg = rate >= 85 ? "#ecfdf5" : rate >= 70 ? "#fffbeb" : "#fef2f2";
                   return (
-                    <tr key={s.id} className="border-b hover:bg-gray-50 transition-colors" style={{ borderColor: i === recentSessions.length - 1 ? "transparent" : "#f3f4f6" }}>
-                      <td className="px-6 py-3.5 font-medium max-w-[200px] truncate" style={{ color: "#111827" }}>{s.course}</td>
-                      <td className="px-6 py-3.5" style={{ color: "#6b7280" }}>{s.date}</td>
+                    <tr key={s.id} className={`hover:bg-gray-50 transition-colors ${i === recentSessions.length - 1 ? "" : "border-b border-gray-100"}`}>
+                      <td className="px-6 py-3.5 font-medium max-w-[200px] truncate text-gray-900">{s.course}</td>
+                      <td className="px-6 py-3.5 text-gray-500">{s.date}</td>
                       <td className="px-6 py-3.5">
-                        <span className="font-semibold" style={{ color: "#111827" }}>{s.present}</span>
-                        <span style={{ color: "#9ca3af" }}> / {s.enrolled}</span>
+                        <span className="font-semibold text-gray-900">{s.present}</span>
+                        <span className="text-gray-400"> / {s.enrolled}</span>
                       </td>
                       <td className="px-6 py-3.5">
-                        <span className="text-[12px] font-semibold px-2.5 py-0.5 rounded-full" style={{ color: rateColor, background: rateBg }}>{rate.toFixed(1)}%</span>
+                        <span className={`text-[12px] font-semibold px-2.5 py-0.5 rounded-full ${rate >= 85 ? "text-emerald-600 bg-emerald-50" : rate >= 70 ? "text-amber-600 bg-amber-50" : "text-red-600 bg-red-50"}`}>{rate.toFixed(1)}%</span>
                       </td>
                       <td className="px-6 py-3.5">
                         {s.verified ? <CheckCircle2 size={15} color="#059669" /> : <XCircle size={15} color="#d97706" />}
@@ -180,7 +180,7 @@ export default function SchoolDashboardPage() {
               </tbody>
             </table>
           ) : (
-            <div className="py-12 text-center text-[14px]" style={{ color: "#9ca3af" }}>
+            <div className="py-12 text-center text-[14px] text-gray-400">
               No attendance sessions recorded yet for {shortName}.
             </div>
           )}

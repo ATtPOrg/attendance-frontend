@@ -23,7 +23,7 @@ const TABS = [
 function SavedBadge({ show }: { show: boolean }) {
   if (!show) return null;
   return (
-    <span className="flex items-center gap-1.5 text-[13px] font-medium" style={{ color: "#059669" }}>
+    <span className="flex items-center gap-1.5 text-[13px] font-medium text-emerald-600">
       <Check size={14} /> Saved successfully
     </span>
   );
@@ -39,18 +39,17 @@ function SaveBtn({ saving, disabled, onClick, children = "Save Changes" }: { sav
 
 function Toggle({ label, description, checked, onChange }: { label: string; description?: string; checked: boolean; onChange: (v: boolean) => void }) {
   return (
-    <div className="flex items-start justify-between py-4 border-b last:border-0" style={{ borderColor: "#f3f4f6" }}>
+    <div className="flex items-start justify-between py-4 border-b last:border-0 border-gray-100">
       <div>
-        <div className="text-[14px] font-medium" style={{ color: "#111827" }}>{label}</div>
-        {description && <div className="text-[12px] mt-0.5" style={{ color: "#9ca3af" }}>{description}</div>}
+        <div className="text-[14px] font-medium text-gray-900">{label}</div>
+        {description && <div className="text-[12px] mt-0.5 text-gray-400">{description}</div>}
       </div>
       <button
         role="switch"
         aria-checked={checked}
         aria-label={label}
         onClick={() => onChange(!checked)}
-        className="relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-8"
-        style={{ background: checked ? "#570000" : "#e5e7eb" }}
+        className={`relative w-11 h-6 rounded-full transition-colors flex-shrink-0 ml-8 ${checked ? "bg-sp-primary" : "bg-gray-200"}`}
       >
         <span
           className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-sm transition-all"
@@ -107,19 +106,19 @@ function ProfileSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-[17px] font-bold mb-1" style={{ color: "#111827" }}>Profile Settings</h2>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Manage your personal information and account details.</p>
+        <h2 className="text-[17px] font-bold mb-1 text-gray-900">Profile Settings</h2>
+        <p className="text-[13px] text-gray-400">Manage your personal information and account details.</p>
       </div>
 
       {/* Avatar */}
-      <div className="flex items-center gap-5 pb-6 border-b" style={{ borderColor: "#f3f4f6" }}>
-        <div className="w-16 h-16 rounded-full flex items-center justify-center text-white text-[22px] font-bold" style={{ background: "#570000" }}>
+      <div className="flex items-center gap-5 pb-6 border-b border-gray-100">
+        <div className="w-16 h-16 rounded-full flex items-center justify-center text-white text-[22px] font-bold bg-sp-primary">
           {profile.name?.charAt(0) ?? "A"}
         </div>
         <div>
-          <div className="text-[14px] font-semibold mb-1" style={{ color: "#111827" }}>{profile.name}</div>
-          <div className="text-[12px] mb-3" style={{ color: "#9ca3af" }}>Super Admin</div>
-          <button className="text-[12px] font-medium px-3 py-1.5 rounded-lg border transition-colors hover:bg-gray-50" style={{ borderColor: "#e5e7eb", color: "#374151" }}>
+          <div className="text-[14px] font-semibold mb-1 text-gray-900">{profile.name}</div>
+          <div className="text-[12px] mb-3 text-gray-400">Super Admin</div>
+          <button className="text-[12px] font-medium px-3 py-1.5 rounded-lg border border-gray-200 transition-colors hover:bg-gray-50 text-gray-700">
             Change Photo
           </button>
         </div>
@@ -191,13 +190,13 @@ function SecuritySection() {
   return (
     <div className="space-y-8">
       <div>
-        <h2 className="text-[17px] font-bold mb-1" style={{ color: "#111827" }}>Security</h2>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Manage your password and active sessions.</p>
+        <h2 className="text-[17px] font-bold mb-1 text-gray-900">Security</h2>
+        <p className="text-[13px] text-gray-400">Manage your password and active sessions.</p>
       </div>
 
       {/* Password */}
-      <div className="bg-white rounded-xl border p-6 space-y-4" style={{ borderColor: "#e5e7eb" }}>
-        <h3 className="text-[14px] font-semibold" style={{ color: "#111827" }}>Change Password</h3>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+        <h3 className="text-[14px] font-semibold text-gray-900">Change Password</h3>
         {(["curr", "next", "confirm"] as const).map((k) => (
           <FormField key={k} label={k === "curr" ? "Current Password" : k === "next" ? "New Password" : "Confirm New Password"} id={`pw-${k}`}>
             <div className="relative">
@@ -222,32 +221,32 @@ function SecuritySection() {
       </div>
 
       {/* Sessions */}
-      <div className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
-        <h3 className="text-[14px] font-semibold mb-4" style={{ color: "#111827" }}>Active Sessions</h3>
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 className="text-[14px] font-semibold mb-4 text-gray-900">Active Sessions</h3>
         {sessions.loading && <LoadingState label="Loading sessions..." />}
         {sessions.error && <ErrorState message={sessions.error} onRetry={sessions.refetch} />}
         {(sessions.data ?? []).map((session) => (
-          <div key={session.id} className="flex items-center justify-between py-3 border-b last:border-0" style={{ borderColor: "#f3f4f6" }}>
+          <div key={session.id} className="flex items-center justify-between py-3 border-b last:border-0 border-gray-100">
             <div>
-              <div className="text-[13px] font-medium" style={{ color: "#111827" }}>{session.device}</div>
-              <div className="text-[11px]" style={{ color: "#9ca3af" }}>{session.location} · {new Date(session.lastActive).toLocaleString()}</div>
+              <div className="text-[13px] font-medium text-gray-900">{session.device}</div>
+              <div className="text-[11px] text-gray-400">{session.location} · {new Date(session.lastActive).toLocaleString()}</div>
             </div>
             {session.current
-              ? <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: "#ecfdf5", color: "#059669" }}>Current</span>
-              : <button onClick={() => void handleRevoke(session.id)} className="text-[12px] font-medium" style={{ color: "#ef4444" }}>Revoke</button>
+              ? <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-emerald-50 text-emerald-600">Current</span>
+              : <button onClick={() => void handleRevoke(session.id)} className="text-[12px] font-medium text-red-500">Revoke</button>
             }
           </div>
         ))}
         {!sessions.loading && !sessions.error && (sessions.data ?? []).length === 0 && (
-          <p className="text-[13px] py-4" style={{ color: "#9ca3af" }}>No other active sessions.</p>
+          <p className="text-[13px] py-4 text-gray-400">No other active sessions.</p>
         )}
       </div>
 
       {/* Danger zone */}
-      <div className="rounded-xl border p-6 space-y-3" style={{ borderColor: "#fecaca", background: "#fff5f5" }}>
-        <h3 className="text-[14px] font-semibold" style={{ color: "#dc2626" }}>Danger Zone</h3>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Deactivating your account will revoke all admin privileges. This action is irreversible.</p>
-        <button onClick={() => setDeactivateOpen(true)} className="px-4 py-2 rounded-lg text-[13px] font-medium border transition-colors hover:bg-red-100" style={{ borderColor: "#fca5a5", color: "#dc2626" }}>
+      <div className="rounded-xl border border-[#fecaca] bg-[#fff5f5] p-6 space-y-3">
+        <h3 className="text-[14px] font-semibold text-red-600">Danger Zone</h3>
+        <p className="text-[13px] text-gray-400">Deactivating your account will revoke all admin privileges. This action is irreversible.</p>
+        <button onClick={() => setDeactivateOpen(true)} className="px-4 py-2 rounded-lg text-[13px] font-medium border border-[#fca5a5] text-red-600 transition-colors hover:bg-red-100">
           Deactivate Account
         </button>
       </div>
@@ -330,13 +329,13 @@ function NotificationsSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-[17px] font-bold mb-1" style={{ color: "#111827" }}>Notification Preferences</h2>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Choose what to be notified about and how.</p>
+        <h2 className="text-[17px] font-bold mb-1 text-gray-900">Notification Preferences</h2>
+        <p className="text-[13px] text-gray-400">Choose what to be notified about and how.</p>
       </div>
 
       {NOTIFICATION_GROUPS.map((group) => (
-        <div key={group.title} className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
-          <h3 className="text-[13px] font-semibold uppercase tracking-wider mb-4" style={{ color: "#6b7280" }}>{group.title}</h3>
+        <div key={group.title} className="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 className="text-[13px] font-semibold uppercase tracking-wider mb-4 text-gray-500">{group.title}</h3>
           {group.items.map((item) => (
             <Toggle
               key={item.key}
@@ -392,16 +391,16 @@ function PlatformSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-[17px] font-bold mb-1" style={{ color: "#111827" }}>Platform Configuration</h2>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Configure global attendance and BLE behaviour for all schools.</p>
+        <h2 className="text-[17px] font-bold mb-1 text-gray-900">Platform Configuration</h2>
+        <p className="text-[13px] text-gray-400">Configure global attendance and BLE behaviour for all schools.</p>
       </div>
 
-      <div className="bg-white rounded-xl border p-6 space-y-5" style={{ borderColor: "#e5e7eb" }}>
-        <h3 className="text-[13px] font-semibold uppercase tracking-wider" style={{ color: "#6b7280" }}>BLE Settings</h3>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+        <h3 className="text-[13px] font-semibold uppercase tracking-wider text-gray-500">BLE Settings</h3>
         <FormField label="BLE Token Rotation Interval (seconds)" id="bleint">
           <div className="flex items-center gap-3">
             <Input id="bleint" type="number" value={config.bleRotationSeconds} onChange={(e) => set("bleRotationSeconds", Number(e.target.value))} min="10" max="120" fullWidth={false} className="w-32" />
-            <span className="text-[13px]" style={{ color: "#9ca3af" }}>seconds (recommended: 30s)</span>
+            <span className="text-[13px] text-gray-400">seconds (recommended: 30s)</span>
           </div>
         </FormField>
         <Toggle label="Require BLE proximity for all sessions" description="Students must be within Bluetooth range to mark attendance" checked={config.requireBleProximity} onChange={(v) => set("requireBleProximity", v)} />
@@ -409,19 +408,19 @@ function PlatformSection() {
         <Toggle label="Strict BLE-only mode" description="Disables manual attendance marking entirely" checked={config.strictBleOnly} onChange={(v) => set("strictBleOnly", v)} />
       </div>
 
-      <div className="bg-white rounded-xl border p-6 space-y-5" style={{ borderColor: "#e5e7eb" }}>
-        <h3 className="text-[13px] font-semibold uppercase tracking-wider" style={{ color: "#6b7280" }}>Attendance Thresholds</h3>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+        <h3 className="text-[13px] font-semibold uppercase tracking-wider text-gray-500">Attendance Thresholds</h3>
         <div className="grid md:grid-cols-2 gap-4">
           <FormField label="Minimum Attendance (%)" id="minatt">
             <div className="flex items-center gap-3">
               <Input id="minatt" type="number" value={config.minAttendancePercent} onChange={(e) => set("minAttendancePercent", Number(e.target.value))} min="50" max="95" fullWidth={false} className="w-28" />
-              <span className="text-[13px]" style={{ color: "#9ca3af" }}>% to pass</span>
+              <span className="text-[13px] text-gray-400">% to pass</span>
             </div>
           </FormField>
           <FormField label="Late Mark Threshold (minutes)" id="latethresh">
             <div className="flex items-center gap-3">
               <Input id="latethresh" type="number" value={config.lateThresholdMinutes} onChange={(e) => set("lateThresholdMinutes", Number(e.target.value))} min="5" max="60" fullWidth={false} className="w-28" />
-              <span className="text-[13px]" style={{ color: "#9ca3af" }}>minutes late</span>
+              <span className="text-[13px] text-gray-400">minutes late</span>
             </div>
           </FormField>
         </div>
@@ -429,8 +428,8 @@ function PlatformSection() {
         <Toggle label="Allow retroactive edits" description="Professors can edit attendance records within 24 hours" checked={config.allowRetroactiveEdits} onChange={(v) => set("allowRetroactiveEdits", v)} />
       </div>
 
-      <div className="bg-white rounded-xl border p-6 space-y-5" style={{ borderColor: "#e5e7eb" }}>
-        <h3 className="text-[13px] font-semibold uppercase tracking-wider" style={{ color: "#6b7280" }}>Face Liveness Verification</h3>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-5">
+        <h3 className="text-[13px] font-semibold uppercase tracking-wider text-gray-500">Face Liveness Verification</h3>
         <Toggle label="Require face liveness for all check-ins" description="Students must pass face verification on every attendance mark" checked={config.requireFaceLiveness} onChange={(v) => set("requireFaceLiveness", v)} />
         <Toggle label="Allow replay grace period" description="Tolerate up to 2 seconds of replay delay before flagging fraud" checked={config.replayGracePeriod} onChange={(v) => set("replayGracePeriod", v)} />
         <Toggle label="Alert on consecutive verification failures" description="Notify admin after 3 failed liveness checks in a session" checked={config.alertOnConsecutiveFailures} onChange={(v) => set("alertOnConsecutiveFailures", v)} />
@@ -439,7 +438,7 @@ function PlatformSection() {
       <InlineError message={error} />
       <div className="flex items-center gap-3">
         <SaveBtn saving={saving} disabled={!draft} onClick={handleSave}>Save Configuration</SaveBtn>
-        {!draft && !saving && <span className="text-[13px]" style={{ color: "#9ca3af" }}>All settings are up to date.</span>}
+        {!draft && !saving && <span className="text-[13px] text-gray-400">All settings are up to date.</span>}
         <SavedBadge show={saved} />
       </div>
     </div>
@@ -459,34 +458,34 @@ function BillingSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-[17px] font-bold mb-1" style={{ color: "#111827" }}>Billing & Plan</h2>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Manage your ATP-Go platform subscription.</p>
+        <h2 className="text-[17px] font-bold mb-1 text-gray-900">Billing & Plan</h2>
+        <p className="text-[13px] text-gray-400">Manage your ATP-Go platform subscription.</p>
       </div>
 
       {/* Current plan */}
-      <div className="rounded-xl p-6 text-white" style={{ background: "linear-gradient(135deg,#570000,#3D0000)" }}>
-        <div className="text-[11px] uppercase tracking-wider mb-1" style={{ color: "rgba(255,255,255,0.6)" }}>Current Plan</div>
+      <div className="rounded-xl p-6 text-white bg-gradient-to-br from-sp-primary to-[#3D0000]">
+        <div className="text-[11px] uppercase tracking-wider mb-1 text-white/60">Current Plan</div>
         <div className="text-[28px] font-bold mb-1">Enterprise</div>
-        <div className="text-[13px] mb-4" style={{ color: "rgba(255,255,255,0.7)" }}>Unlimited schools · Unlimited users · Priority support</div>
+        <div className="text-[13px] mb-4 text-white/70">Unlimited schools · Unlimited users · Priority support</div>
         <div className="flex items-center gap-3">
           <span className="text-[20px] font-bold">Custom Pricing</span>
-          <span className="text-[12px] px-3 py-1 rounded-full" style={{ background: "rgba(255,255,255,0.15)" }}>Annual Contract</span>
+          <span className="text-[12px] px-3 py-1 rounded-full bg-white/15">Annual Contract</span>
         </div>
       </div>
 
       {/* Usage */}
       {usage && (
-        <div className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
-          <h3 className="text-[13px] font-semibold uppercase tracking-wider mb-4" style={{ color: "#6b7280" }}>Usage This Month</h3>
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
+          <h3 className="text-[13px] font-semibold uppercase tracking-wider mb-4 text-gray-500">Usage This Month</h3>
           {[
             { label: "Schools", used: usage.schools, limit: "Unlimited" },
             { label: "Students", used: usage.students, limit: "Unlimited" },
             { label: "Attendance Sessions", used: usage.attendanceSessions, limit: "Unlimited" },
             { label: "API Calls", used: usage.apiCalls, limit: usage.apiCallLimit.toLocaleString() },
           ].map(({ label, used, limit }) => (
-            <div key={label} className="flex items-center justify-between py-3 border-b last:border-0" style={{ borderColor: "#f3f4f6" }}>
-              <span className="text-[13px]" style={{ color: "#374151" }}>{label}</span>
-              <span className="text-[13px] font-medium" style={{ color: "#111827" }}>
+            <div key={label} className="flex items-center justify-between py-3 border-b last:border-0 border-gray-100">
+              <span className="text-[13px] text-gray-700">{label}</span>
+              <span className="text-[13px] font-medium text-gray-900">
                 {used.toLocaleString()} / {limit}
               </span>
             </div>
@@ -495,24 +494,24 @@ function BillingSection() {
       )}
 
       {/* Invoices */}
-      <div className="bg-white rounded-xl border p-6" style={{ borderColor: "#e5e7eb" }}>
-        <h3 className="text-[13px] font-semibold uppercase tracking-wider mb-4" style={{ color: "#6b7280" }}>Recent Invoices</h3>
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 className="text-[13px] font-semibold uppercase tracking-wider mb-4 text-gray-500">Recent Invoices</h3>
         {invoices.error && <ErrorState message={invoices.error} onRetry={invoices.refetch} />}
         {(invoices.data ?? []).map((inv) => (
-          <div key={inv.id} className="flex items-center justify-between py-3 border-b last:border-0" style={{ borderColor: "#f3f4f6" }}>
+          <div key={inv.id} className="flex items-center justify-between py-3 border-b last:border-0 border-gray-100">
             <div>
-              <div className="text-[13px] font-medium" style={{ color: "#111827" }}>{inv.label}</div>
-              <div className="text-[11px]" style={{ color: "#9ca3af" }}>{inv.date}</div>
+              <div className="text-[13px] font-medium text-gray-900">{inv.label}</div>
+              <div className="text-[11px] text-gray-400">{inv.date}</div>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-[13px] font-semibold" style={{ color: "#111827" }}>₦{inv.amount.toLocaleString()}</span>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium" style={{ background: "#ecfdf5", color: "#059669" }}>{inv.status}</span>
-              <button onClick={() => void adminApi.downloadInvoice(inv.id)} className="text-[12px] font-medium" style={{ color: "#570000" }}>Download</button>
+              <span className="text-[13px] font-semibold text-gray-900">₦{inv.amount.toLocaleString()}</span>
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-emerald-50 text-emerald-600">{inv.status}</span>
+              <button onClick={() => void adminApi.downloadInvoice(inv.id)} className="text-[12px] font-medium text-sp-primary">Download</button>
             </div>
           </div>
         ))}
         {!invoices.error && (invoices.data ?? []).length === 0 && (
-          <p className="text-[13px] py-4" style={{ color: "#9ca3af" }}>No invoices yet.</p>
+          <p className="text-[13px] py-4 text-gray-400">No invoices yet.</p>
         )}
       </div>
     </div>
@@ -588,43 +587,43 @@ function ApiSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-[17px] font-bold mb-1" style={{ color: "#111827" }}>API Keys</h2>
-        <p className="text-[13px]" style={{ color: "#9ca3af" }}>Manage API keys for integrating ATP-Go with your institution&apos;s systems.</p>
+        <h2 className="text-[17px] font-bold mb-1 text-gray-900">API Keys</h2>
+        <p className="text-[13px] text-gray-400">Manage API keys for integrating ATP-Go with your institution&apos;s systems.</p>
       </div>
 
-      <div className="rounded-xl border p-4" style={{ borderColor: "#fde68a", background: "#fffbeb" }}>
-        <p className="text-[13px]" style={{ color: "#92400e" }}>
+      <div className="rounded-xl border border-[#fde68a] bg-amber-50 p-4">
+        <p className="text-[13px] text-[#92400e]">
           <strong>Keep your API keys secret.</strong> Do not expose them in client-side code or public repositories.
         </p>
       </div>
 
       <div className="space-y-3">
         {keys.map((apiKey) => (
-          <div key={apiKey.id} className="bg-white rounded-xl border p-5" style={{ borderColor: "#e5e7eb" }}>
+          <div key={apiKey.id} className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-start justify-between mb-3">
               <div>
-                <div className="text-[14px] font-semibold" style={{ color: "#111827" }}>{apiKey.name}</div>
-                <div className="text-[11px] mt-0.5" style={{ color: "#9ca3af" }}>
+                <div className="text-[14px] font-semibold text-gray-900">{apiKey.name}</div>
+                <div className="text-[11px] mt-0.5 text-gray-400">
                   Created {apiKey.created}{apiKey.lastUsed ? ` · Last used ${apiKey.lastUsed}` : " · Never used"}
                 </div>
               </div>
-              <button onClick={() => setRevokeTarget(apiKey)} className="text-[12px] font-medium px-3 py-1.5 rounded-lg border hover:bg-red-50 transition-colors" style={{ borderColor: "#fca5a5", color: "#dc2626" }}>
+              <button onClick={() => setRevokeTarget(apiKey)} className="text-[12px] font-medium px-3 py-1.5 rounded-lg border border-[#fca5a5] hover:bg-red-50 transition-colors text-red-600">
                 Revoke
               </button>
             </div>
             <div className="flex items-center gap-3">
-              <code className="flex-1 text-[12px] px-3 py-2 rounded-lg overflow-hidden font-mono" style={{ background: "#f9fafb", color: "#374151", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              <code className="flex-1 text-[12px] px-3 py-2 rounded-lg font-mono bg-gray-50 text-gray-700 truncate">
                 {apiKey.key}
               </code>
-              <button onClick={() => copyKey(apiKey.id, apiKey.key)} className="flex items-center gap-1.5 text-[12px] font-medium px-3 py-2 rounded-lg border transition-colors hover:bg-gray-50" style={{ borderColor: "#e5e7eb", color: copied === apiKey.id ? "#059669" : "#374151" }}>
+              <button onClick={() => copyKey(apiKey.id, apiKey.key)} className={`flex items-center gap-1.5 text-[12px] font-medium px-3 py-2 rounded-lg border border-gray-200 transition-colors hover:bg-gray-50 ${copied === apiKey.id ? "text-emerald-600" : "text-gray-700"}`}>
                 {copied === apiKey.id ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy</>}
               </button>
             </div>
           </div>
         ))}
         {keys.length === 0 && (
-          <div className="bg-white rounded-xl border py-8 text-center" style={{ borderColor: "#e5e7eb" }}>
-            <p className="text-[13px]" style={{ color: "#9ca3af" }}>No API keys yet.</p>
+          <div className="bg-white rounded-xl border border-gray-200 py-8 text-center">
+            <p className="text-[13px] text-gray-400">No API keys yet.</p>
           </div>
         )}
       </div>
@@ -633,15 +632,14 @@ function ApiSection() {
       <button
         onClick={handleGenerate}
         disabled={generating}
-        className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium border transition-colors hover:bg-gray-50 disabled:opacity-50"
-        style={{ borderColor: "#e5e7eb", color: "#570000" }}
+        className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-[13px] font-medium border border-gray-200 transition-colors hover:bg-gray-50 disabled:opacity-50 text-sp-primary"
       >
         {generating ? <Loader2 size={15} className="animate-spin" /> : <Key size={15} />} Generate New API Key
       </button>
 
       {/* Webhooks */}
-      <div className="bg-white rounded-xl border p-6 space-y-4" style={{ borderColor: "#e5e7eb" }}>
-        <h3 className="text-[13px] font-semibold uppercase tracking-wider" style={{ color: "#6b7280" }}>Webhooks</h3>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
+        <h3 className="text-[13px] font-semibold uppercase tracking-wider text-gray-500">Webhooks</h3>
         <FormField label="Webhook Endpoint URL" id="webhook">
           <Input
             id="webhook"
@@ -660,7 +658,7 @@ function ApiSection() {
                 onChange={() => toggleEvent(event)}
                 className="w-4 h-4 accent-[#570000]"
               />
-              <span className="font-mono text-[12px]" style={{ color: "#374151" }}>{event}</span>
+              <span className="font-mono text-[12px] text-gray-700">{event}</span>
             </label>
           ))}
         </div>
@@ -712,12 +710,7 @@ export default function SettingsPage() {
                 <button
                   key={id}
                   onClick={() => setActiveTab(id)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all text-left"
-                  style={{
-                    color: activeTab === id ? "#570000" : "#6b7280",
-                    background: activeTab === id ? "#FFF8F6" : "transparent",
-                    fontFamily: "'Inter',sans-serif",
-                  }}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-all text-left ${activeTab === id ? "text-sp-primary bg-sp-surface" : "text-gray-500 bg-transparent"}`}
                 >
                   <Icon size={16} strokeWidth={activeTab === id ? 2.5 : 1.8} />
                   {label}

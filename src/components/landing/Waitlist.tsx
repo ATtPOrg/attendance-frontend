@@ -69,52 +69,37 @@ export default function Waitlist() {
   };
 
   const inputClass =
-    "w-full bg-transparent border-b pb-2 text-[14px] outline-none transition-colors placeholder:opacity-30";
-  const labelClass = "block text-[11px] uppercase tracking-[0.12em] mb-2";
+    "w-full bg-transparent border-b pb-2 text-[14px] outline-none transition-colors placeholder:opacity-30 font-mono text-ivory border-[rgba(255,255,255,0.15)]";
+  const labelClass = "block text-[11px] uppercase tracking-[0.12em] mb-2 font-mono text-[rgba(245,240,232,0.4)]";
 
   return (
     <section
       id="waitlist"
-      className="px-6 md:px-12 py-16 md:py-24 border-b"
-      style={{ background: "var(--charcoal)", borderColor: "rgba(255,255,255,0.06)" }}
+      className="px-6 md:px-12 py-16 md:py-24 border-b bg-charcoal border-[rgba(255,255,255,0.06)]"
     >
       <div className="grid md:grid-cols-2 gap-10 md:gap-20 items-start">
 
         {/* Left — copy */}
         <div>
-          <div
-            className="section-label mb-6"
-            style={{ color: "rgba(245,240,232,0.4)" }}
-          >
+          <div className="section-label mb-6 text-[rgba(245,240,232,0.4)]">
             Early Access
           </div>
           <h2
-            className="leading-[0.95] tracking-tight mb-6"
+            className="leading-[0.95] tracking-tight mb-6 font-display text-ivory font-extrabold"
             style={{
-              fontFamily: "var(--font-syne)",
               fontSize: "clamp(40px,6vw,80px)",
-              fontWeight: 800,
               letterSpacing: "-0.04em",
-              color: "var(--ivory)",
             }}
           >
             Be first at<br />
             your{" "}
             <em
-              style={{
-                fontFamily: "var(--font-fraunces)",
-                fontWeight: 300,
-                fontStyle: "italic",
-                color: "var(--accent-on-dark)",
-              }}
+              className="font-serif text-[var(--accent-on-dark)] font-light italic"
             >
               institution.
             </em>
           </h2>
-          <p
-            className="text-[13px] leading-[1.9] max-w-xs"
-            style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.55)" }}
-          >
+          <p className="text-[13px] leading-[1.9] max-w-xs font-mono text-[rgba(245,240,232,0.55)]">
             Join the waitlist and we&apos;ll onboard your school in under a week — BLE hardware, face verification, and your full admin dashboard, ready to go.
           </p>
 
@@ -125,11 +110,8 @@ export default function Waitlist() {
               "Dedicated onboarding support",
             ].map((point) => (
               <div key={point} className="flex items-start gap-3">
-                <CheckCircle2 size={13} className="mt-0.5 flex-shrink-0" style={{ color: "var(--accent-on-dark)" }} />
-                <span
-                  className="text-[12px] leading-[1.7]"
-                  style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.6)" }}
-                >
+                <CheckCircle2 size={13} className="mt-0.5 flex-shrink-0 text-[var(--accent-on-dark)]" />
+                <span className="text-[12px] leading-[1.7] font-mono text-[rgba(245,240,232,0.6)]">
                   {point}
                 </span>
               </div>
@@ -141,26 +123,15 @@ export default function Waitlist() {
         <div>
           {state.status === "success" ? (
             <div className="py-8">
-              <div
-                className="text-[28px] mb-3 leading-tight"
-                style={{ fontFamily: "var(--font-syne)", fontWeight: 700, color: "var(--ivory)" }}
-              >
+              <div className="text-[28px] mb-3 leading-tight font-display font-bold text-ivory">
                 You&apos;re on the list,<br />
                 <em
-                  style={{
-                    fontFamily: "var(--font-fraunces)",
-                    fontWeight: 300,
-                    fontStyle: "italic",
-                    color: "var(--accent-on-dark)",
-                  }}
+                  className="font-serif text-[var(--accent-on-dark)] font-light italic"
                 >
                   {state.name}.
                 </em>
               </div>
-              <p
-                className="text-[13px] leading-[1.8]"
-                style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.55)" }}
-              >
+              <p className="text-[13px] leading-[1.8] font-mono text-[rgba(245,240,232,0.55)]">
                 We&apos;ll reach out within 48 hours to get your institution set up.
               </p>
             </div>
@@ -168,7 +139,7 @@ export default function Waitlist() {
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Institution name */}
               <div>
-                <label htmlFor="wl_school_name" className={labelClass} style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.4)" }}>
+                <label htmlFor="wl_school_name" className={labelClass}>
                   Institution Name
                 </label>
                 <input
@@ -179,14 +150,13 @@ export default function Waitlist() {
                   value={form.school_name}
                   onChange={set("school_name")}
                   className={inputClass}
-                  style={{ fontFamily: "var(--font-dm-mono)", color: "var(--ivory)", borderColor: "rgba(255,255,255,0.15)" }}
                 />
               </div>
 
               {/* Contact name + email */}
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <label htmlFor="wl_contact_name" className={labelClass} style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.4)" }}>
+                  <label htmlFor="wl_contact_name" className={labelClass}>
                     Your Name
                   </label>
                   <input
@@ -197,11 +167,10 @@ export default function Waitlist() {
                     value={form.contact_name}
                     onChange={set("contact_name")}
                     className={inputClass}
-                    style={{ fontFamily: "var(--font-dm-mono)", color: "var(--ivory)", borderColor: "rgba(255,255,255,0.15)" }}
                   />
                 </div>
                 <div>
-                  <label htmlFor="wl_email" className={labelClass} style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.4)" }}>
+                  <label htmlFor="wl_email" className={labelClass}>
                     Email Address
                   </label>
                   <input
@@ -212,7 +181,6 @@ export default function Waitlist() {
                     value={form.email}
                     onChange={set("email")}
                     className={inputClass}
-                    style={{ fontFamily: "var(--font-dm-mono)", color: "var(--ivory)", borderColor: "rgba(255,255,255,0.15)" }}
                   />
                 </div>
               </div>
@@ -220,7 +188,7 @@ export default function Waitlist() {
               {/* Phone + country */}
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <label htmlFor="wl_phone" className={labelClass} style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.4)" }}>
+                  <label htmlFor="wl_phone" className={labelClass}>
                     Phone Number
                   </label>
                   <input
@@ -231,11 +199,10 @@ export default function Waitlist() {
                     value={form.phone}
                     onChange={set("phone")}
                     className={inputClass}
-                    style={{ fontFamily: "var(--font-dm-mono)", color: "var(--ivory)", borderColor: "rgba(255,255,255,0.15)" }}
                   />
                 </div>
                 <div>
-                  <label htmlFor="wl_country" className={labelClass} style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.4)" }}>
+                  <label htmlFor="wl_country" className={labelClass}>
                     Country
                   </label>
                   <input
@@ -246,7 +213,6 @@ export default function Waitlist() {
                     value={form.country}
                     onChange={set("country")}
                     className={inputClass}
-                    style={{ fontFamily: "var(--font-dm-mono)", color: "var(--ivory)", borderColor: "rgba(255,255,255,0.15)" }}
                   />
                 </div>
               </div>
@@ -254,7 +220,7 @@ export default function Waitlist() {
               {/* School type + estimated users */}
               <div className="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <label htmlFor="wl_school_type" className={labelClass} style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.4)" }}>
+                  <label htmlFor="wl_school_type" className={labelClass}>
                     Institution Type
                   </label>
                   <select
@@ -262,8 +228,7 @@ export default function Waitlist() {
                     required
                     value={form.school_type}
                     onChange={set("school_type")}
-                    className={`${inputClass} cursor-pointer`}
-                    style={{ fontFamily: "var(--font-dm-mono)", color: form.school_type ? "var(--ivory)" : "rgba(245,240,232,0.3)", borderColor: "rgba(255,255,255,0.15)", background: "transparent" }}
+                    className={`${inputClass} cursor-pointer ${!form.school_type ? "text-[rgba(245,240,232,0.3)]" : "text-ivory"}`}
                   >
                     <option value="" disabled style={{ background: "#1a1814" }}>Select type</option>
                     {SCHOOL_TYPES.map((t) => (
@@ -272,7 +237,7 @@ export default function Waitlist() {
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="wl_estimated_users" className={labelClass} style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.4)" }}>
+                  <label htmlFor="wl_estimated_users" className={labelClass}>
                     Est. Users
                   </label>
                   <input
@@ -284,16 +249,15 @@ export default function Waitlist() {
                     value={form.estimated_users}
                     onChange={set("estimated_users")}
                     className={inputClass}
-                    style={{ fontFamily: "var(--font-dm-mono)", color: "var(--ivory)", borderColor: "rgba(255,255,255,0.15)" }}
                   />
                 </div>
               </div>
 
               {/* Message */}
               <div>
-                <label htmlFor="wl_message" className={labelClass} style={{ fontFamily: "var(--font-dm-mono)", color: "rgba(245,240,232,0.4)" }}>
+                <label htmlFor="wl_message" className={labelClass}>
                   Message{" "}
-                  <span style={{ opacity: 0.5 }}>(optional)</span>
+                  <span className="opacity-50">(optional)</span>
                 </label>
                 <textarea
                   id="wl_message"
@@ -302,16 +266,12 @@ export default function Waitlist() {
                   value={form.message}
                   onChange={set("message")}
                   className={`${inputClass} resize-none`}
-                  style={{ fontFamily: "var(--font-dm-mono)", color: "var(--ivory)", borderColor: "rgba(255,255,255,0.15)" }}
                 />
               </div>
 
               {/* Error */}
               {state.status === "error" && (
-                <p
-                  className="text-[12px] tracking-[0.03em]"
-                  style={{ fontFamily: "var(--font-dm-mono)", color: "#f87171" }}
-                >
+                <p className="text-[12px] tracking-[0.03em] font-mono text-red-400">
                   {state.message}
                 </p>
               )}
@@ -319,12 +279,7 @@ export default function Waitlist() {
               <button
                 type="submit"
                 disabled={state.status === "loading"}
-                className="px-10 py-4 text-[12px] uppercase tracking-[0.12em] transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{
-                  fontFamily: "var(--font-dm-mono)",
-                  background: "var(--accent-on-dark)",
-                  color: "#1A1814",
-                }}
+                className="px-10 py-4 text-[12px] uppercase tracking-[0.12em] transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed font-mono bg-[var(--accent-on-dark)] text-charcoal"
               >
                 {state.status === "loading" ? "Submitting…" : <span className="flex items-center gap-2">Join Waitlist <ArrowRight size={14} /></span>}
               </button>
