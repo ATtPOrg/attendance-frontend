@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import Link from "next/link";
 import DashboardHeader from "@/components/dashboard/Header";
 import {
@@ -9,7 +10,7 @@ import { adminApi } from "@/lib/api";
 import { useApi } from "@/hooks/useApi";
 import { LoadingState, ErrorState } from "@/components/ui/Async";
 import { useAuthStore } from "@/stores/authStore";
-import { School, Users, BookOpen, TrendingUp, Clock, ArrowUpRight, ArrowRight, Ticket, PauseCircle, Mail, Globe, Hash } from "lucide-react";
+import { School, Users, BookOpen, TrendingUp, Clock, ArrowUpRight, ArrowRight, Ticket, PauseCircle, Mail, Globe, Hash, X, Loader2 } from "lucide-react";
 import type { WaitlistEntry } from "@/lib/types";
 
 const activityIcons: Record<string, React.ElementType> = {
@@ -272,7 +273,16 @@ export default function DashboardPage() {
 
         {/* Waitlist */}
         <div id="waitlist">
-          <WaitlistPanel entries={waitlist.data ?? []} loading={waitlist.loading} />
+          <WaitlistPanel
+            entries={waitlist.data ?? []}
+            loading={waitlist.loading}
+            onReject={async (id) => {
+              await adminApi.updateWaitlistStatus(id, "rejected");
+              waitlist.setData((prev) =>
+                (prev ?? []).map((e) => (e.id === id ? { ...e, status: "rejected" as const } : e))
+              );
+            }}
+          />
         </div>
       </div>
     </>
@@ -291,7 +301,28 @@ function waitlistOnboardUrl(entry: WaitlistEntry): string {
   return `/dashboard/schools/new?${p.toString()}`;
 }
 
-function WaitlistPanel({ entries, loading }: { entries: WaitlistEntry[]; loading: boolean }) {
+function WaitlistPanel({
+  entries,
+  loading,
+  onReject,
+}: {
+  entries: WaitlistEntry[];
+  loading: boolean;
+  onReject: (id: string) => Promise<void>;
+}) {
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [rejectingId, setRejectingId] = useState<string | null>(null);
+
+  const handleReject = async (id: string) => {
+    setRejectingId(id);
+    try {
+      await onReject(id);
+    } finally {
+      setRejectingId(null);
+      setConfirmingId(null);
+    }
+  };
+
   const pending = entries.filter((e) => e.status === "pending");
   const approvedCount = entries.filter((e) => e.status === "approved").length;
   const rejectedCount = entries.filter((e) => e.status === "rejected").length;
@@ -377,6 +408,34 @@ function WaitlistPanel({ entries, loading }: { entries: WaitlistEntry[]; loading
                 >
                   Onboard <ArrowRight size={11} />
                 </Link>
+                {confirmingId === entry.id ? (
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[11px]" style={{ color: "#6b7280" }}>Reject?</span>
+                    <button
+                      onClick={() => handleReject(entry.id)}
+                      disabled={rejectingId === entry.id}
+                      className="text-[11px] font-medium px-2 py-0.5 rounded"
+                      style={{ background: "#fee2e2", color: "#dc2626" }}
+                    >
+                      {rejectingId === entry.id ? <Loader2 size={10} className="animate-spin" /> : "Yes"}
+                    </button>
+                    <button
+                      onClick={() => setConfirmingId(null)}
+                      className="text-[11px] font-medium px-2 py-0.5 rounded"
+                      style={{ background: "#f3f4f6", color: "#6b7280" }}
+                    >
+                      No
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setConfirmingId(entry.id)}
+                    className="flex items-center gap-1 text-[11px] font-medium"
+                    style={{ color: "#9ca3af" }}
+                  >
+                    <X size={11} /> Reject
+                  </button>
+                )}
               </div>
             </div>
           ))}
