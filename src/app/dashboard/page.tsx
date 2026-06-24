@@ -9,7 +9,8 @@ import { adminApi } from "@/lib/api";
 import { useApi } from "@/hooks/useApi";
 import { LoadingState, ErrorState } from "@/components/ui/Async";
 import { useAuthStore } from "@/stores/authStore";
-import { School, Users, BookOpen, TrendingUp, Clock, ArrowUpRight, ArrowRight, Ticket, PauseCircle } from "lucide-react";
+import { School, Users, BookOpen, TrendingUp, Clock, ArrowUpRight, ArrowRight, Ticket, PauseCircle, Mail, Globe, Hash } from "lucide-react";
+import type { WaitlistEntry } from "@/lib/types";
 
 const activityIcons: Record<string, React.ElementType> = {
   onboard: School,
@@ -25,6 +26,7 @@ export default function DashboardPage() {
   const trend = useApi(() => adminApi.attendanceTrend());
   const deptPerf = useApi(() => adminApi.departmentPerformance());
   const schools = useApi(() => adminApi.schools.list());
+  const waitlist = useApi(() => adminApi.waitlist());
 
   const loading = overview.loading || activity.loading || trend.loading || deptPerf.loading || schools.loading;
   const error = overview.error ?? activity.error ?? trend.error ?? deptPerf.error ?? schools.error;
@@ -246,7 +248,99 @@ export default function DashboardPage() {
             )}
           </div>
         </div>
+
+        {/* Waitlist */}
+        <WaitlistPanel entries={waitlist.data ?? []} loading={waitlist.loading} />
       </div>
     </>
+  );
+}
+
+function WaitlistPanel({ entries, loading }: { entries: WaitlistEntry[]; loading: boolean }) {
+  const pending = entries.filter((e) => e.status === "pending");
+
+  return (
+    <div className="bg-white rounded-xl border" style={{ borderColor: "#e5e7eb" }}>
+      <div className="flex items-center justify-between px-6 py-4 border-b" style={{ borderColor: "#e5e7eb" }}>
+        <div>
+          <h3 className="text-[15px] font-semibold" style={{ color: "#111827" }}>
+            Waitlist
+            {pending.length > 0 && (
+              <span
+                className="ml-2 text-[11px] px-2 py-0.5 rounded-full font-medium"
+                style={{ background: "#fffbeb", color: "#d97706" }}
+              >
+                {pending.length} pending
+              </span>
+            )}
+          </h3>
+          <p className="text-[12px]" style={{ color: "#9ca3af" }}>Schools waiting to be onboarded</p>
+        </div>
+        <Link
+          href="/dashboard/schools/new"
+          className="flex items-center gap-1 text-[13px] font-medium px-3 py-1.5 rounded-lg"
+          style={{ background: "#570000", color: "#ffffff" }}
+        >
+          Onboard new <ArrowRight size={13} />
+        </Link>
+      </div>
+
+      {loading ? (
+        <p className="text-[13px] py-8 text-center" style={{ color: "#9ca3af" }}>Loading...</p>
+      ) : entries.length === 0 ? (
+        <p className="text-[13px] py-8 text-center" style={{ color: "#9ca3af" }}>No waitlist submissions yet.</p>
+      ) : (
+        <div className="divide-y" style={{ borderColor: "#f3f4f6" }}>
+          {entries.slice(0, 8).map((entry) => (
+            <div key={entry.id} className="flex items-start gap-4 px-6 py-4">
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0 mt-0.5"
+                style={{ background: "#F0D5CE", color: "#570000" }}
+              >
+                {entry.schoolName.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-[14px] font-semibold truncate" style={{ color: "#111827" }}>{entry.schoolName}</div>
+                <div className="flex flex-wrap gap-x-4 gap-y-0.5 mt-0.5">
+                  <span className="flex items-center gap-1 text-[12px]" style={{ color: "#6b7280" }}>
+                    <Users size={11} /> {entry.contactName}
+                  </span>
+                  <span className="flex items-center gap-1 text-[12px]" style={{ color: "#6b7280" }}>
+                    <Mail size={11} /> {entry.email}
+                  </span>
+                  {entry.country && (
+                    <span className="flex items-center gap-1 text-[12px]" style={{ color: "#6b7280" }}>
+                      <Globe size={11} /> {entry.country}
+                    </span>
+                  )}
+                  {entry.estimatedUsers && (
+                    <span className="flex items-center gap-1 text-[12px]" style={{ color: "#6b7280" }}>
+                      <Hash size={11} /> {entry.estimatedUsers} users
+                    </span>
+                  )}
+                </div>
+                {entry.message && (
+                  <p className="text-[12px] mt-1 line-clamp-1" style={{ color: "#9ca3af" }}>{entry.message}</p>
+                )}
+              </div>
+              <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                <span
+                  className="text-[11px] px-2.5 py-1 rounded-full font-medium"
+                  style={{
+                    background: entry.status === "pending" ? "#fffbeb" : entry.status === "approved" ? "#ecfdf5" : "#fef2f2",
+                    color: entry.status === "pending" ? "#d97706" : entry.status === "approved" ? "#059669" : "#dc2626",
+                  }}
+                >
+                  {entry.status}
+                </span>
+                <span className="text-[11px]" style={{ color: "#9ca3af" }}>
+                  {new Date(entry.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

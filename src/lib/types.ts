@@ -221,6 +221,20 @@ export interface AdminUser {
   timezone?: string;
 }
 
+export interface WaitlistEntry {
+  id: string;
+  schoolName: string;
+  contactName: string;
+  email: string;
+  phone: string | null;
+  country: string | null;
+  schoolType: string | null;
+  estimatedUsers: number | null;
+  message: string | null;
+  status: "pending" | "approved" | "rejected";
+  createdAt: string;
+}
+
 export interface SchoolAdmin {
   id: string;
   name: string;

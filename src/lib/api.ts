@@ -4,7 +4,7 @@ import type {
   AttendanceSession, TrendPoint, DeptPerformance, ActivityItem,
   AdminOverview, SchoolDashboard, BillingSummary, Invoice, ApiKey,
   LoginSession, PlatformConfig, NotificationPrefs, WebhookConfig,
-  AdminUser, SchoolAdmin, NotificationItem,
+  AdminUser, SchoolAdmin, NotificationItem, WaitlistEntry,
 } from "./types";
 
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
@@ -216,6 +216,9 @@ export const adminApi = {
   revokeApiKey: (id: string) => a<void>(`/admin/api-keys/${id}`, { method: "DELETE" }),
   webhooks: () => a<WebhookConfig>("/admin/webhooks"),
   saveWebhooks: (body: WebhookConfig) => a<WebhookConfig>("/admin/webhooks", { method: "PUT", body }),
+
+  // Waitlist
+  waitlist: () => a<WaitlistEntry[]>("/admin/waitlist"),
 };
 
 // ─── School Admin portal ──────────────────────────────────────────────────────
