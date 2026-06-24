@@ -256,6 +256,18 @@ export default function DashboardPage() {
   );
 }
 
+function waitlistOnboardUrl(entry: WaitlistEntry): string {
+  const p = new URLSearchParams({
+    from: entry.id,
+    sName: entry.schoolName,
+    aName: entry.contactName,
+    aEmail: entry.email,
+    ...(entry.phone ? { phone: entry.phone } : {}),
+    ...(entry.country ? { country: entry.country } : {}),
+  });
+  return `/dashboard/schools/new?${p.toString()}`;
+}
+
 function WaitlistPanel({ entries, loading }: { entries: WaitlistEntry[]; loading: boolean }) {
   const pending = entries.filter((e) => e.status === "pending");
 
@@ -294,7 +306,7 @@ function WaitlistPanel({ entries, loading }: { entries: WaitlistEntry[]; loading
           {entries.slice(0, 8).map((entry) => (
             <div key={entry.id} className="flex items-start gap-4 px-6 py-4">
               <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center text-white text-[12px] font-bold flex-shrink-0 mt-0.5"
+                className="w-9 h-9 rounded-lg flex items-center justify-center text-[12px] font-bold flex-shrink-0 mt-0.5"
                 style={{ background: "#F0D5CE", color: "#570000" }}
               >
                 {entry.schoolName.charAt(0).toUpperCase()}
@@ -336,6 +348,15 @@ function WaitlistPanel({ entries, loading }: { entries: WaitlistEntry[]; loading
                 <span className="text-[11px]" style={{ color: "#9ca3af" }}>
                   {new Date(entry.createdAt).toLocaleDateString()}
                 </span>
+                {entry.status === "pending" && (
+                  <Link
+                    href={waitlistOnboardUrl(entry)}
+                    className="flex items-center gap-1 text-[12px] font-semibold"
+                    style={{ color: "#570000" }}
+                  >
+                    Onboard <ArrowRight size={11} />
+                  </Link>
+                )}
               </div>
             </div>
           ))}

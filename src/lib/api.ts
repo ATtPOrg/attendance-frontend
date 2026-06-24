@@ -219,6 +219,8 @@ export const adminApi = {
 
   // Waitlist
   waitlist: () => a<WaitlistEntry[]>("/admin/waitlist"),
+  updateWaitlistStatus: (id: string, status: string) =>
+    a<WaitlistEntry>(`/admin/waitlist/${id}/status`, { method: "PATCH", body: { status } }),
 };
 
 // ─── School Admin portal ──────────────────────────────────────────────────────

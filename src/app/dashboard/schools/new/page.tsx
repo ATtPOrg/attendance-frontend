@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import DashboardHeader from "@/components/dashboard/Header";
 import { adminApi, ApiError } from "@/lib/api";
 import { ChevronLeft, Check, Loader2, ArrowRight } from "lucide-react";
@@ -8,18 +8,31 @@ import Link from "next/link";
 
 const steps = ["School Info", "Contact & Location", "Plan & Access"];
 
-export default function NewSchoolPage() {
+function NewSchoolForm() {
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+  const params = useSearchParams();
+
+  const waitlistId = params.get("from") ?? "";
 
   const [form, setForm] = useState({
-    name: "", shortName: "", email: "", phone: "",
-    country: "Nigeria", city: "", address: "",
-    plan: "Professional", adminName: "", adminEmail: "",
+    name: params.get("sName") ?? "",
+    shortName: "",
+    email: "",
+    phone: params.get("phone") ?? "",
+    country: params.get("country") ?? "Nigeria",
+    city: "",
+    address: "",
+    plan: "Starter",
+    adminName: params.get("aName") ?? "",
+    adminEmail: params.get("aEmail") ?? "",
   });
+
+  // If a waitlistId is present but no pre-fill came through params, it's a safety fallback.
+  // Nothing more to do — the params already seeded the form above.
 
   const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
@@ -32,6 +45,9 @@ export default function NewSchoolPage() {
     setSubmitting(true);
     try {
       await adminApi.schools.create(form);
+      if (waitlistId) {
+        await adminApi.updateWaitlistStatus(waitlistId, "approved").catch(() => null);
+      }
       setDone(true);
     } catch (e) {
       setError(e instanceof ApiError ? e.message : "Failed to onboard school. Please try again.");
@@ -60,14 +76,18 @@ export default function NewSchoolPage() {
             </p>
             <div className="flex gap-3 justify-center">
               <button
-                onClick={() => router.push("/dashboard/schools")}
+                onClick={() => router.push(waitlistId ? "/dashboard" : "/dashboard/schools")}
                 className="px-5 py-2.5 rounded-lg text-[13px] font-medium"
                 style={{ background: "#FED65B", color: "#570000" }}
               >
-                View All Schools
+                {waitlistId ? "Back to Dashboard" : "View All Schools"}
               </button>
               <button
-                onClick={() => { setStep(0); setDone(false); setForm({ name: "", shortName: "", email: "", phone: "", country: "Nigeria", city: "", address: "", plan: "Professional", adminName: "", adminEmail: "" }); }}
+                onClick={() => {
+                  setStep(0);
+                  setDone(false);
+                  setForm({ name: "", shortName: "", email: "", phone: "", country: "Nigeria", city: "", address: "", plan: "Starter", adminName: "", adminEmail: "" });
+                }}
                 className="px-5 py-2.5 rounded-lg text-[13px] font-medium border"
                 style={{ borderColor: "#e5e7eb", color: "#374151" }}
               >
@@ -82,15 +102,28 @@ export default function NewSchoolPage() {
 
   return (
     <>
-      <DashboardHeader title="Onboard New School" subtitle="Add a new institution to the platform" />
+      <DashboardHeader
+        title={waitlistId ? `Onboarding: ${form.name || "School"}` : "Onboard New School"}
+        subtitle={waitlistId ? "Pre-filled from waitlist submission" : "Add a new institution to the platform"}
+      />
       <div className="p-8">
         <Link
-          href="/dashboard/schools"
+          href={waitlistId ? "/dashboard" : "/dashboard/schools"}
           className="inline-flex items-center gap-1.5 text-[13px] font-medium mb-8"
           style={{ color: "#6b7280" }}
         >
-          <ChevronLeft size={16} /> Back to Schools
+          <ChevronLeft size={16} /> {waitlistId ? "Back to Dashboard" : "Back to Schools"}
         </Link>
+
+        {waitlistId && (
+          <div
+            className="mb-6 flex items-center gap-2 px-4 py-3 rounded-lg text-[13px]"
+            style={{ background: "#fffbeb", color: "#92400e", border: "1px solid #fde68a" }}
+          >
+            <Check size={14} />
+            Form pre-filled from waitlist submission. Review and complete the remaining fields below.
+          </div>
+        )}
 
         {/* Step indicator */}
         <div className="flex items-center gap-0 mb-10 max-w-lg">
@@ -140,7 +173,7 @@ export default function NewSchoolPage() {
             {step === 1 && (
               <>
                 {[
-                  { label: "Admin Email", fieldKey: "email", placeholder: "admin@university.edu.ng", type: "email" },
+                  { label: "Institution Email", fieldKey: "email", placeholder: "info@university.edu.ng", type: "email" },
                   { label: "Phone Number", fieldKey: "phone", placeholder: "+234 1 820 1000" },
                   { label: "City", fieldKey: "city", placeholder: "Lagos" },
                   { label: "Address", fieldKey: "address", placeholder: "University Road, Yaba" },
@@ -206,6 +239,14 @@ export default function NewSchoolPage() {
         </div>
       </div>
     </>
+  );
+}
+
+export default function NewSchoolPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-[14px]" style={{ color: "#9ca3af" }}>Loading...</div>}>
+      <NewSchoolForm />
+    </Suspense>
   );
 }
 
